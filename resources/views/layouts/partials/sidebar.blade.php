@@ -25,6 +25,12 @@
         <i class="mdi mdi-home menu-icon"></i>
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ route('index-buku') }}">
+        <span class="menu-title">Buku</span>
+        <i class="mdi mdi-book menu-icon"></i>
+      </a>
+    </li>
     @forelse($sidebarMenu ?? [] as $menu)
       <li class="nav-item">
         @if(!empty($menu['submenu']))

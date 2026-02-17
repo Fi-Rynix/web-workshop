@@ -1,0 +1,984 @@
+/* ====================================
+   Kategori Page Styles - Purple Theme
+   ==================================== */
+
+/* CSS Reset untuk Kategori */
+.kategori-header,
+.kategori-container,
+.kategori-header-section,
+.kategori-table-wrapper,
+.kategori-table,
+.kategori-actions,
+.btn-add-kategori,
+.btn-action,
+.modal-title,
+.modal-label,
+.modal-input,
+.modal-buttons,
+.btn-modal {
+  box-sizing: border-box !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Root Color Variables */
+:root {
+  --primary-purple: #7c3aed;
+  --primary-purple-dark: #6d28d9;
+  --primary-purple-light: #a78bfa;
+  --secondary-cyan: #06b6d4;
+  --secondary-teal: #14b8a6;
+  --gradient-purple-pink: linear-gradient(135deg, #da8cff 0%, #9a55ff 100%);
+  --gradient-purple-hover: linear-gradient(135deg, #e09fff 0%, #b084ff 100%);
+  --gradient-teal: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
+  --shadow-lg: 0 20px 25px -5px rgba(124, 58, 237, 0.15);
+  --shadow-md: 0 10px 15px -3px rgba(124, 58, 237, 0.1);
+}
+
+/* ====================================
+   INDEX PAGE STYLES
+   ==================================== */
+
+.kategori-header {
+  margin-bottom: 2rem;
+  animation: slideInDown 0.5s ease-out;
+}
+
+.kategori-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e1b4b;
+  letter-spacing: -0.5px;
+}
+
+.kategori-header p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+/* Container Card */
+.kategori-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
+  transition: all 0.3s ease;
+}
+
+.kategori-container:hover {
+  box-shadow: 0 25px 35px -5px rgba(124, 58, 237, 0.2);
+}
+
+/* Header Section */
+.kategori-header-section {
+  padding: 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.kategori-header-section h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Add Button */
+.btn-add-kategori {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--gradient-purple-pink);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-add-kategori:hover {
+  background: var(--gradient-purple-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px rgba(124, 58, 237, 0.3);
+}
+
+.btn-add-kategori:active {
+  transform: translateY(0);
+}
+
+.btn-add-kategori svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2.5;
+}
+
+.btn-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2.5;
+  display: inline-block;
+}
+
+.empty-icon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+  display: inline-block;
+}
+
+/* Table Section */
+.kategori-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kategori-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.kategori-table thead {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f5f3ff 100%);
+  border-bottom: 2px solid #e9d5ff;
+}
+
+.kategori-table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #5e21b6;
+}
+
+.kategori-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.kategori-table tbody tr:hover {
+  background-color: #faf5ff;
+  box-shadow: inset 0 0 0 1px #e9d5ff;
+}
+
+.kategori-table td {
+  padding: 1.25rem 1.5rem;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.kategori-table td:nth-child(1) {
+  font-weight: 600;
+  color: #7c3aed;
+  width: 60px;
+}
+
+.kategori-table td:nth-child(2) {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.kategori-table td:nth-child(3) {
+  text-align: center;
+}
+
+/* Action Buttons */
+.kategori-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  color: white;
+}
+
+.btn-edit:hover {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(20, 184, 166, 0.3);
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.btn-delete:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Empty State */
+.kategori-empty {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: #94a3b8;
+}
+
+.kategori-empty svg {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+/* ====================================
+   MODAL STYLES
+   ==================================== */
+
+/* Dialog Base */
+dialog {
+  all: unset;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9000;
+}
+
+dialog[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Backdrop */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Dialog Wrapper Container */
+el-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+el-dialog-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.35) !important;
+  animation: fadeIn 0.25s ease-out !important;
+  z-index: 9000 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Dialog Panel */
+el-dialog-panel {
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3) !important;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  border: 1px solid #f1f5f9 !important;
+  padding: 2.5rem !important;
+  max-width: 600px !important;
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  overflow: visible !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 9001 !important;
+}
+
+/* Custom Scrollbar Styling */
+el-dialog-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+el-dialog-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+el-dialog-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+el-dialog-panel::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Modal Panel - Custom Class */
+.modal-panel {
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3) !important;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  padding: 2.5rem !important;
+  max-width: 600px !important;
+  width: 90vw !important;
+  border: 1px solid #f1f5f9 !important;
+  margin: 0 auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  display: block !important;
+}
+
+.modal-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.modal-panel::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.modal-panel-delete {
+  max-width: 480px !important;
+  padding: 2rem !important;
+}
+
+/* Modal Header */
+.modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e1b4b;
+  margin: 0 0 1.75rem 0;
+  letter-spacing: -0.3px;
+  word-wrap: break-word;
+}
+
+#modalCreate .modal-title,
+#modalCreate-wrapper .modal-title {
+  background: linear-gradient(135deg, #da8cff 0%, #9a55ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#modalEdit .modal-title,
+#modalEdit-wrapper .modal-title {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Form Container */
+form {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Error Alert */
+.modal-error {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+  border: 1.5px solid #fecaca;
+  border-radius: 10px;
+  animation: slideInDown 0.3s ease-out;
+}
+
+.modal-error-title {
+  color: #7f1d1d;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  margin: 0 0 0.75rem 0;
+}
+
+.modal-error-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: #dc2626;
+}
+
+.modal-error-list li {
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: #b91c1c;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.modal-error-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+/* Form Group */
+.modal-form-group {
+  margin-bottom: 1.75rem;
+}
+
+.modal-label {
+  display: block;
+  margin-bottom: 0.875rem;
+  font-weight: 600;
+  font-size: 0.925rem;
+  color: #1e293b;
+  letter-spacing: 0.3px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.modal-input::placeholder {
+  color: #cbd5e1;
+}
+
+.modal-input:hover:not(:focus):not(.error) {
+  border-color: #cbd5e1;
+  background-color: #fafbfc;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+  background-color: #ffffff;
+}
+
+.modal-input.error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.modal-input.error:focus {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+}
+
+.modal-input-error {
+  margin-top: 0.5rem;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-modal {
+  padding: 0.8rem 1.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.btn-modal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.btn-modal:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.btn-modal:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-cancel {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-cancel:hover {
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #da8cff 0%, #9a55ff 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.btn-save:hover {
+  background: linear-gradient(135deg, #e09fff 0%, #b084ff 100%);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+}
+
+.btn-update {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+}
+
+.btn-update:hover {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  box-shadow: 0 8px 20px rgba(20, 184, 166, 0.4);
+}
+
+.btn-delete-modal {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.btn-delete-modal:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* ====================================
+   MODAL: CREATE KATEGORI
+   ==================================== */
+
+#modalCreate el-dialog-panel {
+  max-width: 600px;
+}
+
+#modalCreate .modal-title {
+  color: #7c3aed;
+}
+
+#modalCreate .btn-save {
+  background: var(--gradient-purple-pink);
+}
+
+/* ====================================
+   MODAL: EDIT KATEGORI
+   ==================================== */
+
+#modalEdit el-dialog-panel {
+  max-width: 600px;
+}
+
+#modalEdit .modal-title {
+  color: #06b6d4;
+}
+
+#modalEdit .btn-update {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+}
+
+.btn-delete-modal {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete-modal:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* ====================================
+   MODAL: DELETE KATEGORI
+   ==================================== */
+
+.modal-panel-delete {
+  max-width: 480px !important;
+  padding: 2rem !important;
+}
+
+.delete-modal-content {
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.delete-modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.3px;
+}
+
+.delete-modal-warning {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 1.75rem;
+}
+
+.delete-modal-warning strong {
+  color: #1e293b;
+  font-weight: 700;
+  display: block;
+  margin: 0.75rem 0 0.5rem 0;
+}
+
+.delete-modal-subtitle {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 0.75rem;
+  font-style: italic;
+  display: block;
+  opacity: 0.8;
+}
+
+.modal-buttons-delete {
+  flex-direction: row !important;
+  justify-content: center !important;
+  gap: 1rem !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+  margin-top: 1.5rem !important;
+}
+
+/* ====================================
+   ANIMATIONS
+   ==================================== */
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+
+@media (max-width: 768px) {
+  .kategori-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .kategori-header-section {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .btn-add-kategori {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .kategori-table th,
+  .kategori-table td {
+    padding: 0.75rem 1rem;
+  }
+
+  .kategori-actions {
+    gap: 0.5rem;
+  }
+
+  .btn-action {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .modal-panel {
+    padding: 2rem !important;
+    max-width: calc(100vw - 2rem) !important;
+  }
+
+  .modal-panel-delete {
+    max-width: calc(100vw - 2rem) !important;
+    padding: 1.75rem !important;
+  }
+
+  .modal-title {
+    font-size: 1.2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .delete-modal-title {
+    font-size: 1.1rem;
+  }
+
+  .modal-buttons {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+  }
+
+  .modal-buttons-delete {
+    flex-direction: row !important;
+    gap: 0.75rem !important;
+  }
+
+  .btn-modal {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  .modal-buttons-delete .btn-modal {
+    flex: 1;
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .kategori-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .kategori-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .kategori-header-section {
+    padding: 1rem;
+  }
+
+  .kategori-table th,
+  .kategori-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .btn-action {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .modal-panel {
+    padding: 1.5rem !important;
+    margin: 0 1rem !important;
+  }
+
+  .modal-panel-delete {
+    padding: 1.5rem !important;
+    margin: 0 1rem !important;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .delete-modal-title {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .delete-modal-warning {
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .modal-input {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-modal {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* ====================================
+   UTILITY CLASSES
+   ==================================== */
+
+.text-gradient-purple {
+  background: var(--gradient-purple-pink);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shadow-purple {
+  box-shadow: var(--shadow-lg);
+}
+
+.border-purple {
+  border-color: #e9d5ff;
+}
+
+.text-purple {
+  color: #7c3aed;
+}
+
+.bg-purple-light {
+  background-color: #faf5ff;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --gradient-purple-pink: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%);
+    --gradient-purple-hover: linear-gradient(135deg, #d8b4fe 0%, #c4b5fd 100%);
+  }
+
+  .kategori-container {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  .kategori-header-section {
+    background: linear-gradient(135deg, #1e293b 0%, #293548 100%);
+    border-bottom-color: #334155;
+  }
+
+  .kategori-header-section h2 {
+    color: #f1f5f9;
+  }
+
+  .kategori-header h1 {
+    color: #f8fafc;
+  }
+
+  .kategori-table thead {
+    background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+    border-bottom-color: #6366f1;
+  }
+
+  .kategori-table th {
+    color: #c4b5fd;
+  }
+
+  .kategori-table tbody tr:hover {
+    background-color: #2d3748;
+  }
+
+  .kategori-table td {
+    color: #cbd5e1;
+    border-bottom-color: #334155;
+  }
+
+  el-dialog-panel {
+    background: #1e293b;
+  }
+
+  .modal-title {
+    color: #f1f5f9;
+  }
+
+  .modal-label {
+    color: #e2e8f0;
+  }
+
+  .modal-input {
+    background-color: #0f172a;
+    border-color: #334155;
+    color: #f1f5f9;
+  }
+
+  .modal-input:focus {
+    background-color: #1e293b;
+    border-color: #7c3aed;
+  }
+}

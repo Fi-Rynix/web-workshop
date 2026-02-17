@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Buku extends Model
 {
     protected $table = 'buku';
-    protected $primaryKey = 'id_buku';
-    protected $fillable = ['judul', 'pengarang', 'penerbit', 'tahun_terbit', 'id_kategori'];
+    protected $primaryKey = 'idbuku';
+    protected $fillable = ['kode', 'judul', 'pengarang', 'penerbit', 'tahun_terbit', 'idkategori'];
+
+    public $timestamps = false;
 
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
+        return $this->belongsTo(Kategori::class, 'idkategori', 'idkategori');
     }
 }
