@@ -22,7 +22,7 @@
     <li class="nav-item">
       <a class="nav-link" href="{{ route('index-kategori') }}">
         <span class="menu-title">Kategori</span>
-        <i class="mdi mdi-home menu-icon"></i>
+        <i class="mdi mdi-tag menu-icon"></i>
       </a>
     </li>
     <li class="nav-item">
