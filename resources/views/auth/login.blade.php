@@ -51,6 +51,10 @@
                     <a href="#" class="auth-link text-primary">Forgot password?</a>
                   </div>
                   <div class="mb-2 d-grid gap-2">
+                    <a href="{{ route('google-redirect') }}" class="btn btn-block btn-google auth-form-btn" style="background-color: #DB4437; color: white;">
+                      <i class="mdi mdi-google me-2"></i>Sign in with Google</a>
+                  </div>
+                  <div class="mb-2 d-grid gap-2">
                     <button type="button" class="btn btn-block btn-facebook auth-form-btn">
                       <i class="mdi mdi-facebook me-2"></i>Connect using facebook </button>
                   </div>
