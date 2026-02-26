@@ -31,6 +31,12 @@
         <i class="mdi mdi-book menu-icon"></i>
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ route('generate-pdf') }}">
+        <span class="menu-title">Generate PDF</span>
+        <i class="mdi mdi-file menu-icon"></i>
+      </a>
+    </li>
     @forelse($sidebarMenu ?? [] as $menu)
       <li class="nav-item">
         @if(!empty($menu['submenu']))
