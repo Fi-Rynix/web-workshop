@@ -32,6 +32,12 @@
       </a>
     </li>
     <li class="nav-item">
+      <a class="nav-link" href="{{ route('index-barang') }}">
+        <span class="menu-title">Barang</span>
+        <i class="mdi mdi-package menu-icon"></i>
+      </a>
+    </li>
+    <li class="nav-item">
       <a class="nav-link" href="{{ route('generate-pdf') }}">
         <span class="menu-title">Generate PDF</span>
         <i class="mdi mdi-file menu-icon"></i>

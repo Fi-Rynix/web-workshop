@@ -5,7 +5,7 @@
     <el-dialog>
         <el-dialog-panel class="modal-panel">
 
-                <h2 class="modal-title">Tambah Kategori</h2>
+                <h2 class="modal-title">Tambah Barang</h2>
 
                 @if ($errors->any())
                     <div class="modal-error">
@@ -18,18 +18,30 @@
                     </div>
                 @endif
 
-                <form action="{{ route('create-kategori') }}" method="POST">
+                <form action="{{ route('create-barang') }}" method="POST">
                     @csrf
 
                     <div class="modal-form-group">
-                        <label class="modal-label">Nama Kategori</label>
+                        <label class="modal-label">Nama Barang</label>
                         <input type="text" 
-                               name="nama_kategori" 
-                               value="{{ old('nama_kategori') }}"
-                               class="modal-input @error('nama_kategori') error @enderror"
-                               placeholder="Masukkan nama kategori..."
-                               required>
-                        @error('nama_kategori')
+                               name="nama_barang" 
+                               value="{{ old('nama_barang') }}"
+                               class="modal-input @error('nama_barang') error @enderror"
+                               placeholder="Masukkan nama barang...">
+                        @error('nama_barang')
+                            <p class="modal-input-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label class="modal-label">Harga</label>
+                        <input type="number" 
+                               name="harga" 
+                               value="{{ old('harga') }}"
+                               class="modal-input @error('harga') error @enderror"
+                               placeholder="Masukkan harga barang..."
+                               min="0">
+                        @error('harga')
                             <p class="modal-input-error">{{ $message }}</p>
                         @enderror
                     </div>
@@ -43,17 +55,9 @@
                         </button>
 
                         <button type="submit"
-                            class="btn-modal btn-save"
-                            id="submitBtnCreate">
-                            <span class="btn-text">Simpan</span>
-                            <span class="spinner-inline" style="display: none;">
-                                <span class="spinner-dot"></span>
-                            </span>
+                            class="btn-modal btn-save">
+                            Simpan
                         </button>
                     </div>
                 </form>
-
-            </el-dialog-panel>
-        </el-dialog>
-
-    </dialog>
+</dialog>

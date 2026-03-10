@@ -36,6 +36,13 @@ Route::middleware(['auth', 'check_verif'])->group(function () {
     Route::put('buku/edit-buku/{id}', [App\Http\Controllers\BukuController::class, 'update'])->name('edit-buku');
     Route::delete('buku/delete-buku/{id}', [App\Http\Controllers\BukuController::class, 'destroy'])->name('delete-buku');
 
+    Route::get('barang/index-barang', [App\Http\Controllers\BarangController::class, 'index'])->name('index-barang');
+    Route::post('barang/create-barang', [App\Http\Controllers\BarangController::class, 'store'])->name('create-barang');
+    Route::put('barang/edit-barang/{id}', [App\Http\Controllers\BarangController::class, 'update'])->name('edit-barang');
+    Route::delete('barang/delete-barang/{id}', [App\Http\Controllers\BarangController::class, 'destroy'])->name('delete-barang');
+    Route::post('barang/generate-label', [App\Http\Controllers\BarangController::class, 'generateLabel'])->name('generate-label');
+    Route::post('barang/print-label', [App\Http\Controllers\BarangController::class, 'printLabel'])->name('print-label');
+
     Route::get('pdf/generate-pdf', [App\Http\Controllers\PdfController::class, 'generatePdf'])->name('generate-pdf');
 
 

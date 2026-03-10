@@ -29,7 +29,8 @@
                                name="nama_kategori"
                                value="{{ old('nama_kategori', $row->nama_kategori) }}"
                                class="modal-input @error('nama_kategori') error @enderror"
-                               placeholder="Masukkan nama kategori...">
+                               placeholder="Masukkan nama kategori..."
+                               required>
                         @error('nama_kategori')
                             <p class="modal-input-error">{{ $message }}</p>
                         @enderror
@@ -44,8 +45,12 @@
                         </button>
 
                         <button type="submit"
-                                class="btn-modal btn-update">
-                            Perbarui
+                                class="btn-modal btn-update"
+                                id="submitBtnEdit-{{ $row->idkategori }}">
+                            <span class="btn-text">Perbarui</span>
+                            <span class="spinner-inline" style="display: none;">
+                                <span class="spinner-dot"></span>
+                            </span>
                         </button>
                     </div>
 

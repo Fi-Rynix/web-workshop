@@ -1,244 +1,251 @@
-/**
- * ========================================
- * JAVASCRIPT PAGE - KATEGORI
- * ========================================
- * 
- * File ini berisi semua fungsi JavaScript
- * yang spesifik untuk halaman kategori.
- * 
- * Struktur:
- * - Inisialisasi/Setup
- * - Event Listeners
- * - Fungsi Helper
- * ========================================
- */
-
 (function() {
     'use strict';
 
-    // ====================================
-    // INISIALISASI & SETUP
-    // ====================================
-
-    /**
-     * Inisialisasi halaman kategori
-     * Dipanggil saat dokumen sudah siap
-     */
     function initKategoriPage() {
         console.log('Kategori Page Initialized');
-        
-        // Setup event listeners untuk modal
         setupModalEvents();
-        
-        // Setup event listeners untuk form
         setupFormEvents();
-        
-        // Setup event listeners untuk tabel
         setupTableEvents();
     }
 
-    // ====================================
-    // EVENT LISTENERS
-    // ====================================
 
-    /**
-     * Setup modal events
-     * Mengelola pembukaan dan penutupan modal
-     */
+    // show close modal
     function setupModalEvents() {
-        // Event untuk tombol show modal
-        document.addEventListener('click', function(e) {
-            const showModalBtn = e.target.closest('[command="show-modal"]');
-            if (showModalBtn) {
-                const modalId = showModalBtn.getAttribute('commandfor');
-                openModal(modalId);
-            }
+        // Event untuk tombol show modal menggunakan jQuery delegasi event
+        $(document).on('click', '[command="show-modal"]', function() {
+            const modalId = $(this).attr('commandfor');
+            openModal(modalId);
+        });
 
-            // Event untuk tombol close modal
-            const closeModalBtn = e.target.closest('[command="close"]');
-            if (closeModalBtn) {
-                const modalId = closeModalBtn.getAttribute('commandfor');
+        // Event untuk tombol close modal menggunakan jQuery
+        $(document).on('click', '[command="close"]', function() {
+            const modalId = $(this).attr('commandfor');
+            closeModal(modalId);
+        });
+
+        // Event untuk backdrop click (close modal) menggunakan jQuery
+        $(document).on('click', 'el-dialog-backdrop', function() {
+            const modal = $(this).closest('dialog');
+            if (modal.length) {
+                const modalId = modal.attr('id');
                 closeModal(modalId);
             }
-
-            // Event untuk backdrop click (close modal)
-            const backdrop = e.target.closest('el-dialog-backdrop');
-            if (backdrop) {
-                // Find parent modal dialog
-                const dialog = backdrop.closest('dialog');
-                if (dialog) {
-                    const modalId = dialog.id;
-                    closeModal(modalId);
-                }
-            }
         });
     }
 
-    /**
-     * Setup form events
-     * Mengelola validasi dan submit form
-     */
+    // form handle
     function setupFormEvents() {
         // Form submit handling
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                const formType = this.getAttribute('method');
-                const isValid = validateForm(this);
-                
-                if (!isValid) {
-                    e.preventDefault();
-                    console.warn('Form validation failed');
-                }
-            });
+        $('form').on('submit', function(e) {
+            // Validasi form terlebih dahulu
+            const isValid = validateForm(this);
+            
+            if (!isValid) {
+                e.preventDefault(); // Hanya prevent jika validasi gagal
+                console.warn('Form validation failed');
+                return; // Stop jika validasi gagal
+            }
+
+            // Jika validasi berhasil, tampilkan spinner dan biarkan form submit normal
+            handleFormSubmitWithSpinner(this);
+            // TIDAK preventDefault - biarkan form submit dengan token CSRF intact
         });
 
-        // Input focus events untuk highlight
-        const inputs = document.querySelectorAll('.modal-input');
-        inputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement?.classList.add('focused');
-            });
+        // Input focus events dengan jQuery
+        $('.modal-input').on('focus', function() {
+            $(this).parent().addClass('focused');
+        });
 
-            input.addEventListener('blur', function() {
-                this.parentElement?.classList.remove('focused');
-                // Validasi saat blur
-                validateInput(this);
-            });
+        // Input blur events dengan jQuery
+        $('.modal-input').on('blur', function() {
+            $(this).parent().removeClass('focused');
+            // Validasi saat blur
+            validateInput(this);
         });
     }
 
     /**
-     * Setup table events
+     * Handle form submit dengan spinner (jQuery)
+     * @param {HTMLFormElement} form - Form element
+     */
+    function handleFormSubmitWithSpinner(form) {
+        const $form = $(form);
+        
+        // Find submit button menggunakan jQuery
+        const $submitBtn = $form.find('button[type="submit"]');
+        if ($submitBtn.length === 0) {
+            return; // Jika button tidak ditemukan, form tetap submit normal
+        }
+
+        // Show spinner dan disable button
+        showSpinner($submitBtn[0]);
+
+        // Disable semua form element untuk prevent double-click
+        $form.find('input, button, textarea, select').each(function() {
+            if (this.type !== 'submit') {
+                $(this).prop('disabled', true);
+            }
+        });
+
+        // Form akan submit secara natural - CSRF token tetap intact
+        // Jangan manual submit, biarkan browser handle
+    }
+
+    /**
+     * Tampilkan spinner pada button (jQuery)
+     * @param {HTMLElement} button - Button element
+     */
+    function showSpinner(button) {
+        const $button = $(button);
+        
+        // Add loading class menggunakan jQuery
+        $button.addClass('loading');
+        
+        // Update button text menggunakan jQuery
+        $button.find('.btn-text').text('Menyimpan...');
+
+        // Show spinner menggunakan jQuery show()
+        $button.find('.spinner-inline').show();
+
+        // Disable button menggunakan jQuery prop
+        $button.prop('disabled', true);
+    }
+
+    /**
+     * Setup table events (jQuery)
      * Mengelola interaksi dengan tabel
      */
     function setupTableEvents() {
-        const table = document.querySelector('.kategori-table');
-        if (!table) return;
+        const $table = $('.kategori-table');
+        if ($table.length === 0) return;
 
-        // Row hover effects
-        const rows = table.querySelectorAll('tbody tr');
-        rows.forEach((row, index) => {
-            row.addEventListener('mouseenter', function() {
-                this.style.backgroundColor = 'rgba(124, 58, 237, 0.05)';
+        // Row hover effects menggunakan jQuery mouseenter dan mouseleave
+        $table.find('tbody tr').each(function(index) {
+            $(this).on('mouseenter', function() {
+                $(this).css('backgroundColor', 'rgba(124, 58, 237, 0.05)');
             });
 
-            row.addEventListener('mouseleave', function() {
-                this.style.backgroundColor = '';
+            $(this).on('mouseleave', function() {
+                $(this).css('backgroundColor', '');
             });
 
-            // Add row numbering
-            const noCell = row.querySelector('td:first-child');
-            if (noCell) {
-                noCell.textContent = index + 1;
-            }
+            // Add row numbering menggunakan jQuery
+            $(this).find('td:first-child').text(index + 1);
         });
 
         // Konfirmasi delete untuk safety
-        const deleteButtons = table.querySelectorAll('.btn-delete');
-        deleteButtons.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                // Modal akan handle konfirmasi
-                console.log('Delete kategori clicked');
-            });
+        $table.find('.btn-delete').on('click', function(e) {
+            // Modal akan handle konfirmasi
+            console.log('Delete kategori clicked');
         });
     }
 
     // ====================================
-    // FUNGSI MODAL
+    // FUNGSI MODAL (jQuery)
     // ====================================
 
     /**
-     * Membuka modal dengan animasi
+     * Membuka modal dengan animasi (jQuery)
      * @param {string} modalId - ID dari modal element
      */
     function openModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (!modal) return;
+        const $modal = $('#' + modalId);
+        if ($modal.length === 0) return;
 
-        // Set display
-        modal.style.display = 'block';
+        // Set display menggunakan jQuery show()
+        $modal.show();
         
-        // Trigger animasi dengan class
-        modal.classList.add('modal-open');
+        // Trigger animasi dengan class menggunakan jQuery addClass()
+        $modal.addClass('modal-open');
         
         // Prevent body scroll
-        document.body.style.overflow = 'hidden';
+        $('body').css('overflow', 'hidden');
         
         console.log('Modal opened:', modalId);
 
         // Focus ke input pertama (jika ada form)
         setTimeout(() => {
-            const firstInput = modal.querySelector('input[type="text"]');
-            if (firstInput) {
-                firstInput.focus();
-                firstInput.select();
+            const $firstInput = $modal.find('input[type="text"]').first();
+            if ($firstInput.length) {
+                $firstInput.focus().select();
             }
         }, 100);
     }
 
     /**
-     * Menutup modal dengan animasi
+     * Menutup modal dengan animasi (jQuery)
      * @param {string} modalId - ID dari modal element
      */
     function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (!modal) return;
+        const $modal = $('#' + modalId);
+        if ($modal.length === 0) return;
 
-        // Remove animasi class
-        modal.classList.remove('modal-open');
+        // Remove animasi class menggunakan jQuery removeClass()
+        $modal.removeClass('modal-open');
         
         // Delay sebelum hide untuk animasi
         setTimeout(() => {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
+            $modal.hide();
+            $('body').css('overflow', 'auto');
         }, 200);
 
         // Clear form errors saat close
-        const form = modal.querySelector('form');
-        if (form) {
-            clearFormErrors(form);
+        const $form = $modal.find('form');
+        if ($form.length) {
+            clearFormErrors($form[0]);
         }
         
         console.log('Modal closed:', modalId);
     }
 
     // ====================================
-    // FUNGSI FORM VALIDATION
+    // FUNGSI FORM VALIDATION (jQuery)
     // ====================================
 
     /**
-     * Validasi seluruh form
+     * Validasi seluruh form (jQuery)
      * @param {HTMLFormElement} form - Form element
      * @returns {boolean} - Valid atau tidak
      */
     function validateForm(form) {
-        const inputs = form.querySelectorAll('input[required], textarea[required]');
+        const $form = $(form);
+        const $inputs = $form.find('input[required], textarea[required]');
         let isValid = true;
 
-        inputs.forEach(input => {
-            if (!validateInput(input)) {
+        $inputs.each(function() {
+            if (!validateInput(this)) {
                 isValid = false;
             }
         });
+
+        // DEBUG: Log form data sebelum submit
+        if (isValid) {
+            console.log('=== FORM DEBUG ===');
+            console.log('Form Action:', $form.attr('action'));
+            console.log('Form Method:', $form.attr('method'));
+            console.log('Form Data:', new FormData(form));
+            console.log('CSRF Token Value:', $form.find('input[name="_token"]').val());
+            console.log('Nama Kategori:', $form.find('input[name="nama_kategori"]').val());
+        }
 
         return isValid;
     }
 
     /**
-     * Validasi satu input field
+     * Validasi satu input field (jQuery)
      * @param {HTMLElement} input - Input element
      * @returns {boolean} - Valid atau tidak
      */
     function validateInput(input) {
-        const value = input.value.trim();
+        const $input = $(input);
+        const value = $input.val().trim();
         let isValid = true;
 
         // Clear previous error
         clearInputError(input);
 
         // Required validation
-        if (input.hasAttribute('required') && !value) {
+        if ($input.attr('required') && !value) {
             showInputError(input, 'Field tidak boleh kosong');
             isValid = false;
         }
@@ -259,73 +266,78 @@
     }
 
     /**
-     * Tampilkan error message untuk input
+     * Tampilkan error message untuk input (jQuery)
      * @param {HTMLElement} input - Input element
      * @param {string} message - Error message
      */
     function showInputError(input, message) {
-        input.classList.add('error');
+        const $input = $(input);
         
-        // Create error message element
-        let errorEl = input.nextElementSibling;
-        if (!errorEl || !errorEl.classList.contains('modal-input-error')) {
-            errorEl = document.createElement('p');
-            errorEl.className = 'modal-input-error';
-            input.parentNode.insertBefore(errorEl, input.nextSibling);
+        // Add error class menggunakan jQuery addClass()
+        $input.addClass('error');
+        
+        // Create error message element menggunakan jQuery
+        let $errorEl = $input.next('.modal-input-error');
+        
+        if ($errorEl.length === 0) {
+            $errorEl = $('<p>')
+                .addClass('modal-input-error')
+                .insertAfter($input);
         }
         
-        errorEl.textContent = message;
+        $errorEl.text(message);
     }
 
     /**
-     * Clear error message dari input
+     * Clear error message dari input (jQuery)
      * @param {HTMLElement} input - Input element
      */
     function clearInputError(input) {
-        input.classList.remove('error');
+        const $input = $(input);
         
-        const errorEl = input.nextElementSibling;
-        if (errorEl && errorEl.classList.contains('modal-input-error')) {
-            errorEl.remove();
-        }
+        // Remove error class menggunakan jQuery removeClass()
+        $input.removeClass('error');
+        
+        // Remove error message menggunakan jQuery remove()
+        $input.next('.modal-input-error').remove();
     }
 
     /**
-     * Clear semua error di form
+     * Clear semua error di form (jQuery)
      * @param {HTMLFormElement} form - Form element
      */
     function clearFormErrors(form) {
-        const inputs = form.querySelectorAll('input.error, textarea.error');
-        inputs.forEach(input => {
-            clearInputError(input);
+        const $form = $(form);
+        const $inputs = $form.find('input.error, textarea.error');
+        
+        $inputs.each(function() {
+            clearInputError(this);
         });
     }
 
     // ====================================
-    // FUNGSI HELPER
+    // FUNGSI HELPER (jQuery)
     // ====================================
 
     /**
-     * Show toast/notification message
+     * Show toast/notification message (jQuery)
      * @param {string} message - Pesan yang ditampilkan
      * @param {string} type - Tipe: success, error, warning, info
      */
     function showNotification(message, type = 'info') {
-        // Create toast element
-        const toast = document.createElement('div');
-        toast.className = `notification notification-${type}`;
-        toast.textContent = message;
-        
-        // Add to body
-        document.body.appendChild(toast);
+        // Create toast element menggunakan jQuery
+        const $toast = $('<div>')
+            .addClass(`notification notification-${type}`)
+            .text(message)
+            .appendTo('body');
         
         // Show dengan animasi
-        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => $toast.addClass('show'), 10);
         
         // Auto hide setelah 3 detik
         setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
+            $toast.removeClass('show');
+            setTimeout(() => $toast.remove(), 300);
         }, 3000);
     }
 
@@ -356,30 +368,28 @@
     }
 
     /**
-     * Disable tombol untuk prevent double submit
+     * Disable tombol untuk prevent double submit (jQuery)
      * @param {HTMLElement} button - Button element
      * @param {number} duration - Durasi dalam ms (default: 3000)
      */
     function disableButton(button, duration = 3000) {
-        button.disabled = true;
-        button.style.opacity = '0.6';
+        const $button = $(button);
+        
+        $button.prop('disabled', true).css('opacity', '0.6');
         
         setTimeout(() => {
-            button.disabled = false;
-            button.style.opacity = '1';
+            $button.prop('disabled', false).css('opacity', '1');
         }, duration);
     }
 
     // ====================================
-    // DOM READY
+    // DOM READY (jQuery)
     // ====================================
 
-    // Jalankan inisialisasi saat DOM siap
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initKategoriPage);
-    } else {
+    // Jalankan inisialisasi saat DOM siap menggunakan jQuery $(document).ready()
+    $(document).ready(function() {
         initKategoriPage();
-    }
+    });
 
     // Export functions untuk global access jika diperlukan
     window.KategoriPage = {
@@ -390,7 +400,9 @@
         showNotification,
         formatDate,
         confirmAction,
-        disableButton
+        disableButton,
+        showSpinner,
+        handleFormSubmitWithSpinner
     };
 
 })();
