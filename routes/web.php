@@ -45,5 +45,23 @@ Route::middleware(['auth', 'check_verif'])->group(function () {
 
     Route::get('pdf/generate-pdf', [App\Http\Controllers\PdfController::class, 'generatePdf'])->name('generate-pdf');
 
+    Route::get('modul-4-js/non-datatables', function () {return view('pages.modul-4-js.non-datatables');})->name('modul-4-js-non-datatables');
+    Route::get('modul-4-js/datatables', function () {return view('pages.modul-4-js.datatables');})->name('modul-4-js-datatables');
+    Route::get('modul-4-js/select-kota', function () {return view('pages.modul-4-js.select-kota');})->name('modul-4-js-select-kota');
 
+    // Modul 5 - Wilayah Ajax
+    Route::get('modul-5-ajax/wilayah-ajax', function () {return view('pages.modul-5-ajax.wilayah-ajax');})->name('modul-5-ajax-wilayah-ajax');
+    Route::get('api/get-provinsi', [App\Http\Controllers\WilayahController::class, 'getProvinsi'])->name('get-provinsi');
+    Route::get('api/get-kota', [App\Http\Controllers\WilayahController::class, 'getKota'])->name('get-kota');
+    Route::get('api/get-kecamatan', [App\Http\Controllers\WilayahController::class, 'getKecamatan'])->name('get-kecamatan');
+    Route::get('api/get-kelurahan', [App\Http\Controllers\WilayahController::class, 'getKelurahan'])->name('get-kelurahan');
+
+    Route::get('modul-5-ajax/wilayah-axios', function () {return view('pages.modul-5-ajax.wilayah-axios');})->name('modul-5-ajax-wilayah-axios');
+    Route::get('modul-5-ajax/pos-ajax', [App\Http\Controllers\PosController::class, 'indexAjax'])->name('modul-5-ajax-pos-ajax');
+    Route::get('modul-5-ajax/pos-axios', [App\Http\Controllers\PosController::class, 'indexAxios'])->name('modul-5-ajax-pos-axios');
+
+    // API POS AJAX & Axios
+    Route::get('api/pos/get-barang', [App\Http\Controllers\PosController::class, 'getBarang'])->name('pos-get-barang');
+    Route::get('api/pos/get-barang-detail', [App\Http\Controllers\PosController::class, 'getBarangDetail'])->name('pos-get-barang-detail');
+    Route::post('api/pos/save-penjualan', [App\Http\Controllers\PosController::class, 'savePenjualan'])->name('pos-save-penjualan');
 });

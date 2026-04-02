@@ -43,7 +43,8 @@
                                name="kode" 
                                value="{{ old('kode') }}"
                                class="modal-input @error('kode') error @enderror"
-                               placeholder="Masukkan kode buku (e.g., NV-01)...">
+                               placeholder="Masukkan kode buku (e.g., NV-01)..."
+                               required>
                         @error('kode')
                             <p class="modal-input-error">{{ $message }}</p>
                         @enderror
@@ -55,7 +56,8 @@
                                name="judul" 
                                value="{{ old('judul') }}"
                                class="modal-input @error('judul') error @enderror"
-                               placeholder="Masukkan judul buku...">
+                               placeholder="Masukkan judul buku..."
+                               required>
                         @error('judul')
                             <p class="modal-input-error">{{ $message }}</p>
                         @enderror
@@ -67,7 +69,8 @@
                                name="pengarang" 
                                value="{{ old('pengarang') }}"
                                class="modal-input @error('pengarang') error @enderror"
-                               placeholder="Masukkan nama pengarang...">
+                               placeholder="Masukkan nama pengarang..."
+                               required>
                         @error('pengarang')
                             <p class="modal-input-error">{{ $message }}</p>
                         @enderror

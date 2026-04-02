@@ -741,47 +741,6 @@ form {
 }
 
 /* ====================================
-   SPINNER / LOADER STYLES
-   ==================================== */
-
-/* Inline Spinner Container */
-.spinner-inline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 0.625rem;
-  vertical-align: middle;
-}
-
-.spinner-dot {
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Button with Loader State */
-.btn-modal.loading {
-  pointer-events: none;
-}
-
-.btn-modal.loading .btn-text {
-  opacity: 1;
-}
-
-.btn-modal.loading .spinner-inline {
-  display: inline-flex !important;
-}
-
-/* ====================================
    RESPONSIVE DESIGN
    ==================================== */
 
@@ -922,104 +881,54 @@ form {
 }
 
 /* ====================================
-   UTILITY CLASSES
+   LOADING ANIMATION
    ==================================== */
 
-.text-gradient-purple {
-  background: var(--gradient-purple-pink);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.btn-modal.loading {
+  opacity: 0.7;
+  pointer-events: none;
 }
 
-.shadow-purple {
-  box-shadow: var(--shadow-lg);
+.btn-modal.loading .spinner-border {
+  display: inline-block;
+  animation: spin 0.75s linear infinite;
 }
 
-.border-purple {
-  border-color: #e9d5ff;
-}
-
-.text-purple {
-  color: #7c3aed;
-}
-
-.bg-purple-light {
-  background-color: #faf5ff;
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* Dark Mode Support (Optional) */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --gradient-purple-pink: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%);
-    --gradient-purple-hover: linear-gradient(135deg, #d8b4fe 0%, #c4b5fd 100%);
-  }
+.spinner-border {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  border: 0.25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}
 
-  .kategori-container {
-    background: #1e293b;
-    border-color: #334155;
-  }
+.spinner-border-sm {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-width: 0.2em;
+}
 
-  .kategori-header-section {
-    background: linear-gradient(135deg, #1e293b 0%, #293548 100%);
-    border-bottom-color: #334155;
-  }
-
-  .kategori-header-section h2 {
-    color: #f1f5f9;
-  }
-
-  .kategori-header h1 {
-    color: #f8fafc;
-  }
-
-  .kategori-table thead {
-    background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
-    border-bottom-color: #6366f1;
-  }
-
-  .kategori-table th {
-    color: #c4b5fd;
-  }
-
-  .kategori-table tbody tr:hover {
-    background-color: #2d3748;
-  }
-
-  .kategori-table td {
-    color: #cbd5e1;
-    border-bottom-color: #334155;
-  }
-
-  el-dialog-panel {
-    background: #1e293b;
-  }
-
-  .modal-title {
-    color: #f1f5f9;
-  }
-
-  .modal-label {
-    color: #e2e8f0;
-  }
-
-  .modal-input {
-    background-color: #0f172a;
-    border-color: #334155;
-    color: #f1f5f9;
-  }
-
-  .modal-input:focus {
-    background-color: #1e293b;
-    border-color: #7c3aed;
+@keyframes spinner-border {
+  to {
+    transform: rotate(360deg);
   }
 }
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+
+

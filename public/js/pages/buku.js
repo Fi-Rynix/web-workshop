@@ -1,17 +1,14 @@
-/**
- * ========================================
- * JAVASCRIPT PAGE - BUKU
- * ========================================
- * 
- * File ini berisi semua fungsi JavaScript
- * yang spesifik untuk halaman buku.
- * 
- * Struktur:
- * - Inisialisasi/Setup
- * - Event Listeners
- * - Fungsi Helper
- * ========================================
- */
+// ========================================
+// javascript page - buku
+// ========================================
+// file ini berisi semua fungsi javascript
+// yang spesifik untuk halaman buku.
+//
+// struktur:
+// - inisialisasi/setup
+// - event listeners
+// - fungsi helper
+// ========================================
 
 (function() {
     'use strict';
@@ -20,10 +17,8 @@
     // INISIALISASI & SETUP
     // ====================================
 
-    /**
-     * Inisialisasi halaman buku
-     * Dipanggil saat dokumen sudah siap
-     */
+    // inisialisasi halaman buku
+    // dipanggil saat dokumen sudah siap
     function initBukuPage() {
         console.log('Buku Page Initialized');
         
@@ -41,10 +36,8 @@
     // EVENT LISTENERS
     // ====================================
 
-    /**
-     * Setup modal events
-     * Mengelola pembukaan dan penutupan modal
-     */
+    // setup modal events
+    // mengelola pembukaan dan penutupan modal
     function setupModalEvents() {
         // Event untuk tombol show modal
         document.addEventListener('click', function(e) {
@@ -74,10 +67,8 @@
         });
     }
 
-    /**
-     * Setup form events
-     * Mengelola validasi dan submit form
-     */
+    // setup form events
+    // mengelola validasi dan submit form
     function setupFormEvents() {
         // Form submit handling
         const forms = document.querySelectorAll('form');
@@ -108,10 +99,8 @@
         });
     }
 
-    /**
-     * Setup table events
-     * Mengelola interaksi dengan tabel
-     */
+    // setup table events
+    // mengelola interaksi dengan tabel
     function setupTableEvents() {
         const table = document.querySelector('.buku-table');
         if (!table) return;
@@ -148,10 +137,8 @@
     // FUNGSI MODAL
     // ====================================
 
-    /**
-     * Membuka modal dengan animasi
-     * @param {string} modalId - ID dari modal element
-     */
+    // membuka modal dengan animasi
+    // @param {string} modalid - id dari modal element
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (!modal) return;
@@ -179,10 +166,8 @@
         }, 100);
     }
 
-    /**
-     * Menutup modal dengan animasi
-     * @param {string} modalId - ID dari modal element
-     */
+    // menutup modal dengan animasi
+    // @param {string} modalid - id dari modal element
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (!modal) return;
@@ -209,11 +194,9 @@
     // FUNGSI FORM VALIDATION
     // ====================================
 
-    /**
-     * Validasi seluruh form
-     * @param {HTMLFormElement} form - Form element
-     * @returns {boolean} - Valid atau tidak
-     */
+    // validasi seluruh form
+    // @param {htmlformelement} form - form element
+    // @returns {boolean} - valid atau tidak
     function validateForm(form) {
         const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
         let isValid = true;
@@ -227,11 +210,9 @@
         return isValid;
     }
 
-    /**
-     * Validasi satu input field
-     * @param {HTMLElement} input - Input element
-     * @returns {boolean} - Valid atau tidak
-     */
+    // validasi satu input field
+    // @param {htmlelement} input - input element
+    // @returns {boolean} - valid atau tidak
     function validateInput(input) {
         const value = input.value.trim();
         let isValid = true;
@@ -260,11 +241,9 @@
         return isValid;
     }
 
-    /**
-     * Tampilkan error message untuk input
-     * @param {HTMLElement} input - Input element
-     * @param {string} message - Error message
-     */
+    // tampilkan error message untuk input
+    // @param {htmlelement} input - input element
+    // @param {string} message - error message
     function showInputError(input, message) {
         input.classList.add('error');
         
@@ -279,10 +258,8 @@
         errorEl.textContent = message;
     }
 
-    /**
-     * Clear error message dari input
-     * @param {HTMLElement} input - Input element
-     */
+    // clear error message dari input
+    // @param {htmlelement} input - input element
     function clearInputError(input) {
         input.classList.remove('error');
         
@@ -292,10 +269,8 @@
         }
     }
 
-    /**
-     * Clear semua error di form
-     * @param {HTMLFormElement} form - Form element
-     */
+    // clear semua error di form
+    // @param {htmlformelement} form - form element
     function clearFormErrors(form) {
         const inputs = form.querySelectorAll('input.error, textarea.error, select.error');
         inputs.forEach(input => {
@@ -307,11 +282,9 @@
     // FUNGSI HELPER
     // ====================================
 
-    /**
-     * Show toast/notification message
-     * @param {string} message - Pesan yang ditampilkan
-     * @param {string} type - Tipe: success, error, warning, info
-     */
+    // show toast/notification message
+    // @param {string} message - pesan yang ditampilkan
+    // @param {string} type - tipe: success, error, warning, info
     function showNotification(message, type = 'info') {
         // Create toast element
         const toast = document.createElement('div');
@@ -331,11 +304,9 @@
         }, 3000);
     }
 
-    /**
-     * Format tanggal untuk display
-     * @param {Date|string} date - Date object atau string
-     * @returns {string} - Format: DD-MM-YYYY
-     */
+    // format tanggal untuk display
+    // @param {date|string} date - date object atau string
+    // @returns {string} - format: dd-mm-yyyy
     function formatDate(date) {
         if (typeof date === 'string') {
             date = new Date(date);
@@ -348,20 +319,16 @@
         return `${d}-${m}-${y}`;
     }
 
-    /**
-     * Confirm dialog sebelum delete
-     * @param {string} message - Pesan konfirmasi
-     * @returns {boolean} - Dikonfirmasi atau tidak
-     */
+    // confirm dialog sebelum delete
+    // @param {string} message - pesan konfirmasi
+    // @returns {boolean} - dikonfirmasi atau tidak
     function confirmAction(message) {
         return confirm(message || 'Apakah anda yakin?');
     }
 
-    /**
-     * Disable tombol untuk prevent double submit
-     * @param {HTMLElement} button - Button element
-     * @param {number} duration - Durasi dalam ms (default: 3000)
-     */
+    // disable tombol untuk prevent double submit
+    // @param {htmlelement} button - button element
+    // @param {number} duration - durasi dalam ms (default: 3000)
     function disableButton(button, duration = 3000) {
         button.disabled = true;
         button.style.opacity = '0.6';

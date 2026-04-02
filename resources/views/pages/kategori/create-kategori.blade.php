@@ -43,12 +43,8 @@
                         </button>
 
                         <button type="submit"
-                            class="btn-modal btn-save"
-                            id="submitBtnCreate">
-                            <span class="btn-text">Simpan</span>
-                            <span class="spinner-inline" style="display: none;">
-                                <span class="spinner-dot"></span>
-                            </span>
+                            class="btn-modal btn-save">
+                            Simpan
                         </button>
                     </div>
                 </form>

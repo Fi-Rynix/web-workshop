@@ -30,7 +30,8 @@
                                name="kode" 
                                value="{{ $row->kode }}"
                                class="modal-input"
-                               placeholder="Masukkan kode buku...">
+                               placeholder="Masukkan kode buku..."
+                               required>
                     </div>
 
                     <div class="modal-form-group">
@@ -39,7 +40,8 @@
                                name="judul" 
                                value="{{ $row->judul }}"
                                class="modal-input"
-                               placeholder="Masukkan judul buku...">
+                               placeholder="Masukkan judul buku..."
+                               required>
                     </div>
 
                     <div class="modal-form-group">
@@ -48,7 +50,8 @@
                                name="pengarang" 
                                value="{{ $row->pengarang }}"
                                class="modal-input"
-                               placeholder="Masukkan nama pengarang...">
+                               placeholder="Masukkan nama pengarang..."
+                               required>
                     </div>
 
                     <div class="modal-buttons">

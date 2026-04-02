@@ -1,0 +1,81 @@
+/* Wilayah Ajax Styles */
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 4px;
+}
+
+.card-header {
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #333;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.form-control:focus {
+    border-color: #00897b;
+    box-shadow: 0 0 0 0.2rem rgba(0, 137, 123, 0.25);
+}
+
+#provinsiTerpilih,
+#kotaTerpilih,
+#kecamatanTerpilih,
+#kelurahanTerpilih {
+    background-color: #f0f0f0;
+    font-weight: 500;
+}
+
+.card.bg-light {
+    border: 1px solid #e0e0e0;
+}
+
+.card-title {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    border-color: #90caf9;
+    color: #1976d2;
+}
+
+.alert-info strong {
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-group row {
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Animation for option loading */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading {
+    animation: spin 1s linear infinite;
+}
+
+/* Disabled state styling */
+.form-control:disabled {
+    opacity: 0.7;
+}

@@ -43,6 +43,47 @@
         <i class="mdi mdi-file menu-icon"></i>
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#modul4Menu" aria-expanded="false" aria-controls="modul4Menu">
+        <span class="menu-title">Modul 4</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="modul4Menu">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('modul-4-js-non-datatables') }}">Non-DataTables</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('modul-4-js-datatables') }}">DataTables</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('modul-4-js-select-kota') }}">Select Kota</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#modul5Menu" aria-expanded="false" aria-controls="modul5Menu">
+        <span class="menu-title">Modul 5</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="modul5Menu">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('modul-5-ajax-wilayah-ajax') }}">Wilayah Ajax</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('modul-5-ajax-wilayah-axios') }}">Wilayah Axios</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('modul-5-ajax-pos-ajax') }}">POS Ajax</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('modul-5-ajax-pos-axios') }}">POS Axios</a>
+          </li>
+        </ul>
+      </div>
+    </li>
     @forelse($sidebarMenu ?? [] as $menu)
       <li class="nav-item">
         @if(!empty($menu['submenu']))

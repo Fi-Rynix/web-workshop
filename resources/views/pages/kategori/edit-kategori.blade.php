@@ -45,12 +45,8 @@
                         </button>
 
                         <button type="submit"
-                                class="btn-modal btn-update"
-                                id="submitBtnEdit-{{ $row->idkategori }}">
-                            <span class="btn-text">Perbarui</span>
-                            <span class="spinner-inline" style="display: none;">
-                                <span class="spinner-dot"></span>
-                            </span>
+                                class="btn-modal btn-update">
+                            Perbarui
                         </button>
                     </div>
 

@@ -27,7 +27,8 @@
                                name="nama_barang" 
                                value="{{ old('nama_barang') }}"
                                class="modal-input @error('nama_barang') error @enderror"
-                               placeholder="Masukkan nama barang...">
+                               placeholder="Masukkan nama barang..."
+                               required>
                         @error('nama_barang')
                             <p class="modal-input-error">{{ $message }}</p>
                         @enderror
@@ -40,7 +41,8 @@
                                value="{{ old('harga') }}"
                                class="modal-input @error('harga') error @enderror"
                                placeholder="Masukkan harga barang..."
-                               min="0">
+                               min="0"
+                               required>
                         @error('harga')
                             <p class="modal-input-error">{{ $message }}</p>
                         @enderror

@@ -1,0 +1,20 @@
+/* Nomor 4 Select Kota Styling */
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+.select2 {
+    width: 100% !important;
+}
+
+.select2-container--bootstrap4 .select2-selection {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.select2-container--bootstrap4.select2-container--focus .select2-selection {
+    border-color: #667bc6;
+}

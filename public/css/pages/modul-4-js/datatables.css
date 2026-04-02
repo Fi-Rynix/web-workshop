@@ -1,0 +1,27 @@
+/* Nomor 2-3 DataTables Styling */
+
+.table tr {
+    cursor: pointer;
+}
+
+.table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+/* DataTables specific overrides */
+.dataTables_wrapper .dataTables_paginate .paginate_button.active {
+    background: #667bc6;
+    border: 1px solid #667bc6;
+    color: white !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+}
