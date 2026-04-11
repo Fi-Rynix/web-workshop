@@ -13,5 +13,10 @@ class User extends Authenticatable
     protected $primaryKey = 'iduser';
     public $timestamps = false;
 
-    protected $fillable = ['nama', 'email', 'password', 'google_id', 'otp', 'otp_expire_at', 'status_verif'];
+    protected $fillable = ['nama', 'email', 'password', 'google_id', 'otp', 'otp_expire_at', 'status_verif', 'idrole'];
+
+    public function pesanan()
+    {
+        return $this->hasMany(Pesanan::class, 'iduser', 'iduser');
+    }
 }

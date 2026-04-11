@@ -45,13 +45,13 @@ class SocialiteController extends Controller
         if (empty($user_db->status_verif) || $user_db->status_verif !== 'Active') {
 
             Log::info('Masuk OTP block - Email: ' . $user_db->email);
-            
+
             $otp = rand(100000, 999999);
 
             $user_db->otp = md5($otp);
             $user_db->otp_expire_at = Carbon::now()->addMinutes(5);
             $save_result = $user_db->save();
-            
+
             Log::info('Save OTP - Result: ' . ($save_result ? 'SUCCESS' : 'FAILED') . ', Email: ' . $user_db->email);
             Log::info('OTP Hash: ' . $user_db->otp . ', Expire: ' . $user_db->otp_expire_at);
 
@@ -70,6 +70,16 @@ class SocialiteController extends Controller
             return redirect()->route('index-verify');
         }
 
+        // Redirect berdasarkan role
+        if ($user_db->idrole == 1) {
+            return redirect()->route('dashboard');
+        } elseif ($user_db->idrole == 2) {
+            return redirect()->route('vendor.dashboard');
+        } elseif ($user_db->idrole == 3) {
+            return redirect()->route('pelanggan.dashboard');
+        }
+
+        // Default fallback
         return redirect()->route('dashboard');
     }
 }

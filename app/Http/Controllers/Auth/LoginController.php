@@ -66,13 +66,13 @@ class LoginController extends Controller
         if (empty($user->status_verif) || $user->status_verif !== 'Active') {
 
             Log::info('Masuk OTP block - Email: ' . $user->email);
-            
+
             $otp = rand(100000, 999999);
 
             $user->otp = md5($otp);
             $user->otp_expire_at = Carbon::now()->addMinutes(5);
             $save_result = $user->save();
-            
+
             Log::info('Save OTP - Result: ' . ($save_result ? 'SUCCESS' : 'FAILED') . ', Email: ' . $user->email);
             Log::info('OTP Hash: ' . $user->otp . ', Expire: ' . $user->otp_expire_at);
 
@@ -91,6 +91,16 @@ class LoginController extends Controller
             return redirect()->route('index-verify');
         }
 
+        // Redirect berdasarkan role
+        if ($user->idrole == 1) {
+            return redirect()->route('dashboard');
+        } elseif ($user->idrole == 2) {
+            return redirect()->route('vendor.dashboard');
+        } elseif ($user->idrole == 3) {
+            return redirect()->route('pelanggan.dashboard');
+        }
+
+        // Default fallback
         return redirect()->route('dashboard');
     }
 

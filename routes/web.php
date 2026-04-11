@@ -23,7 +23,8 @@ Route::middleware(['auth'])->group(function(){
 });
 
 
-Route::middleware(['auth', 'check_verif'])->group(function () {
+// Routes untuk Admin (idrole = 1)
+Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
     Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('kategori/index-kategori', [App\Http\Controllers\KategoriController::class, 'index'])->name('index-kategori');
@@ -64,4 +65,30 @@ Route::middleware(['auth', 'check_verif'])->group(function () {
     Route::get('api/pos/get-barang', [App\Http\Controllers\PosController::class, 'getBarang'])->name('pos-get-barang');
     Route::get('api/pos/get-barang-detail', [App\Http\Controllers\PosController::class, 'getBarangDetail'])->name('pos-get-barang-detail');
     Route::post('api/pos/save-penjualan', [App\Http\Controllers\PosController::class, 'savePenjualan'])->name('pos-save-penjualan');
+});
+
+// Routes untuk Vendor (idrole = 2)
+Route::middleware(['auth', 'check_verif', 'check.role:2'])->group(function () {
+    Route::get('vendor/dashboard', [App\Http\Controllers\Vendor\VendorController::class, 'index'])->name('vendor.dashboard');
+
+    // Menu Management
+    Route::get('vendor/menu', [App\Http\Controllers\Vendor\VendorController::class, 'menuIndex'])->name('vendor.menu.index');
+    Route::get('vendor/menu/create', [App\Http\Controllers\Vendor\VendorController::class, 'menuCreate'])->name('vendor.menu.create');
+    Route::post('vendor/menu', [App\Http\Controllers\Vendor\VendorController::class, 'menuStore'])->name('vendor.menu.store');
+    Route::get('vendor/menu/{id}/edit', [App\Http\Controllers\Vendor\VendorController::class, 'menuEdit'])->name('vendor.menu.edit');
+    Route::put('vendor/menu/{id}', [App\Http\Controllers\Vendor\VendorController::class, 'menuUpdate'])->name('vendor.menu.update');
+    Route::delete('vendor/menu/{id}', [App\Http\Controllers\Vendor\VendorController::class, 'menuDestroy'])->name('vendor.menu.destroy');
+
+    // Pesanan yang masuk ke vendor
+    Route::get('vendor/pesanan', [App\Http\Controllers\Vendor\VendorController::class, 'pesananIndex'])->name('vendor.pesanan.index');
+    Route::get('vendor/pesanan/{id}', [App\Http\Controllers\Vendor\VendorController::class, 'pesananShow'])->name('vendor.pesanan.show');
+});
+
+// Routes untuk Pelanggan (idrole = 3)
+Route::middleware(['auth', 'check_verif', 'check.role:3'])->group(function () {
+    Route::get('pelanggan/dashboard', function () {
+        return view('pages.pelanggan.dashboard');
+    })->name('pelanggan.dashboard');
+
+    // Tambahkan route pelanggan lainnya di sini
 });
