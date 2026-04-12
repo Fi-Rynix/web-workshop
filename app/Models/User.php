@@ -19,4 +19,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Pesanan::class, 'iduser', 'iduser');
     }
+
+    /**
+     * Relasi: User memiliki satu Vendor (jika role = vendor)
+     */
+    public function vendor()
+    {
+        return $this->hasOne(Vendor::class, 'iduser', 'iduser');
+    }
 }
