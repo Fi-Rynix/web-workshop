@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'check_verif' => App\Http\Middleware\CheckVerif::class,
             'check.role' => App\Http\Middleware\CheckRole::class,
         ]);
+
+        // Exclude CSRF token untuk webhook Midtrans
+        $middleware->validateCsrfTokens(except: [
+            'midtrans/notification',
+            '*/midtrans/notification',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

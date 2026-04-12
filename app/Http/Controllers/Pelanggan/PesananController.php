@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Menu;
 use App\Models\Pesanan;
 use App\Models\DetailPesanan;
+use App\Models\User;
+use App\Models\Vendor;
 use App\Services\MidtransService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class PesananController extends Controller
 {
@@ -22,34 +24,98 @@ class PesananController extends Controller
     }
 
     /**
-     * Tampilkan history pesanan pelanggan
+     * Buat guest user baru (hanya untuk simpan ke DB, tidak login)
+     */
+    protected function createGuestUser()
+    {
+        // Buat user guest baru
+        $lastGuest = User::where('nama', 'like', 'Guest_%')
+            ->orderBy('iduser', 'desc')
+            ->first();
+
+        $nextNumber = 1;
+        if ($lastGuest) {
+            preg_match('/Guest_(\d+)/', $lastGuest->nama, $matches);
+            if (isset($matches[1])) {
+                $nextNumber = intval($matches[1]) + 1;
+            }
+        }
+
+        $guestName = 'Guest_' . str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
+
+        $user = User::create([
+            'nama' => $guestName,
+            'email' => null,
+            'password' => bcrypt(uniqid()),
+            'idrole' => 3, // Pelanggan
+            'status_verif' => 1, // Langsung verifikasi
+            'otp' => null,
+            'otp_expire_at' => null,
+        ]);
+
+        return $user;
+    }
+
+    /**
+     * Tampilkan history pesanan pelanggan (untuk user yang login)
      */
     public function index()
     {
         $pesanans = Pesanan::where('iduser', Auth::id())
             ->with('detailPesanan.menu')
             ->orderBy('timestamp', 'desc')
-            ->paginate(10);
+            ->get();
 
-        return view('pages.pelanggan.pesanan.index', compact('pesanans'));
+        return view('pages.pelanggan.index-transaksi', compact('pesanans'));
     }
 
     /**
-     * Form buat pesanan baru
+     * Form buat pesanan baru - Public (tanpa login, tanpa session)
      */
-    public function create()
+    public function createPublic()
     {
-        $menus = Menu::with('vendor')->get();
-        return view('pages.pelanggan.pesanan.create', compact('menus'));
+        $vendors = Vendor::all();
+
+        return view('pages.pelanggan.create-pesanan', compact('vendors'));
     }
 
     /**
-     * Simpan pesanan ke database dan generate Snap Token
+     * API: Get all vendors
      */
-    public function store(Request $request)
+    public function getVendors()
     {
+        $vendors = Vendor::all();
+        return response()->json($vendors);
+    }
+
+    /**
+     * API: Get menu by vendor
+     */
+    public function getMenuByVendor()
+    {
+        $idvendor = request('idvendor');
+
+        if (!$idvendor) {
+            return response()->json([]);
+        }
+
+        $menus = Menu::where('idvendor', $idvendor)
+            ->with('vendor')
+            ->get();
+
+        return response()->json($menus);
+    }
+
+    /**
+     * Simpan pesanan dari guest user
+     */
+    public function storePublic()
+    {
+        $request = request();
+
         $request->validate([
             'nama' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
             'items' => 'required|array|min:1',
             'items.*.idmenu' => 'required|exists:menu,idmenu',
             'items.*.jumlah' => 'required|integer|min:1',
@@ -58,6 +124,19 @@ class PesananController extends Controller
 
         try {
             DB::beginTransaction();
+
+            // Pastikan user guest sudah login
+            if (!Auth::check()) {
+                $user = $this->createGuestUser();
+                Auth::login($user);
+            }
+
+            $user = Auth::user();
+
+            // Update email jika diisi
+            if ($request->email && empty($user->email)) {
+                $user->update(['email' => $request->email]);
+            }
 
             // Generate unique order_id untuk Midtrans
             $orderId = MidtransService::generateOrderId();
@@ -83,12 +162,15 @@ class PesananController extends Controller
 
             // Buat pesanan header
             $pesanan = Pesanan::create([
-                'iduser' => Auth::id(),
+                'iduser' => $user->iduser,
                 'order_id' => $orderId,
                 'nama' => $request->nama,
                 'timestamp' => now(),
                 'total' => $total,
-                'status_bayar' => false,
+                'metode_bayar' => null, // Akan diisi setelah callback Midtrans
+                'channel' => null, // Akan diisi setelah callback Midtrans
+                'status_bayar' => 'Pending', // Default status dari Midtrans
+                'customer_email' => $request->email ?? $user->email,
             ]);
 
             // Buat detail pesanan
@@ -107,19 +189,26 @@ class PesananController extends Controller
             DB::commit();
 
             // Generate Snap Token
-            $snapToken = $this->midtransService->createSnapToken(
+            $customerDetails = [
+                'first_name' => $request->nama,
+            ];
+
+            if ($request->email) {
+                $customerDetails['email'] = $request->email;
+            }
+
+            $snapResponse = $this->midtransService->createSnapToken(
                 $pesanan,
                 $items,
-                [
-                    'first_name' => $request->nama,
-                    'email' => Auth::user()->email,
-                ]
+                $customerDetails
             );
 
-            Log::info('Pesanan created with Snap Token', [
+            Log::info('Guest pesanan created with Snap Token', [
                 'pesanan_id' => $pesanan->idpesanan,
                 'order_id' => $orderId,
-                'snap_token' => $snapToken
+                'snap_token' => $snapResponse['token'],
+                'qr_url' => $snapResponse['qr_code_url'],
+                'guest_user' => $user->nama,
             ]);
 
             return response()->json([
@@ -128,7 +217,8 @@ class PesananController extends Controller
                 'data' => [
                     'idpesanan' => $pesanan->idpesanan,
                     'order_id' => $orderId,
-                    'snap_token' => $snapToken,
+                    'snap_token' => $snapResponse['token'],
+                    'qr_code_url' => $snapResponse['qr_code_url'],
                     'total' => $total,
                     'client_key' => MidtransService::getClientKey(),
                     'snap_url' => MidtransService::getSnapUrl(),
@@ -138,7 +228,7 @@ class PesananController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
-            Log::error('Failed to create pesanan', [
+            Log::error('Failed to create guest pesanan', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -160,7 +250,7 @@ class PesananController extends Controller
             ->with('detailPesanan.menu', 'user')
             ->firstOrFail();
 
-        return view('pages.pelanggan.pesanan.show', compact('pesanan'));
+        return view('pages.pelanggan.detail-transaksi', compact('pesanan'));
     }
 
     /**
@@ -169,16 +259,16 @@ class PesananController extends Controller
     public function checkStatus($id)
     {
         $pesanan = Pesanan::where('idpesanan', $id)
-            ->where('iduser', Auth::id())
             ->firstOrFail();
 
         // Cek status dari Midtrans API
         $status = $this->midtransService->checkTransactionStatus($pesanan->order_id);
 
         if ($status) {
-            // Update local status
+            // Update local status dengan string dari Midtrans
+            $transactionStatus = $status['transaction_status'] ?? 'pending';
             $pesanan->update([
-                'status_bayar' => in_array($status['transaction_status'], ['settlement', 'capture']),
+                'status_bayar' => $transactionStatus,
             ]);
         }
 
@@ -187,7 +277,7 @@ class PesananController extends Controller
             'data' => [
                 'pesanan' => $pesanan,
                 'midtrans_status' => $status,
-                'is_paid' => $pesanan->status_bayar,
+                'is_paid' => in_array($pesanan->status_bayar, ['settlement', 'capture']),
             ]
         ]);
     }

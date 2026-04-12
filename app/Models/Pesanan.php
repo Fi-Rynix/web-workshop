@@ -15,7 +15,6 @@ class Pesanan extends Model
 
     protected $casts = [
         'timestamp' => 'datetime',
-        'status_bayar' => 'boolean',
     ];
 
 

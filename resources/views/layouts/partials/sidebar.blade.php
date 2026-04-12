@@ -121,6 +121,18 @@
           <i class="mdi mdi-home menu-icon"></i>
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('pesan.public') }}">
+          <span class="menu-title">Pesan Menu</span>
+          <i class="mdi mdi-food menu-icon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('pelanggan.transaksi.index') }}">
+          <span class="menu-title">Riwayat Pesanan</span>
+          <i class="mdi mdi-history menu-icon"></i>
+        </a>
+      </li>
     @endif
 
     @forelse($sidebarMenu ?? [] as $menu)

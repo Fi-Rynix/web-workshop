@@ -11,7 +11,7 @@ class Vendor extends Model
     protected $primaryKey = 'idvendor';
     public $timestamps = false;
 
-    protected $fillable = ['nama_vendor', 'iduser'];
+    protected $fillable = ['nama_vendor'];
 
     /**
      * Relasi: Vendor memiliki banyak Menu
@@ -19,13 +19,5 @@ class Vendor extends Model
     public function menus(): HasMany
     {
         return $this->hasMany(Menu::class, 'idvendor', 'idvendor');
-    }
-
-    /**
-     * Relasi: Vendor dimiliki oleh satu User
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'iduser', 'iduser');
     }
 }

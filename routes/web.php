@@ -72,17 +72,23 @@ Route::middleware(['auth', 'check_verif', 'check.role:2'])->group(function () {
     Route::get('vendor/dashboard', [App\Http\Controllers\Vendor\VendorController::class, 'index'])->name('vendor.dashboard');
 
     // Menu Management
-    Route::get('vendor/menu', [App\Http\Controllers\Vendor\VendorController::class, 'menuIndex'])->name('vendor.menu.index');
-    Route::get('vendor/menu/create', [App\Http\Controllers\Vendor\VendorController::class, 'menuCreate'])->name('vendor.menu.create');
-    Route::post('vendor/menu', [App\Http\Controllers\Vendor\VendorController::class, 'menuStore'])->name('vendor.menu.store');
-    Route::get('vendor/menu/{id}/edit', [App\Http\Controllers\Vendor\VendorController::class, 'menuEdit'])->name('vendor.menu.edit');
-    Route::put('vendor/menu/{id}', [App\Http\Controllers\Vendor\VendorController::class, 'menuUpdate'])->name('vendor.menu.update');
-    Route::delete('vendor/menu/{id}', [App\Http\Controllers\Vendor\VendorController::class, 'menuDestroy'])->name('vendor.menu.destroy');
+    Route::get('vendor/menu', [App\Http\Controllers\Vendor\MenuController::class, 'index'])->name('vendor.menu.index');
+    Route::post('vendor/menu', [App\Http\Controllers\Vendor\MenuController::class, 'store'])->name('vendor.menu.store');
+    Route::put('vendor/menu/{id}', [App\Http\Controllers\Vendor\MenuController::class, 'update'])->name('vendor.menu.update');
+    Route::delete('vendor/menu/{id}', [App\Http\Controllers\Vendor\MenuController::class, 'destroy'])->name('vendor.menu.destroy');
 
     // Pesanan yang masuk ke vendor
-    Route::get('vendor/pesanan', [App\Http\Controllers\Vendor\VendorController::class, 'pesananIndex'])->name('vendor.pesanan.index');
-    Route::get('vendor/pesanan/{id}', [App\Http\Controllers\Vendor\VendorController::class, 'pesananShow'])->name('vendor.pesanan.show');
+    Route::get('vendor/pesanan', [App\Http\Controllers\Vendor\TransaksiController::class, 'index'])->name('vendor.pesanan.index');
+    Route::get('vendor/pesanan/{id}', [App\Http\Controllers\Vendor\TransaksiController::class, 'show'])->name('vendor.pesanan.show');
 });
+
+// Public Route - Pesan Tanpa Login (Guest)
+Route::get('pesan', [App\Http\Controllers\Pelanggan\PesananController::class, 'createPublic'])->name('pesan.public');
+Route::post('pesan', [App\Http\Controllers\Pelanggan\PesananController::class, 'storePublic'])->name('pesan.store');
+
+// API untuk get menu by vendor (public)
+Route::get('api/get-vendors', [App\Http\Controllers\Pelanggan\PesananController::class, 'getVendors'])->name('api.get-vendors');
+Route::get('api/get-menu-by-vendor', [App\Http\Controllers\Pelanggan\PesananController::class, 'getMenuByVendor'])->name('api.get-menu-by-vendor');
 
 // Routes untuk Pelanggan (idrole = 3)
 Route::middleware(['auth', 'check_verif', 'check.role:3'])->group(function () {
@@ -90,5 +96,22 @@ Route::middleware(['auth', 'check_verif', 'check.role:3'])->group(function () {
         return view('pages.pelanggan.dashboard');
     })->name('pelanggan.dashboard');
 
-    // Tambahkan route pelanggan lainnya di sini
+    // Transaksi (History pesanan) untuk pelanggan yang login
+    Route::get('pelanggan/transaksi', [App\Http\Controllers\Pelanggan\PesananController::class, 'index'])->name('pelanggan.transaksi.index');
+    Route::get('pelanggan/transaksi/{id}', [App\Http\Controllers\Pelanggan\PesananController::class, 'show'])->name('pelanggan.transaksi.show');
+    Route::get('pelanggan/transaksi/{id}/check-status', [App\Http\Controllers\Pelanggan\PesananController::class, 'checkStatus'])->name('pelanggan.transaksi.check-status');
 });
+
+// Webhook untuk Midtrans notification (public)
+Route::post('midtrans/notification', [App\Http\Controllers\MidtransController::class, 'notification'])->name('midtrans.notification');
+
+// GET route untuk testing webhook endpoint (bukan untuk production)
+Route::get('midtrans/notification', function () {
+    return response()->json([
+        'status' => true,
+        'message' => 'Webhook endpoint aktif. Gunakan POST method untuk menerima notifikasi dari Midtrans.',
+        'endpoint' => url('/midtrans/notification'),
+        'method' => 'POST',
+        'note' => 'Endpoint ini hanya menerima POST request dari Midtrans.'
+    ]);
+})->name('midtrans.notification.test');
