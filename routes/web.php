@@ -90,6 +90,9 @@ Route::post('pesan', [App\Http\Controllers\Pelanggan\PesananController::class, '
 Route::get('api/get-vendors', [App\Http\Controllers\Pelanggan\PesananController::class, 'getVendors'])->name('api.get-vendors');
 Route::get('api/get-menu-by-vendor', [App\Http\Controllers\Pelanggan\PesananController::class, 'getMenuByVendor'])->name('api.get-menu-by-vendor');
 
+// API: Cek status webhook untuk order (public, untuk guest mode)
+Route::get('pesanan/{order_id}/webhook-status', [App\Http\Controllers\MidtransController::class, 'webhookStatus'])->name('pesanan.webhook-status');
+
 // Routes untuk Pelanggan (idrole = 3)
 Route::middleware(['auth', 'check_verif', 'check.role:3'])->group(function () {
     Route::get('pelanggan/dashboard', function () {

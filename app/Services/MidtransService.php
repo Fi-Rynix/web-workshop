@@ -6,6 +6,7 @@ use App\Models\Pesanan;
 use Illuminate\Support\Facades\Log;
 use Midtrans\Config;
 use Midtrans\Snap;
+use Midtrans\Transaction;
 
 class MidtransService
 {
@@ -121,7 +122,6 @@ class MidtransService
 
             $orderId = $notificationData['order_id'] ?? null;
             $transactionStatus = $notificationData['transaction_status'] ?? null;
-            $transactionType = $notificationData['transaction_type'] ?? null;
             $paymentType = $notificationData['payment_type'] ?? null;
             $fraudStatus = $notificationData['fraud_status'] ?? null;
 
@@ -144,15 +144,13 @@ class MidtransService
             // Update pesanan
             $pesanan->update([
                 'status_bayar' => $statusBayar,
-                'metode_bayar' => $transactionType,
-                'channel' => $paymentType,
+                'metode_bayar' => $paymentType,
             ]);
 
             Log::info('Pesanan updated from notification', [
                 'order_id' => $orderId,
                 'status_bayar' => $statusBayar,
-                'metode_bayar' => $transactionType,
-                'channel' => $paymentType,
+                'metode_bayar' => $paymentType,
             ]);
 
             return true;

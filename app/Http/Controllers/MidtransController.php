@@ -34,9 +34,7 @@ class MidtransController extends Controller
 
             $orderId = $notificationData['order_id'];
             $transactionStatus = $notificationData['transaction_status'];
-            $transactionType = $notificationData['transaction_type'] ?? null;
             $paymentType = $notificationData['payment_type'] ?? null;
-            $channel = $notificationData['payment_channel'] ?? null;
 
             // Cari pesanan
             $pesanan = Pesanan::where('order_id', $orderId)->first();
@@ -51,14 +49,9 @@ class MidtransController extends Controller
                 'status_bayar' => $transactionStatus, // Simpan status string langsung (pending, settlement, deny, etc)
             ];
 
-            // Update metode bayar jika belum ada
-            if ($transactionType && empty($pesanan->metode_bayar)) {
-                $updateData['metode_bayar'] = $transactionType; // Simpan transaction_type sebagai metode_bayar
-            }
-
-            // Update channel jika ada
-            if ($paymentType && empty($pesanan->channel)) {
-                $updateData['channel'] = $paymentType;
+            // Update metode bayar dari payment_type selama payment_type valid
+            if ($paymentType) {
+                $updateData['metode_bayar'] = $paymentType; // payment_type: credit_card, qris, bank_transfer, dll
             }
 
             // Update total jika berbeda (dari amount Midtrans)
@@ -128,5 +121,33 @@ class MidtransController extends Controller
         }
 
         return response()->json(['status' => false, 'message' => 'Failed to check status'], 500);
+    }
+
+    /**
+     * Cek status webhook untuk order (digunakan oleh frontend polling)
+     */
+    public function webhookStatus($orderId)
+    {
+        $pesanan = Pesanan::where('order_id', $orderId)->first();
+
+        if (!$pesanan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Order not found'
+            ], 404);
+        }
+
+        // Webhook dianggap diterima kalau status sudah settlement/capture (dari database)
+        $webhookReceived = in_array($pesanan->status_bayar, ['settlement', 'capture']);
+
+        return response()->json([
+            'status' => true,
+            'webhook_received' => $webhookReceived,
+            'order_id' => $orderId,
+            'idpesanan' => $pesanan->idpesanan,
+            'status_bayar' => $pesanan->status_bayar,
+            'metode_bayar' => $pesanan->metode_bayar,
+            'total' => $pesanan->total,
+        ]);
     }
 }

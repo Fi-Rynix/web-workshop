@@ -15,13 +15,13 @@ Dokumentasi ini menjelaskan alur lengkap sistem pembayaran dari awal pelanggan m
 
 **Lampiran Kode (routes/web.php):**
 ```php
-// Halaman pemesanan (guest mode)
+// Halaman pemesanan (guest mode - tanpa login)
 Route::get('pesan', [PesananController::class, 'createPublic']);
 Route::post('pesan', [PesananController::class, 'storePublic']);
 ```
 
 **Penjelasan:**
-Ketika user membuka URL `/pesan`, Laravel akan mengeksekusi method `createPublic()` di `PesananController`. Route ini bersifat **public** (tanpa middleware auth), artinya guest user bisa akses tanpa login.
+Ketika user membuka URL `/pesan`, Laravel akan mengeksekusi method `createPublic()` di `PesananController`. Route ini bersifat **public** (tanpa middleware auth), artinya guest user bisa akses tanpa login. Guest user yang dibuat **tidak dimasukkan ke session** (hanya untuk DB tracking).
 
 **Dioper kemana:**
 Controller mengambil data vendor dari database dan me-return view `create-pesanan.blade.php`.
@@ -352,12 +352,18 @@ fetch('{{ route('pesan.store') }}', {
             idpesanan: data.data.idpesanan,
             order_id: data.data.order_id,
             snap_token: data.data.snap_token,
-            qr_code_url: data.data.qr_code_url,
+            qr_code_url: null,  // Akan diisi dari onPending callback
             total: data.data.total
         };
 
         // Simpan ke localStorage untuk persistency
         localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+        
+        // Tampilkan section status pembayaran
+        showPaymentStatusSection(data.data);
+        
+        // Mulai polling untuk cek status webhook
+        startWebhookPolling(data.data.order_id);
 ```
 
 **Penjelasan Rinci:**
@@ -367,6 +373,8 @@ fetch('{{ route('pesan.store') }}', {
 4. `JSON.stringify({...})` - ubah object JavaScript jadi string JSON
 5. `currentOrder = {...}` - simpan response data ke variable global
 6. `localStorage.setItem(...)` - simpan juga ke localStorage (supaya survive page refresh)
+7. `showPaymentStatusSection(data.data)` - tampilkan section status pembayaran
+8. `startWebhookPolling(data.data.order_id)` - mulai polling webhook status
 
 **Dioper kemana:**
 Request masuk ke `PesananController::storePublic()` di backend.
@@ -396,12 +404,9 @@ public function storePublic()
     try {
         DB::beginTransaction();
 
-        // Buat atau ambil user
-        if (!Auth::check()) {
-            $user = $this->createGuestUser();
-            Auth::login($user);
-        }
-        $user = Auth::user();
+        // Buat guest user baru (hanya untuk DB, tidak login)
+        $user = $this->createGuestUser();
+        // Tidak ada Auth::login() - guest tidak masuk session
 
         // Generate Order ID
         $orderId = MidtransService::generateOrderId();
@@ -413,17 +418,26 @@ public function storePublic()
             $menu = Menu::find($item['idmenu']);
             $subtotal = $menu->harga * $item['jumlah'];
             $total += $subtotal;
-            $items[] = [...]; // siapkan untuk detail pesanan
+            
+            $items[] = [
+                'idmenu' => $item['idmenu'],
+                'nama_menu' => $menu->nama_menu,
+                'harga' => $menu->harga,
+                'jumlah' => $item['jumlah'],
+                'subtotal' => $subtotal,
+                'catatan' => $item['catatan'] ?? null,
+            ];
         }
 
-        // Buat pesanan
+        // Buat pesanan dengan default value
         $pesanan = Pesanan::create([
             'iduser' => $user->iduser,
             'order_id' => $orderId,
             'nama' => $request->nama,
             'timestamp' => now(),
             'total' => $total,
-            'status_bayar' => 'Pending',
+            'metode_bayar' => 'Midtrans',  // Placeholder, akan diupdate webhook dengan payment_type
+            'status_bayar' => 'Pending',   // Placeholder, akan diupdate webhook
             'customer_email' => $request->email ?? $user->email,
         ]);
 
@@ -431,7 +445,12 @@ public function storePublic()
         foreach ($items as $item) {
             DetailPesanan::create([
                 'idpesanan' => $pesanan->idpesanan,
-                ...
+                'idmenu' => $item['idmenu'],
+                'jumlah' => $item['jumlah'],
+                'harga' => $item['harga'],
+                'subtotal' => $item['subtotal'],
+                'timestamp' => now(),
+                'catatan' => $item['catatan'],
             ]);
         }
 
@@ -449,8 +468,7 @@ public function storePublic()
             'data' => [
                 'idpesanan' => $pesanan->idpesanan,
                 'order_id' => $orderId,
-                'snap_token' => $snapResponse['token'],
-                'qr_code_url' => $snapResponse['qr_code_url'],
+                'snap_token' => $snapResponse['token'],  // Hanya token, tidak ada qr_code_url
                 'total' => $total,
             ]
         ]);
@@ -467,14 +485,19 @@ public function storePublic()
 **Penjelasan Rinci:**
 1. `$request->validate([...])` - Laravel validation: nama required, items minimal 1, dll
 2. `DB::beginTransaction()` - mulai database transaction (rollback kalau error)
-3. `createGuestUser()` - kalau guest, buat user baru di database
+3. `createGuestUser()` - buat user guest baru, **tidak login ke session**
 4. `MidtransService::generateOrderId()` - generate ID unik: `ORDER-YYYYMMDD-XXXXXXX`
 5. `foreach ($request->items as $item)` - hitung total harga dari database (hindari manipulasi client)
-6. `Pesanan::create([...])` - simpan header pesanan ke tabel `pesanan`
+6. `Pesanan::create([...])` - simpan header pesanan ke tabel `pesanan` dengan placeholder value
 7. `DetailPesanan::create([...])` - simpan item-item ke tabel `detail_pesanan`
 8. `DB::commit()` - commit transaction kalau semua berhasil
 9. `$this->midtransService->createSnapToken(...)` - panggil Midtrans untuk buat token
-10. `return response()->json([...])` - kirim response ke frontend
+10. `return response()->json([...])` - kirim response ke frontend (hanya token, tidak ada qr_code_url)
+
+**Perubahan Penting:**
+- Guest user tidak login ke session (hanya dibuat di DB)
+- Default value untuk `metode_bayar` dan `status_bayar` (akan diupdate oleh webhook)
+- Response hanya berisi `token`, tidak ada `qr_code_url` (dihapus karena tidak reliable)
 
 **Dioper kemana:**
 `createSnapToken()` dipanggil, ini akan komunikasi dengan API Midtrans.
@@ -516,14 +539,15 @@ public function createSnapToken(Pesanan $pesanan, array $items, array $customerD
 
         Log::info('Creating Snap Token', ['order_id' => $pesanan->order_id, 'params' => $params]);
 
+        // Generate Snap Token dari Midtrans API
         $snapToken = Snap::getSnapToken($params);
 
-        // Dapatkan QR Code URL untuk QRIS
-        $qrCodeUrl = $this->getQrCodeUrl($pesanan->order_id);
+        // DIHAPUS: Tidak ada getQrCodeUrl() lagi
+        // QR Code URL akan diambil dari callback onPending di frontend
 
         return [
             'token' => $snapToken,
-            'qr_code_url' => $qrCodeUrl,
+            // 'qr_code_url' => $qrCodeUrl,  // DIHAPUS - tidak reliable
         ];
     } catch (\Exception $e) {
         Log::error('Failed to create Snap Token', ['error' => $e->getMessage()]);
@@ -540,26 +564,28 @@ public function createSnapToken(Pesanan $pesanan, array $items, array $customerD
    - `customer_details`: data pembeli
    - `expiry`: token expire dalam 2 menit (testing)
 3. `Snap::getSnapToken($params)` - panggil library Midtrans, kirim ke server Midtrans
-4. `$this->getQrCodeUrl($pesanan->order_id)` - ambil QR code URL (kalau ada)
-5. `Log::info(...)` dan `Log::error(...)` - logging untuk debugging
+4. `Log::info(...)` dan `Log::error(...)` - logging untuk debugging
+
+**Perubahan Penting:**
+- Method `getQrCodeUrl()` dihapus karena tidak reliable (QR Code hanya tersedia setelah user pilih metode pembayaran)
+- Return hanya berisi `token`, tidak ada `qr_code_url`
 
 **Dioper kemana:**
 Snap Token dikirim kembali ke frontend, lalu digunakan untuk membuka popup pembayaran.
 
 ---
 
-### 2.5 Frontend: Buka Popup Midtrans
+### 2.5 Frontend: Buka Popup Midtrans & Section Status Pembayaran
 
 **File yang terkait:**
 - `resources/views/pages/pelanggan/create-pesanan.blade.php`
-- Environment: Midtrans Sandbox (atau Production)
 
 **Lampiran Kode:**
 ```javascript
+// Open Midtrans Snap
 snap.pay(data.data.snap_token, {
     onSuccess: function(result) {
-        // Pembayaran berhasil
-        clearInterval(statusCheckInterval);
+        // Pembayaran langsung berhasil (jarang untuk QRIS/VA)
         Swal.fire({
             icon: 'success',
             title: 'Pembayaran Berhasil!',
@@ -569,7 +595,8 @@ snap.pay(data.data.snap_token, {
         });
     },
     onPending: function(result) {
-        // Update QR Code URL jika ada dari result
+        // User pilih metode pembayaran (QRIS/VA/Kartu)
+        // Simpan QR Code URL jika ada dari result
         if (result && result.actions) {
             const qrAction = result.actions.find(a => a.name === 'generate-qr-code');
             if (qrAction && qrAction.url) {
@@ -577,13 +604,11 @@ snap.pay(data.data.snap_token, {
                 localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
             }
         }
-        // Tampilkan section saat pending
-        showPaymentDetailSection();
-        startStatusPolling();
+        // Tidak perlu tampilkan section di sini
+        // Section sudah tampil sebelum popup terbuka
     },
     onError: function(result) {
         // Pembayaran gagal
-        clearInterval(statusCheckInterval);
         Swal.fire({
             icon: 'error',
             title: 'Pembayaran Gagal',
@@ -591,9 +616,9 @@ snap.pay(data.data.snap_token, {
         });
     },
     onClose: function() {
-        // Popup ditutup
-        showPaymentDetailSection();
-        startStatusPolling();
+        // Popup ditutup - biarkan user melanjutkan alur baru
+        // Section status sudah tampil sejak awal
+        // Polling webhook masih berjalan
     }
 });
 ```
@@ -603,78 +628,276 @@ snap.pay(data.data.snap_token, {
 2. `onSuccess` - dipanggil kalau pembayaran langsung sukses (jarang untuk QRIS)
 3. `onPending` - dipanggil saat user pilih metode pembayaran (QRIS/VA/Kartu)
    - `result.actions` berisi array action, cari yang `name: 'generate-qr-code'`
-   - Kalau ketemu, simpan URL-nya untuk ditampilkan
+   - Kalau ketemu, simpan URL-nya ke localStorage
 4. `onError` - dipanggil kalau ada error saat pembayaran
 5. `onClose` - dipanggil saat user menutup popup (klik X atau di luar)
-6. `showPaymentDetailSection()` - tampilkan section dengan info pembayaran
-7. `startStatusPolling()` - mulai cek status setiap 10 detik
+   - **Tidak reliable karena privacy policy Snap.js**
+   - Section sudah tampil sejak awal (sebelum popup terbuka)
+
+**Perubahan Penting:**
+- `onClose` tidak digunakan untuk trigger section (tidak reliable)
+- Section tampil sejak order dibuat (sebelum popup terbuka)
+- QR Code URL diambil dari `onPending` callback dan disimpan ke localStorage
 
 **Dioper kemana:**
-User melihat popup Midtrans dan memilih metode pembayaran. Kalau QRIS dipilih, QR code akan muncul di popup. User bisa tutup popup dan lihat section detail pembayaran di bawah.
+User melihat popup Midtrans dan memilih metode pembayaran. Section status pembayaran sudah tampil di bawah dengan tombol "Bayar Sekarang" dan polling webhook aktif.
 
 ---
 
-### 2.6 Frontend: Polling Status Pembayaran
+### 2.6 Frontend: Section Status Pembayaran dengan Polling Webhook
 
 **File yang terkait:**
 - `resources/views/pages/pelanggan/create-pesanan.blade.php`
 
-**Lampiran Kode:**
-```javascript
-function startStatusPolling() {
-    // Cek status setiap 10 detik
-    statusCheckInterval = setInterval(() => {
-        checkPaymentStatus();
-    }, 10000);
+**Lampiran Kode (HTML Section):**
+```html
+<div id="paymentStatusSection" class="row mt-4" style="display: none;">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="mdi mdi-clock-alert me-2"></i>Status Pembayaran</h5>
+                <span id="statusBadge" class="badge bg-warning text-dark">MENUNGGU</span>
+            </div>
+            <div class="card-body">
+                <!-- Data Order -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Order ID</label>
+                            <input type="text" id="paymentOrderId" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Total Pembayaran</label>
+                            <input type="text" id="paymentTotal" class="form-control" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Metode Bayar</label>
+                            <input type="text" id="paymentMetode" class="form-control" value="-" readonly>
+                        </div>
+                    </div>
+                </div>
 
-    // Cek pertama kali
-    checkPaymentStatus();
+                <!-- Tombol Buka Snap Lagi -->
+                <div class="text-center mt-3">
+                    <button id="btnOpenSnap" class="btn btn-primary btn-lg" onclick="reopenSnapPopup()">
+                        <i class="mdi mdi-credit-card me-2"></i>Bayar Sekarang
+                    </button>
+                </div>
+
+                <!-- Loading Webhook -->
+                <div id="webhookWaitingInfo" class="alert alert-light border mt-3 mb-0">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                        <span>Menunggu konfirmasi dari Midtrans...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+**Lampiran Kode (JavaScript Functions):**
+```javascript
+// Tampilkan section status pembayaran
+function showPaymentStatusSection(orderData) {
+    document.getElementById('paymentOrderId').value = orderData.order_id;
+    document.getElementById('paymentTotal').value = 'Rp ' + formatRupiah(orderData.total);
+    
+    // Tampilkan section
+    document.getElementById('paymentStatusSection').style.display = 'block';
+    
+    // Scroll ke section
+    setTimeout(() => {
+        document.getElementById('paymentStatusSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
 }
 
-function checkPaymentStatus() {
-    if (!currentOrder) return;
+// Variabel untuk polling interval
+let webhookPollingInterval = null;
 
-    fetch(`{{ url('pelanggan/transaksi') }}/${currentOrder.idpesanan}/check-status`)
+// Polling untuk cek apakah webhook sudah datang
+function startWebhookPolling(orderId) {
+    // Hentikan polling sebelumnya jika ada
+    if (webhookPollingInterval) {
+        clearInterval(webhookPollingInterval);
+    }
+
+    // Polling tiap 3 detik
+    webhookPollingInterval = setInterval(() => {
+        checkWebhookStatus(orderId);
+    }, 3000);
+
+    // Cek pertama kali
+    checkWebhookStatus(orderId);
+
+    // Timeout 5 menit (hentikan polling)
+    setTimeout(() => {
+        if (webhookPollingInterval) {
+            clearInterval(webhookPollingInterval);
+        }
+    }, 300000);
+}
+
+// Cek status webhook dari backend
+function checkWebhookStatus(orderId) {
+    fetch(`{{ url('pesanan') }}/${orderId}/webhook-status`)
         .then(response => response.json())
         .then(data => {
-            if (data.status) {
-                const status = data.data.pesanan.status_bayar;
-                updatePaymentStatusUI(status);
-
-                // Jika sudah paid atau expired/cancel, hentikan polling
-                if (['settlement', 'capture', 'expire', 'cancel', 'deny'].includes(status)) {
-                    clearInterval(statusCheckInterval);
-                    localStorage.removeItem('currentOrder'); // Clear saved order
-
-                    if (status === 'settlement' || status === 'capture') {
-                        setTimeout(() => {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Pembayaran Berhasil!',
-                            }).then(() => {
-                                window.location.href = '{{ route('pelanggan.transaksi.index') }}';
-                            });
-                        }, 1000);
-                    }
-                }
+            if (data.webhook_received) {
+                // Webhook sudah datang, update UI
+                clearInterval(webhookPollingInterval);
+                updatePaymentStatusUI(data);
             }
         })
         .catch(error => {
-            // Silently fail - akan retry di polling berikutnya
+            // Silent fail, akan retry di polling berikutnya
+            console.log('Polling error:', error);
         });
+}
+
+// Update UI section dengan data dari webhook
+function updatePaymentStatusUI(data) {
+    const statusBadge = document.getElementById('statusBadge');
+    const metodeInput = document.getElementById('paymentMetode');
+    const waitingInfo = document.getElementById('webhookWaitingInfo');
+    const btnOpenSnap = document.getElementById('btnOpenSnap');
+    const card = document.querySelector('#paymentStatusSection .card');
+
+    // Update badge status
+    statusBadge.textContent = data.status_bayar.toUpperCase();
+
+    // Update style berdasarkan status
+    switch (data.status_bayar) {
+        case 'settlement':
+        case 'capture':
+            statusBadge.className = 'badge bg-success';
+            card.classList.remove('border-info');
+            card.classList.add('border-success');
+            document.querySelector('#paymentStatusSection .card-header').className = 'card-header bg-success text-white d-flex justify-content-between align-items-center';
+            break;
+        case 'pending':
+            statusBadge.className = 'badge bg-warning text-dark';
+            break;
+        case 'expire':
+        case 'cancel':
+        case 'deny':
+            statusBadge.className = 'badge bg-danger';
+            card.classList.remove('border-info');
+            card.classList.add('border-danger');
+            document.querySelector('#paymentStatusSection .card-header').className = 'card-header bg-danger text-white d-flex justify-content-between align-items-center';
+            break;
+    }
+
+    // Update metode bayar dari webhook
+    if (data.metode_bayar) {
+        metodeInput.value = data.metode_bayar.toUpperCase();
+    }
+
+    // Sembunyikan waiting info
+    waitingInfo.style.display = 'none';
+
+    // Kalau sudah settlement/capture, sembunyikan tombol bayar dan redirect
+    if (['settlement', 'capture'].includes(data.status_bayar)) {
+        btnOpenSnap.style.display = 'none';
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Pembayaran Berhasil!',
+            text: 'Pesanan Anda telah dibayar',
+            showConfirmButton: true,
+        }).then(() => {
+            @if(Auth::check())
+                window.location.href = '{{ route('pelanggan.transaksi.index') }}';
+            @else
+                window.location.href = '{{ route('login') }}';
+            @endif
+        });
+    }
+}
+
+// Buka popup Snap lagi (kalau user tutup popup sebelum bayar)
+function reopenSnapPopup() {
+    if (!currentOrder || !currentOrder.snap_token) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Token pembayaran tidak ditemukan',
+        });
+        return;
+    }
+
+    snap.pay(currentOrder.snap_token, {
+        onSuccess: function(result) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Pembayaran Berhasil!',
+                text: 'Pesanan Anda telah dibayar',
+                showConfirmButton: true,
+            }).then(() => {
+                @if(Auth::check())
+                    window.location.href = '{{ route('pelanggan.transaksi.index') }}';
+                @else
+                    window.location.href = '{{ route('login') }}';
+                @endif
+            });
+        },
+        onPending: function(result) {
+            // QR Code URL bisa disimpan jika perlu
+            if (result && result.actions) {
+                const qrAction = result.actions.find(a => a.name === 'generate-qr-code');
+                if (qrAction && qrAction.url) {
+                    currentOrder.qr_code_url = qrAction.url;
+                    localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+                }
+            }
+        },
+        onError: function(result) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Pembayaran Gagal',
+                text: 'Silakan coba lagi',
+            });
+        },
+        onClose: function() {
+            // Popup ditutup, polling masih berjalan
+        }
+    });
 }
 ```
 
 **Penjelasan Rinci:**
-1. `setInterval(checkPaymentStatus, 10000)` - jalankan function setiap 10.000ms (10 detik)
-2. `clearInterval(statusCheckInterval)` - hentikan polling kalau status final
-3. `check-status` endpoint memanggil API Midtrans untuk cek status terbaru
-4. `updatePaymentStatusUI(status)` - update tampilan badge (PENDING → SETTLEMENT)
-5. `localStorage.removeItem('currentOrder')` - bersihkan localStorage kalau sudah selesai
-6. Redirect ke halaman transaksi kalau pembayaran berhasil
+1. `showPaymentStatusSection(orderData)` - Tampilkan section setelah order dibuat
+2. `startWebhookPolling(orderId)` - Mulai polling ke backend tiap 3 detik
+3. `checkWebhookStatus(orderId)` - Fetch ke endpoint `/pesanan/{order_id}/webhook-status`
+4. `updatePaymentStatusUI(data)` - Update UI saat webhook diterima (badge dan metode bayar)
+5. `reopenSnapPopup()` - Buka popup Snap lagi kalau user tutup sebelum bayar
+
+**Endpoint Backend:**
+```php
+// Route: GET /pesanan/{order_id}/webhook-status
+public function webhookStatus($orderId)
+{
+    $pesanan = Pesanan::where('order_id', $orderId)->first();
+    
+    // Cek apakah webhook sudah datang (metode_bayar tidak null)
+    $webhookReceived = !is_null($pesanan->metode_bayar);
+    
+    return response()->json([
+        'status' => true,
+        'webhook_received' => $webhookReceived,
+        'order_id' => $orderId,
+        'status_bayar' => $pesanan->status_bayar,
+        'metode_bayar' => $pesanan->metode_bayar,
+        'total' => $pesanan->total,
+    ]);
+}
+```
 
 **Dioper kemana:**
-Polling akan terus berjalan sampai webhook atau polling mendapat status final.
+Polling akan terus berjalan sampai webhook diterima dari Midtrans, lalu UI auto-update dengan data terbaru.
 
 ---
 
@@ -770,12 +993,16 @@ Setiap ada perubahan status transaksi, Midtrans akan POST ke Notification URL.
 // Webhook untuk Midtrans notification (public - no auth required)
 Route::post('midtrans/notification', [App\Http\Controllers\MidtransController::class, 'notification'])
     ->name('midtrans.notification');
+
+// API untuk cek webhook status (untuk frontend polling)
+Route::get('pesanan/{order_id}/webhook-status', [App\Http\Controllers\MidtransController::class, 'webhookStatus'])
+    ->name('pesanan.webhook-status');
 ```
 
 **Penjelasan:**
 - Route `POST /midtrans/notification` menerima callback dari Midtrans
+- Route `GET /pesanan/{order_id}/webhook-status` untuk frontend polling
 - Tidak pakai middleware auth (public route)
-- Dihandle oleh `MidtransController::notification()`
 
 **Dioper kemana:**
 Request masuk ke Controller untuk diproses.
@@ -804,8 +1031,7 @@ public function notification(Request $request)
 
         $orderId = $notificationData['order_id'];
         $transactionStatus = $notificationData['transaction_status'];
-        $paymentType = $notificationData['payment_type'] ?? null;
-
+        $paymentType = $notificationData['payment_type'] ?? null;        // qris, bank_transfer
         // Cari pesanan
         $pesanan = Pesanan::where('order_id', $orderId)->first();
 
@@ -819,8 +1045,17 @@ public function notification(Request $request)
             'status_bayar' => $transactionStatus,
         ];
 
+        // Update metode bayar dari payment_type webhook
         if ($paymentType && empty($pesanan->metode_bayar)) {
             $updateData['metode_bayar'] = $paymentType;
+        }
+
+        // Update total jika berbeda
+        if (isset($notificationData['gross_amount'])) {
+            $grossAmount = (int) $notificationData['gross_amount'];
+            if ($grossAmount != $pesanan->total) {
+                $updateData['total'] = $grossAmount;
+            }
         }
 
         $pesanan->update($updateData);
@@ -828,7 +1063,7 @@ public function notification(Request $request)
         Log::info('Pesanan updated from webhook', [
             'order_id' => $orderId,
             'transaction_status' => $transactionStatus,
-            'status_bayar' => $transactionStatus,
+            'metode_bayar' => $paymentType,
         ]);
 
         return response()->json([
@@ -846,6 +1081,34 @@ public function notification(Request $request)
             'message' => 'Internal server error',
         ], 500);
     }
+}
+
+/**
+ * Cek status webhook untuk order (digunakan oleh frontend polling)
+ */
+public function webhookStatus($orderId)
+{
+    $pesanan = Pesanan::where('order_id', $orderId)->first();
+
+    if (!$pesanan) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Order not found'
+        ], 404);
+    }
+
+    // Cek apakah webhook sudah datang (metode_bayar tidak null berarti webhook sudah update)
+    $webhookReceived = !is_null($pesanan->metode_bayar);
+
+    return response()->json([
+        'status' => true,
+        'webhook_received' => $webhookReceived,
+        'order_id' => $orderId,
+        'idpesanan' => $pesanan->idpesanan,
+        'status_bayar' => $pesanan->status_bayar,
+        'metode_bayar' => $pesanan->metode_bayar,
+        'total' => $pesanan->total,
+    ]);
 }
 ```
 
@@ -867,6 +1130,83 @@ public function notification(Request $request)
 
 **Dioper kemana:**
 Status di database berubah. Frontend yang sedang polling akan mendeteksi perubahan dan update UI.
+
+---
+
+### 3.6 Debug Routes untuk Webhook
+
+**File yang terkait:**
+- `routes/web.php`
+
+**Lampiran Kode:**
+```php
+// DEBUG: Route untuk melihat payload lengkap dari Midtrans
+Route::post('midtrans/debug', function (\Illuminate\Http\Request $request) {
+    $filename = 'midtrans_debug_' . date('Ymd_His') . '_' . uniqid() . '.json';
+    $filepath = storage_path('logs/' . $filename);
+
+    $data = [
+        'received_at' => now()->toDateTimeString(),
+        'ip_address' => $request->ip(),
+        'user_agent' => $request->userAgent(),
+        'headers' => $request->headers->all(),
+        'body' => $request->all(),
+    ];
+
+    file_put_contents($filepath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Payload logged successfully',
+        'saved_to' => $filepath,
+        'received_payload' => $request->all(),
+        'all_headers' => $request->headers->all(),
+    ]);
+});
+
+// DEBUG: Route untuk melihat semua file debug yang tersimpan
+Route::get('midtrans/debug/files', function () {
+    $files = glob(storage_path('logs/midtrans_debug_*.json'));
+    rsort($files);
+
+    $list = array_map(function ($file) {
+        return [
+            'filename' => basename($file),
+            'size' => filesize($file) . ' bytes',
+            'modified' => date('Y-m-d H:i:s', filemtime($file)),
+            'view_url' => url('midtrans/debug/view/' . basename($file)),
+        ];
+    }, array_slice($files, 0, 20));
+
+    return response()->json([
+        'total_files' => count($files),
+        'files' => $list,
+    ]);
+});
+
+// DEBUG: Route untuk melihat isi file debug tertentu
+Route::get('midtrans/debug/view/{filename}', function ($filename) {
+    // Security: hanya izinkan filename dengan pattern yang benar
+    if (!preg_match('/^midtrans_debug_\d{8}_\d{6}_[a-f0-9]+\.json$/', $filename)) {
+        return response()->json(['error' => 'Invalid filename'], 400);
+    }
+
+    $filepath = storage_path('logs/' . $filename);
+
+    if (!file_exists($filepath)) {
+        return response()->json(['error' => 'File not found'], 404);
+    }
+
+    $content = file_get_contents($filepath);
+    return response()->json(json_decode($content, true));
+});
+```
+
+**Cara Pakai:**
+1. Ganti URL di Midtrans Dashboard ke `/midtrans/debug` (sementara)
+2. Lakukan pembayaran
+3. Cek `/midtrans/debug/files` untuk lihat daftar payload
+4. Cek `/midtrans/debug/view/{filename}` untuk lihat detail
 
 ---
 
@@ -961,21 +1301,28 @@ Service ini setup konfigurasi Midtrans library saat di-instantiate.
 │    - Fetch POST ke /pesan (AJAX)                                        │
 │    - Backend:                                                           │
 │      * Validasi input                                                   │
-│      * Buat Guest User (kalau belum login)                              │
+│      * Buat Guest User (tidak login ke session)                         │
 │      * Generate Order ID                                                │
 │      * Simpan Pesanan & Detail ke Database                              │
+│      * Set default: metode_bayar='Midtrans'                             │
 │      * Panggil MidtransService::createSnapToken()                       │
 │      * Komunikasi ke API Midtrans → Dapat Snap Token                    │
 │    - Response: snap_token, order_id, total                              │
+│    - Frontend:                                                          │
+│      * Tampilkan section Status Pembayaran                              │
+│      * Mulai polling webhook tiap 3 detik                                 │
+│      * Buka popup Snap.js                                               │
 └─────────────────────────────────────────────────────────────────────────┘
                                     ↓
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ 5. BUKA POPUP MIDTRANS                                                 │
+│ 5. POPUP MIDTRANS & SECTION STATUS                                      │
 │    - snap.pay(snap_token, {callbacks})                                  │
-│    - User pilih metode pembayaran (QRIS/VA/Kartu)                       │
-│    - onPending() → Simpan QR Code URL (kalau ada)                       │
-│    - onClose() atau Fallback Timer → showPaymentDetailSection()         │
-│    - startStatusPolling() → Cek status tiap 10 detik                    │
+│    - Section sudah tampil dengan:                                      │
+│      * Order ID, Total                                                  │
+│      * Badge: MENUNGGU                                                  │
+│      * Tombol "Bayar Sekarang"                                          │
+│      * Loading: "Menunggu konfirmasi dari Midtrans..."                    │
+│    - Polling aktif: cek /pesanan/{order_id}/webhook-status               │
 └─────────────────────────────────────────────────────────────────────────┘
                                     ↓
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -986,17 +1333,22 @@ Service ini setup konfigurasi Midtrans library saat di-instantiate.
 │    - Laravel:                                                           │
 │      * Terima webhook (CSRF excluded)                                   │
 │      * Validasi order_id                                                │
-│      * Update status_bayar & metode_bayar di database                   │
+│      * Update status_bayar, metode_bayar, channel di database           │
 │      * Log untuk debugging                                              │
 │      * Return 200 OK ke Midtrans                                        │
 └─────────────────────────────────────────────────────────────────────────┘
                                     ↓
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ 7. FRONTEND DETEKSI PERUBAHAN STATUS                                    │
-│    - Polling: checkPaymentStatus() tiap 10 detik                        │
-│    - Atau Webhook langsung update DB                                    │
-│    - updatePaymentStatusUI() → Badge berubah jadi hijau                 │
-│    - Swal.fire() "Pembayaran Berhasil!"                                 │
+│ 7. FRONTEND DETEKSI WEBHOOK                                             │
+│    - Polling: checkWebhookStatus() mendeteksi webhook_received = true     │
+│    - updatePaymentStatusUI() dipanggil                                  │
+│    - UI Update:                                                         │
+│      * Badge: MENUNGGU → SETTLEMENT (hijau)                             │
+│      * Metode Bayar: - → QRIS                                           │
+│      * Channel: - → CAPTURE                                              │
+│      * Tombol Bayar: disembunyikan                                      │
+│      * Loading spinner: disembunyikan                                   │
+│    - Swal.fire "Pembayaran Berhasil!"                                   │
 │    - Redirect ke halaman riwayat transaksi                              │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
@@ -1007,31 +1359,85 @@ Service ini setup konfigurasi Midtrans library saat di-instantiate.
 
 | File | Fungsi |
 |------|--------|
-| `routes/web.php` | Definisi semua route |
-| `app/Http/Controllers/Pelanggan/PesananController.php` | Logic pemesanan & Midtrans integration |
-| `app/Http/Controllers/MidtransController.php` | Handle webhook notification |
+| `routes/web.php` | Definisi semua route termasuk webhook dan debug routes |
+| `app/Http/Controllers/Pelanggan/PesananController.php` | Logic pemesanan, guest user, Midtrans integration |
+| `app/Http/Controllers/MidtransController.php` | Handle webhook notification dan webhook status polling |
 | `app/Services/MidtransService.php` | Service class untuk komunikasi ke API Midtrans |
-| `resources/views/pages/pelanggan/create-pesanan.blade.php` | Halaman pemesanan (frontend) |
+| `resources/views/pages/pelanggan/create-pesanan.blade.php` | Halaman pemesanan dengan section status dan polling |
 | `bootstrap/app.php` | CSRF exception untuk webhook |
 | `.env` | Konfigurasi Midtrans keys & APP_URL |
-| `config/midtrans.php` | (opsional) Konfigurasi Midtrans via config file |
+
+---
+
+## Perubahan Penting dari Versi Sebelumnya
+
+### 1. Guest User Tidak Login
+**Sebelumnya:**
+```php
+$user = $this->createGuestUser();
+Auth::login($user);  // DIHAPUS
+```
+
+**Sekarang:**
+```php
+$user = $this->createGuestUser();  // Langsung create, tidak login
+```
+
+### 2. Tidak Ada QR Code URL di Response
+**Sebelumnya:**
+```php
+return [
+    'token' => $snapToken,
+    'qr_code_url' => $qrCodeUrl,  // DIHAPUS
+];
+```
+
+**Sekarang:**
+```php
+return [
+    'token' => $snapToken,  // Hanya token
+];
+```
+
+### 3. Section Status dengan Polling Webhook
+**Sebelumnya:** Section muncul saat `onClose` popup (tidak reliable)
+
+**Sekarang:** 
+- Section muncul sejak order dibuat
+- Polling webhook tiap 3 detik
+- Tombol "Bayar Sekarang" untuk buka popup lagi
+- Auto-update UI saat webhook diterima
+
+### 4. Debug Routes
+**Baru ditambahkan:**
+- `POST /midtrans/debug` - Simpan payload ke file
+- `GET /midtrans/debug/files` - List semua file debug
+- `GET /midtrans/debug/view/{filename}` - Lihat isi file
 
 ---
 
 ## Catatan Penting untuk Pemula
 
-1. **CSRF Token**: Laravel wajib CSRF untuk POST request, tapi webhook Midtrans perlu dikecualikan karena datang dari luar.
+1. **Guest User Tidak Login:** Guest user hanya dibuat di database untuk tracking, tidak masuk session (tidak bisa login ulang).
 
-2. **Ngrok**: URL ngrok berubah setiap restart (free tier). Selalu update di Midtrans Dashboard dan .env.
+2. **Section Muncul Sejak Awal:** Section status pembayaran tampil segera setelah order dibuat, tidak tunggu onClose popup.
 
-3. **Order ID**: Format `ORDER-YYYYMMDD-XXXXXXX` unik setiap pesanan.
+3. **Polling Webhook:** Frontend polling ke backend tiap 3 detik untuk cek apakah webhook sudah datang.
 
-4. **Snap Token**: Expire dalam 2 menit (setting saat testing), production bisa lebih lama.
+4. **QR Code URL:** QR Code hanya tersedia dari `onPending` callback Snap.js (setelah user pilih QRIS), bukan dari backend.
 
-5. **Webhook vs Polling**: Webhook lebih cepat, tapi polling sebagai backup kalau webhook fail.
+5. **CSRF Token:** Laravel wajib CSRF untuk POST request, tapi webhook Midtrans perlu dikecualikan karena datang dari luar.
 
-6. **Database Transaction**: `DB::beginTransaction()` penting supaya data konsisten kalau ada error di tengah proses.
+6. **Ngrok:** URL ngrok berubah setiap restart (free tier). Selalu update di Midtrans Dashboard dan .env.
+
+7. **Order ID:** Format `ORDER-YYYYMMDD-XXXXXXX` unik setiap pesanan.
+
+8. **Snap Token:** Expire dalam 2 menit (setting saat testing), production bisa lebih lama.
+
+9. **Webhook vs Polling:** Webhook lebih cepat, tapi polling sebagai backup dan untuk update UI real-time.
+
+10. **Database Transaction:** `DB::beginTransaction()` penting supaya data konsisten kalau ada error di tengah proses.
 
 ---
 
-**Dokumen ini dibuat untuk pemula yang ingin memahami alur lengkap Midtrans integration.**
+**Dokumen ini dibuat untuk pemula yang ingin memahami alur lengkap Midtrans integration dengan section status pembayaran dan polling webhook.**

@@ -170,6 +170,57 @@
     </div>
 </div>
 
+<!-- Section Status Pembayaran (Muncul setelah order dibuat) -->
+<div id="paymentStatusSection" class="row mt-4" style="display: none;">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="mdi mdi-clock-alert me-2"></i>Status Pembayaran</h5>
+                <span id="statusBadge" class="badge bg-warning text-dark">MENUNGGU</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Order ID</label>
+                            <input type="text" id="paymentOrderId" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Total Pembayaran</label>
+                            <input type="text" id="paymentTotal" class="form-control" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Metode Bayar</label>
+                            <input type="text" id="paymentMetode" class="form-control" value="-" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Buka Snap Lagi -->
+                <div class="text-center mt-3">
+                    <button id="btnOpenSnap" class="btn btn-primary btn-lg" onclick="reopenSnapPopup()">
+                        <i class="mdi mdi-credit-card me-2"></i>Bayar Sekarang
+                    </button>
+                    <p class="text-muted small mt-2 mb-0">
+                        <i class="mdi mdi-information-outline me-1"></i>
+                        Klik tombol di atas untuk melanjutkan pembayaran
+                    </p>
+                </div>
+
+                <!-- Info Webhook Status -->
+                <div id="webhookWaitingInfo" class="alert alert-light border mt-3 mb-0">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                        <span>Menunggu konfirmasi dari Midtrans...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal untuk tambah ke keranjang -->
 <div class="modal fade" id="modalAddCart" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -503,6 +554,12 @@
                 // Simpan order ke localStorage untuk persistency
                 localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
 
+                // Tampilkan section status pembayaran
+                showPaymentStatusSection(data.data);
+
+                // Mulai polling untuk cek status webhook
+                startWebhookPolling(data.data.order_id);
+
                 // Open Midtrans Snap
                 snap.pay(data.data.snap_token, {
                     onSuccess: function(result) {
@@ -558,6 +615,206 @@
             });
         });
     });
+
+    /**
+     * ============================================================
+     * PAYMENT STATUS SECTION & WEBHOOK POLLING
+     * ============================================================
+     */
+
+    // Tampilkan section status pembayaran
+    function showPaymentStatusSection(orderData) {
+        document.getElementById('paymentOrderId').value = orderData.order_id;
+        document.getElementById('paymentTotal').value = 'Rp ' + formatRupiah(orderData.total);
+
+        // Tampilkan section
+        document.getElementById('paymentStatusSection').style.display = 'block';
+
+        // Scroll ke section
+        setTimeout(() => {
+            document.getElementById('paymentStatusSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+
+    // Variabel untuk polling interval
+    let webhookPollingInterval = null;
+
+    // Polling untuk cek apakah webhook sudah datang
+    function startWebhookPolling(orderId) {
+        // Hentikan polling sebelumnya jika ada
+        if (webhookPollingInterval) {
+            clearInterval(webhookPollingInterval);
+        }
+
+        // Polling tiap 1 detik untuk lebih responsif
+        webhookPollingInterval = setInterval(() => {
+            checkWebhookStatus(orderId);
+        }, 1000);
+
+        // Cek pertama kali
+        checkWebhookStatus(orderId);
+
+        // Timeout 5 menit (hentikan polling)
+        setTimeout(() => {
+            if (webhookPollingInterval) {
+                clearInterval(webhookPollingInterval);
+            }
+        }, 300000);
+    }
+
+    // Cek status dari backend (selalu update UI dengan data terbaru dari DB)
+    function checkWebhookStatus(orderId) {
+        fetch(`{{ url('pesanan') }}/${orderId}/webhook-status`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Polling response:', data);
+
+                // Selalu update UI dengan status terbaru dari database
+                updatePaymentStatusUI(data);
+
+                // Kalau sudah settlement/capture di database, hentikan polling
+                if (['settlement', 'capture'].includes(data.status_bayar)) {
+                    console.log('Settlement/Capture from DB, stopping polling...');
+                    clearInterval(webhookPollingInterval);
+                }
+            })
+            .catch(error => {
+                console.log('Polling error:', error);
+            });
+    }
+
+    // Update UI section dengan data dari webhook
+    function updatePaymentStatusUI(data) {
+        console.log('updatePaymentStatusUI called with:', data);
+        const statusBadge = document.getElementById('statusBadge');
+        const metodeInput = document.getElementById('paymentMetode');
+        const waitingInfo = document.getElementById('webhookWaitingInfo');
+        const btnOpenSnap = document.getElementById('btnOpenSnap');
+        const card = document.querySelector('#paymentStatusSection .card');
+
+        // Update badge status
+        statusBadge.textContent = data.status_bayar.toUpperCase();
+        console.log('Status badge updated to:', data.status_bayar.toUpperCase());
+
+        // Update style berdasarkan status
+        switch (data.status_bayar) {
+            case 'settlement':
+            case 'capture':
+                statusBadge.className = 'badge bg-success';
+                card.classList.remove('border-info');
+                card.classList.add('border-success');
+                document.querySelector('#paymentStatusSection .card-header').className = 'card-header bg-success text-white d-flex justify-content-between align-items-center';
+                break;
+            case 'pending':
+                statusBadge.className = 'badge bg-warning text-dark';
+                break;
+            case 'expire':
+            case 'cancel':
+            case 'deny':
+                statusBadge.className = 'badge bg-danger';
+                card.classList.remove('border-info');
+                card.classList.add('border-danger');
+                document.querySelector('#paymentStatusSection .card-header').className = 'card-header bg-danger text-white d-flex justify-content-between align-items-center';
+                break;
+        }
+
+        // Update metode bayar dari webhook
+        if (data.metode_bayar) {
+            metodeInput.value = data.metode_bayar.toUpperCase();
+            console.log('Metode bayar updated to:', data.metode_bayar.toUpperCase());
+        } else {
+            console.log('Metode bayar is empty/null');
+        }
+
+        // Sembunyikan waiting info
+        waitingInfo.style.display = 'none';
+
+        // Kalau sudah settlement/capture, sembunyikan tombol bayar dan tutup section
+        console.log('Checking settlement condition, status:', data.status_bayar);
+        if (['settlement', 'capture'].includes(data.status_bayar)) {
+            console.log('Settlement/Capture detected! Hiding button, closing section, and showing success...');
+            btnOpenSnap.style.display = 'none';
+
+            // Tutup section status pembayaran setelah 2 detik (biar user lihat status sukses)
+            setTimeout(() => {
+                document.getElementById('paymentStatusSection').remove();
+            }, 2000);
+
+            // Tampilkan pesan sukses
+            Swal.fire({
+                icon: 'success',
+                title: 'Pembayaran Berhasil!',
+                text: 'Pesanan Anda telah dibayar',
+                showConfirmButton: true,
+            }).then(() => {
+                @if(Auth::check())
+                    window.location.href = '{{ route('pelanggan.transaksi.index') }}';
+                @else
+                    window.location.href = '{{ route('login') }}';
+                @endif
+            });
+        }
+    }
+
+    // Buka popup Snap lagi
+    function reopenSnapPopup() {
+        if (!currentOrder || !currentOrder.snap_token) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Token pembayaran tidak ditemukan',
+            });
+            return;
+        }
+
+        snap.pay(currentOrder.snap_token, {
+            onSuccess: function(result) {
+                console.log('onSuccess triggered', result);
+                // Force check status immediately (jangan tunggu polling)
+                if (currentOrder && currentOrder.order_id) {
+                    checkWebhookStatus(currentOrder.order_id);
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pembayaran Berhasil!',
+                    text: 'Pesanan Anda telah dibayar',
+                    showConfirmButton: true,
+                }).then(() => {
+                    @if(Auth::check())
+                        window.location.href = '{{ route('pelanggan.transaksi.index') }}';
+                    @else
+                        window.location.href = '{{ route('login') }}';
+                    @endif
+                });
+            },
+            onPending: function(result) {
+                console.log('onPending triggered', result);
+                // QR Code URL bisa disimpan jika perlu
+                if (result && result.actions) {
+                    const qrAction = result.actions.find(a => a.name === 'generate-qr-code');
+                    if (qrAction && qrAction.url) {
+                        currentOrder.qr_code_url = qrAction.url;
+                        localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+                    }
+                }
+                // Force check status (webhook mungkin sudah datang dengan status pending)
+                if (currentOrder && currentOrder.order_id) {
+                    setTimeout(() => checkWebhookStatus(currentOrder.order_id), 1000);
+                }
+            },
+            onError: function(result) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Pembayaran Gagal',
+                    text: 'Silakan coba lagi',
+                });
+            },
+            onClose: function() {
+                // Popup ditutup, polling masih berjalan
+            }
+        });
+    }
 
 </script>
 @endsection

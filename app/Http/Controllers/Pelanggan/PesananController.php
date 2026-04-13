@@ -161,9 +161,8 @@ class PesananController extends Controller
                 'nama' => $request->nama,
                 'timestamp' => now(),
                 'total' => $total,
-                'metode_bayar' => null, // Akan diisi setelah callback Midtrans
-                'channel' => null, // Akan diisi setelah callback Midtrans
-                'status_bayar' => 'Pending', // Default status dari Midtrans
+                'metode_bayar' => 'midtrans', // Placeholder, akan diupdate webhook dengan payment_type
+                'status_bayar' => 'pending',   // Placeholder, akan diupdate webhook
                 'customer_email' => $request->email ?? $user->email,
             ]);
 
