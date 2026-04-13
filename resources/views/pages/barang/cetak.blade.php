@@ -74,6 +74,7 @@
             @endphp
             @if(isset($labels[$index]) && $labels[$index])
             <div class="label" style="width: {{ $labelWidth }}mm; height: {{ $labelHeight }}mm; left: {{ $left }}mm; top: {{ $top }}mm;">
+                <img src="data:image/png;base64,{{ $labels[$index]['barcode'] }}" style="max-width: 24mm; height: 6mm; margin-bottom: 1px;">
                 <div class="nama-barang">{{ $labels[$index]['nama_barang'] }}</div>
                 <div class="harga">{{ $labels[$index]['harga'] }}</div>
             </div>

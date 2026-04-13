@@ -66,8 +66,8 @@ function updateRow() {
     setTimeout(() => {
         if(currentRow) {
             currentRow.data([
-                $('#editId').val(), 
-                $('#editNama').val(), 
+                $('#editId').val(),
+                $('#editNama').val(),
                 $('#editHarga').val()
             ]).draw(false);
         }

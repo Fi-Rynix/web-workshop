@@ -33,7 +33,7 @@
                     @forelse ($baranglist as $barang)
                     <li style="margin-bottom: 0.75rem; color: #334155; padding-left: 1.5rem; position: relative;">
                         <span style="position: absolute; left: 0; color: #7c3aed; font-weight: bold;">•</span>
-                        <strong>{{ $barang->nama_barang }}</strong> 
+                        <strong>{{ $barang->nama_barang }}</strong>
                         <span style="color: #7c3aed; font-weight: 600;">Rp {{ number_format($barang->harga, 0, ',', '.') }}</span>
                     </li>
                     @empty
@@ -49,26 +49,16 @@
             <!-- Hidden barang IDs -->
             <input type="hidden" name="barang_ids" value="{{ implode(',', $barangIds) }}">
 
-            <div style="background: #f0f4ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
-                <p style="margin: 0; font-size: 0.95rem; color: #1e293b; line-height: 1.6;">
-                    <strong>📌 Info Pengisian Label:</strong><br>
-                    • Kertas Label: <strong>5 kolom × 8 baris</strong> (40 label per lembar)<br>
-                    • Pengisian: <strong>dari kiri ke kanan, dari bawah ke atas</strong><br>
-                    • Contoh: X=3, Y=2 → mulai dari kolom ke-3, baris ke-2<br>
-                    <span style="color: #64748b; margin-top: 0.5rem; display: block;">⚠️ Pastikan posisi sesuai dengan kertas label yang tersedia</span>
-                </p>
-            </div>
-
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
                 <div class="modal-form-group">
                     <label class="modal-label">Koordinat X (Kolom: 1-5)</label>
-                    <input type="number" 
-                           name="koordinat_x" 
-                           value="1"
-                           class="modal-input"
-                           min="1"
-                           max="5"
-                           required>
+                    <input type="number"
+                            name="koordinat_x"
+                            value="1"
+                            class="modal-input"
+                            min="1"
+                            max="5"
+                            required>
                     <small style="color: #94a3b8; display: block; margin-top: 0.5rem;">Dimulai dari kolom ke berapa?</small>
                 </div>
 

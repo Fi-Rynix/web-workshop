@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class BarangController extends Controller
 {
@@ -99,9 +100,15 @@ class BarangController extends Controller
         foreach ($barangList as $i => $barang) {
             $position = $startIndex + $i;
             if ($position < 40) {
+
+                $generator = new BarcodeGeneratorPNG();
+                $barcode = $generator->getBarcode($barang->idbarang, $generator::TYPE_CODE_128);
+                $barcodeBase64 = base64_encode($barcode);
+                
                 $labels[$position] = [
                     'harga' => 'Rp ' . number_format($barang->harga, 0, ',', '.'),
                     'nama_barang' => $barang->nama_barang,
+                    'barcode' => $barcodeBase64,
                 ];
             }
         }
