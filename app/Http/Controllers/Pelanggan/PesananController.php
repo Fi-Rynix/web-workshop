@@ -12,7 +12,6 @@ use App\Services\MidtransService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 
 class PesananController extends Controller
 {
@@ -125,13 +124,8 @@ class PesananController extends Controller
         try {
             DB::beginTransaction();
 
-            // Pastikan user guest sudah login
-            if (!Auth::check()) {
-                $user = $this->createGuestUser();
-                Auth::login($user);
-            }
-
-            $user = Auth::user();
+            // Buat guest user baru (hanya untuk DB, tidak login)
+            $user = $this->createGuestUser();
 
             // Update email jika diisi
             if ($request->email && empty($user->email)) {
@@ -207,7 +201,6 @@ class PesananController extends Controller
                 'pesanan_id' => $pesanan->idpesanan,
                 'order_id' => $orderId,
                 'snap_token' => $snapResponse['token'],
-                'qr_url' => $snapResponse['qr_code_url'],
                 'guest_user' => $user->nama,
             ]);
 
@@ -218,7 +211,6 @@ class PesananController extends Controller
                     'idpesanan' => $pesanan->idpesanan,
                     'order_id' => $orderId,
                     'snap_token' => $snapResponse['token'],
-                    'qr_code_url' => $snapResponse['qr_code_url'],
                     'total' => $total,
                     'client_key' => MidtransService::getClientKey(),
                     'snap_url' => MidtransService::getSnapUrl(),

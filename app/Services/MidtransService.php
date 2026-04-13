@@ -6,7 +6,6 @@ use App\Models\Pesanan;
 use Illuminate\Support\Facades\Log;
 use Midtrans\Config;
 use Midtrans\Snap;
-use Midtrans\Transaction;
 
 class MidtransService
 {
@@ -35,7 +34,7 @@ class MidtransService
      * @param Pesanan $pesanan
      * @param array $items Array of items (dari detail_pesanan)
      * @param array $customerData ['first_name', 'email', 'phone']
-     * @return array ['token' => string, 'qr_code_url' => string|null]
+     * @return array ['token' => string]
      * @throws \Exception
      */
     public function createSnapToken(Pesanan $pesanan, array $items, array $customerData): array
@@ -76,18 +75,13 @@ class MidtransService
 
             $snapToken = Snap::getSnapToken($params);
 
-            // Dapatkan QR Code URL untuk QRIS
-            $qrCodeUrl = $this->getQrCodeUrl($pesanan->order_id);
-
             Log::info('Snap Token Created', [
                 'order_id' => $pesanan->order_id,
                 'token' => $snapToken,
-                'qr_url' => $qrCodeUrl,
             ]);
 
             return [
                 'token' => $snapToken,
-                'qr_code_url' => $qrCodeUrl,
             ];
 
         } catch (\Exception $e) {
@@ -96,40 +90,6 @@ class MidtransService
                 'error' => $e->getMessage()
             ]);
             throw $e;
-        }
-    }
-
-    /**
-     * Get QR Code URL dari transaction status
-     *
-     * @param string $orderId
-     * @return string|null
-     */
-    public function getQrCodeUrl(string $orderId): ?string
-    {
-        try {
-            $status = Transaction::status($orderId);
-
-            // Cek actions array dari response Midtrans
-            if (isset($status->actions) && is_array($status->actions)) {
-                foreach ($status->actions as $action) {
-                    if ($action->name === 'generate-qr-code') {
-                        Log::info('QR Code URL found', [
-                            'order_id' => $orderId,
-                            'qr_url' => $action->url
-                        ]);
-                        return $action->url ?? null;
-                    }
-                }
-            }
-
-            return null;
-        } catch (\Exception $e) {
-            Log::error('Failed to get QR Code URL', [
-                'order_id' => $orderId,
-                'error' => $e->getMessage()
-            ]);
-            return null;
         }
     }
 
@@ -161,6 +121,7 @@ class MidtransService
 
             $orderId = $notificationData['order_id'] ?? null;
             $transactionStatus = $notificationData['transaction_status'] ?? null;
+            $transactionType = $notificationData['transaction_type'] ?? null;
             $paymentType = $notificationData['payment_type'] ?? null;
             $fraudStatus = $notificationData['fraud_status'] ?? null;
 
@@ -183,13 +144,15 @@ class MidtransService
             // Update pesanan
             $pesanan->update([
                 'status_bayar' => $statusBayar,
-                'metode_bayar' => $paymentType,
+                'metode_bayar' => $transactionType,
+                'channel' => $paymentType,
             ]);
 
             Log::info('Pesanan updated from notification', [
                 'order_id' => $orderId,
                 'status_bayar' => $statusBayar,
-                'metode_bayar' => $paymentType,
+                'metode_bayar' => $transactionType,
+                'channel' => $paymentType,
             ]);
 
             return true;

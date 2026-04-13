@@ -165,82 +165,6 @@
                 <button id="btnBayar" class="btn btn-lg btn-block btn-primary mt-3" style="display: none;">
                     <i class="mdi mdi-credit-card me-2"></i>Bayar Sekarang
                 </button>
-
-                <!-- DEBUG: Tombol Test Section -->
-                <button type="button" class="btn btn-sm btn-warning mt-2" onclick="testShowSection()">
-                    <i class="mdi mdi-bug me-1"></i>DEBUG: Test Section
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Section Detail Pembayaran (Muncul setelah popup ditutup) -->
-<div id="paymentDetailSection" class="row mt-4" style="display: none; border: 5px solid red; min-height: 100px;">
-    <div class="col-12">
-        <div class="card border-warning">
-            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="mdi mdi-clock-alert me-2"></i>Menunggu Pembayaran</h5>
-                <span id="paymentStatusBadge" class="badge bg-warning text-dark">PENDING</span>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 text-center">
-                        <div id="qrCodeContainer" style="display: none;">
-                            <img id="qrCodeImage" src="" alt="QR Code" style="width: 200px; height: 200px; border: 1px solid #ddd; border-radius: 10px;">
-                            <p class="mt-2 text-muted small">Scan dengan aplikasi QRIS</p>
-                        </div>
-                        <div id="noQrCode" class="alert alert-light border">
-                            <i class="mdi mdi-qrcode-scan" style="font-size: 48px; color: #ccc;"></i>
-                            <p class="mt-2 text-muted">QR Code akan muncul setelah memilih metode pembayaran QRIS di popup Midtrans</p>
-                            <button id="btnFetchQr" class="btn btn-sm btn-outline-primary mt-2" onclick="fetchQrCode()">
-                                <i class="mdi mdi-refresh me-1"></i>Ambil QR Code
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="mb-3">
-                            <label class="form-label text-muted small">Order ID</label>
-                            <div class="input-group">
-                                <input type="text" id="detailOrderId" class="form-control" readonly>
-                                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('detailOrderId')">
-                                    <i class="mdi mdi-content-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted small">Total Pembayaran</label>
-                            <input type="text" id="detailTotal" class="form-control" readonly>
-                        </div>
-                        <div class="mb-3" id="qrUrlContainer" style="display: none;">
-                            <label class="form-label text-muted small">QR Code URL</label>
-                            <div class="input-group">
-                                <input type="text" id="detailQrUrl" class="form-control" readonly>
-                                <button class="btn btn-outline-primary" type="button" onclick="copyToClipboard('detailQrUrl')">
-                                    <i class="mdi mdi-content-copy me-1"></i>Copy
-                                </button>
-                            </div>
-                        </div>
-                        <div class="alert alert-info">
-                            <i class="mdi mdi-information me-2"></i>
-                            <strong>Cara Bayar:</strong>
-                            <ol class="mb-0 mt-2">
-                                <li>Buka aplikasi e-wallet atau mobile banking Anda</li>
-                                <li>Pilih menu QRIS atau Scan QR</li>
-                                <li>Scan QR Code di atas atau klik "Copy" URL QR Code</li>
-                                <li>Konfirmasi pembayaran di aplikasi</li>
-                            </ol>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <small class="text-muted">
-                                <i class="mdi mdi-refresh me-1"></i>Status diperbarui otomatis
-                            </small>
-                            <button id="btnCheckStatus" class="btn btn-sm btn-primary" onclick="manualCheckStatus()">
-                                <i class="mdi mdi-refresh me-1"></i>Cek Status
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -291,25 +215,32 @@
     let selectedMenu = null;
     let menus = [];
     let currentOrder = null;
-    let statusCheckInterval = null;
 
-    // Restore currentOrder dari localStorage (kalau ada)
+    /**
+     * ============================================================
+     * STATE MANAGEMENT
+     * ============================================================
+     */
+
+    // Restore currentOrder dari localStorage (kalau ada order yang belum selesai)
     const savedOrder = localStorage.getItem('currentOrder');
     if (savedOrder) {
         try {
             currentOrder = JSON.parse(savedOrder);
-            console.log('Restored currentOrder from localStorage:', currentOrder);
-            // Langsung tampilkan section kalau ada order yang belum selesai
             showPaymentDetailSection();
             startStatusPolling();
         } catch(e) {
-            console.log('Failed to restore currentOrder:', e);
             localStorage.removeItem('currentOrder');
         }
     }
 
-    // API Base URL
     const API_URL = '{{ url('/') }}';
+
+    /**
+     * ============================================================
+     * MENU & KERANJANG
+     * ============================================================
+     */
 
     // Event Listener: Select Vendor
     document.getElementById('selectVendor').addEventListener('change', function() {
@@ -488,34 +419,21 @@
         renderCart();
     }
 
-    // Format Rupiah
+    /**
+     * ============================================================
+     * UTILITY FUNCTIONS
+     * ============================================================
+     */
+
     function formatRupiah(angka) {
         return new Intl.NumberFormat('id-ID').format(angka);
     }
 
-    // DEBUG: Test function untuk manual show section
-    function testShowSection() {
-        console.log('=== TEST SHOW SECTION ===');
-        console.log('currentOrder:', currentOrder);
-
-        // Mock data kalau currentOrder null
-        if (!currentOrder) {
-            console.log('Mocking currentOrder...');
-            currentOrder = {
-                idpesanan: 999,
-                order_id: 'ORDER-TEST-123',
-                snap_token: 'test-token',
-                qr_code_url: null,
-                total: 50000
-            };
-        }
-
-        showPaymentDetailSection();
-        console.log('Section should be visible now');
-    }
-
-
-    // Bayar Button Click
+    /**
+     * ============================================================
+     * PEMBAYARAN - MIDTRANS INTEGRATION
+     * ============================================================
+     */
     document.getElementById('btnBayar').addEventListener('click', function() {
         const nama = document.getElementById('inputNama').value.trim();
         const email = document.getElementById('inputEmail').value.trim();
@@ -573,23 +491,21 @@
             Swal.close();
 
             if (data.status) {
-                // Simpan order data
+                // Simpan order data (qr_code_url akan diisi dari onPending callback)
                 currentOrder = {
                     idpesanan: data.data.idpesanan,
                     order_id: data.data.order_id,
                     snap_token: data.data.snap_token,
-                    qr_code_url: data.data.qr_code_url,
+                    qr_code_url: null,
                     total: data.data.total
                 };
 
-                // SIMPAN currentOrder ke localStorage untuk backup
+                // Simpan order ke localStorage untuk persistency
                 localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
-                console.log('currentOrder saved to localStorage:', currentOrder);
 
                 // Open Midtrans Snap
                 snap.pay(data.data.snap_token, {
                     onSuccess: function(result) {
-                        clearInterval(statusCheckInterval);
                         Swal.fire({
                             icon: 'success',
                             title: 'Pembayaran Berhasil!',
@@ -604,7 +520,7 @@
                         });
                     },
                     onPending: function(result) {
-                        // Update QR Code URL jika ada dari result
+                        // QR Code URL bisa disimpan jika perlu untuk alur baru
                         if (result && result.actions) {
                             const qrAction = result.actions.find(a => a.name === 'generate-qr-code');
                             if (qrAction && qrAction.url) {
@@ -612,12 +528,8 @@
                                 localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
                             }
                         }
-                        // Tampilkan section saat pending
-                        showPaymentDetailSection();
-                        startStatusPolling();
                     },
                     onError: function(result) {
-                        clearInterval(statusCheckInterval);
                         Swal.fire({
                             icon: 'error',
                             title: 'Pembayaran Gagal',
@@ -625,21 +537,9 @@
                         });
                     },
                     onClose: function() {
-                        // Tampilkan section ketika popup ditutup
-                        showPaymentDetailSection();
-                        startStatusPolling();
+                        // Popup ditutup - biarkan user melanjutkan alur baru
                     }
                 });
-
-                // Fallback: Auto show section setelah 5 detik (kalau onClose gagal)
-                setTimeout(() => {
-                    const section = document.getElementById('paymentDetailSection');
-                    if (section && section.style.display === 'none') {
-                        console.log('Fallback: Showing section after timeout');
-                        showPaymentDetailSection();
-                        startStatusPolling();
-                    }
-                }, 5000);
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -659,224 +559,5 @@
         });
     });
 
-    // Tampilkan section detail pembayaran
-    function showPaymentDetailSection() {
-        console.log('showPaymentDetailSection called, currentOrder:', currentOrder);
-
-        // Isi data kalau ada
-        if (currentOrder) {
-            document.getElementById('detailOrderId').value = currentOrder.order_id || '-';
-            document.getElementById('detailTotal').value = 'Rp ' + formatRupiah(currentOrder.total || 0);
-
-            // Tampilkan QR Code jika ada
-            if (currentOrder.qr_code_url) {
-                document.getElementById('qrCodeImage').src = currentOrder.qr_code_url;
-                document.getElementById('qrCodeContainer').style.display = 'block';
-                document.getElementById('noQrCode').style.display = 'none';
-                document.getElementById('detailQrUrl').value = currentOrder.qr_code_url;
-                document.getElementById('qrUrlContainer').style.display = 'block';
-            } else {
-                document.getElementById('qrCodeContainer').style.display = 'none';
-                document.getElementById('noQrCode').style.display = 'block';
-                document.getElementById('qrUrlContainer').style.display = 'none';
-            }
-        } else {
-            // Kalau currentOrder null, tampilkan pesan debug
-            document.getElementById('detailOrderId').value = 'ERROR: Order tidak tercreate';
-            document.getElementById('detailTotal').value = 'Rp 0';
-            document.getElementById('qrCodeContainer').style.display = 'none';
-            document.getElementById('noQrCode').style.display = 'block';
-            document.getElementById('qrUrlContainer').style.display = 'none';
-        }
-
-        // Show section SELALU
-        const section = document.getElementById('paymentDetailSection');
-        section.style.display = 'block';
-        section.style.visibility = 'visible';
-        section.style.opacity = '1';
-        console.log('Section display set to block, visibility:', section.style.visibility);
-
-        // Scroll ke section
-        setTimeout(() => {
-            document.getElementById('paymentDetailSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-    }
-
-    // Copy to clipboard
-    function copyToClipboard(elementId) {
-        const element = document.getElementById(elementId);
-        element.select();
-        element.setSelectionRange(0, 99999); // Mobile support
-        navigator.clipboard.writeText(element.value).then(() => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Copied!',
-                text: 'Teks berhasil disalin',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        });
-    }
-
-    // Polling cek status pembayaran
-    function startStatusPolling() {
-        // Cek status setiap 10 detik
-        statusCheckInterval = setInterval(() => {
-            checkPaymentStatus();
-        }, 10000);
-
-        // Cek pertama kali
-        checkPaymentStatus();
-    }
-
-    // Cek status pembayaran via API
-    function checkPaymentStatus() {
-        if (!currentOrder) return;
-
-        fetch(`{{ url('pelanggan/transaksi') }}/${currentOrder.idpesanan}/check-status`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status) {
-                    const status = data.data.pesanan.status_bayar;
-                    updatePaymentStatusUI(status);
-
-                    // Jika sudah paid atau expired/cancel, hentikan polling
-                    if (['settlement', 'capture', 'expire', 'cancel', 'deny'].includes(status)) {
-                        clearInterval(statusCheckInterval);
-                        localStorage.removeItem('currentOrder'); // Clear saved order
-
-                        if (status === 'settlement' || status === 'capture') {
-                            // Pembayaran berhasil
-                            setTimeout(() => {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Pembayaran Berhasil!',
-                                    text: 'Pesanan Anda telah dibayar',
-                                    showConfirmButton: true,
-                                }).then(() => {
-                                    @if(Auth::check())
-                                        window.location.href = '{{ route('pelanggan.transaksi.index') }}';
-                                    @else
-                                        window.location.href = '{{ route('login') }}';
-                                    @endif
-                                });
-                            }, 1000);
-                        }
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error checking status:', error);
-            });
-    }
-
-    // Update UI status
-    function updatePaymentStatusUI(status) {
-        const badge = document.getElementById('paymentStatusBadge');
-        const card = document.querySelector('#paymentDetailSection .card');
-        const header = document.querySelector('#paymentDetailSection .card-header');
-
-        badge.textContent = status.toUpperCase();
-
-        // Update style berdasarkan status
-        switch (status) {
-            case 'settlement':
-            case 'capture':
-                badge.className = 'badge bg-success';
-                card.classList.remove('border-warning');
-                card.classList.add('border-success');
-                header.className = 'card-header bg-success text-white d-flex justify-content-between align-items-center';
-                header.innerHTML = '<h5 class="mb-0"><i class="mdi mdi-check-circle me-2"></i>Pembayaran Berhasil</h5>' + header.innerHTML;
-                break;
-            case 'pending':
-                badge.className = 'badge bg-warning text-dark';
-                break;
-            case 'expire':
-            case 'cancel':
-            case 'deny':
-                badge.className = 'badge bg-danger';
-                card.classList.remove('border-warning');
-                card.classList.add('border-danger');
-                header.className = 'card-header bg-danger text-white d-flex justify-content-between align-items-center';
-                header.querySelector('h5').innerHTML = '<i class="mdi mdi-alert-circle me-2"></i>Pembayaran Gagal';
-                break;
-        }
-    }
-
-    // Manual check status
-    function manualCheckStatus() {
-        const btn = document.getElementById('btnCheckStatus');
-        btn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i>Memeriksa...';
-        btn.disabled = true;
-
-        checkPaymentStatus();
-
-        setTimeout(() => {
-            btn.innerHTML = '<i class="mdi mdi-refresh me-1"></i>Cek Status';
-            btn.disabled = false;
-        }, 2000);
-    }
-
-    // Fetch QR Code manually (kalau onPending gagal)
-    function fetchQrCode() {
-        if (!currentOrder) return;
-
-        const btn = document.getElementById('btnFetchQr');
-        btn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i>Mengambil...';
-        btn.disabled = true;
-
-        fetch(`{{ url('pelanggan/transaksi') }}/${currentOrder.idpesanan}/check-status`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status && data.midtrans_status && data.midtrans_status.actions) {
-                    const actions = data.midtrans_status.actions;
-                    const qrAction = actions.find(a => a.name === 'generate-qr-code');
-
-                    if (qrAction && qrAction.url) {
-                        currentOrder.qr_code_url = qrAction.url;
-                        localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
-
-                        // Update UI
-                        document.getElementById('qrCodeImage').src = qrAction.url;
-                        document.getElementById('qrCodeContainer').style.display = 'block';
-                        document.getElementById('noQrCode').style.display = 'none';
-                        document.getElementById('detailQrUrl').value = qrAction.url;
-                        document.getElementById('qrUrlContainer').style.display = 'block';
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'QR Code Ditemukan!',
-                            text: 'QR Code berhasil diambil',
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'QR Code Belum Tersedia',
-                            text: 'Silakan pilih metode pembayaran QRIS di popup Midtrans terlebih dahulu',
-                        });
-                    }
-                } else {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Belum Tersedia',
-                        text: 'Transaksi masih pending atau belum memilih metode pembayaran',
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching QR:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Gagal mengambil QR Code',
-                });
-            })
-            .finally(() => {
-                btn.innerHTML = '<i class="mdi mdi-refresh me-1"></i>Ambil QR Code';
-                btn.disabled = false;
-            });
-    }
 </script>
 @endsection

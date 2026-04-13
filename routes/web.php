@@ -105,13 +105,68 @@ Route::middleware(['auth', 'check_verif', 'check.role:3'])->group(function () {
 // Webhook untuk Midtrans notification (public)
 Route::post('midtrans/notification', [App\Http\Controllers\MidtransController::class, 'notification'])->name('midtrans.notification');
 
-// GET route untuk testing webhook endpoint (bukan untuk production)
-Route::get('midtrans/notification', function () {
+
+// DEBUG: Route untuk melihat payload lengkap dari Midtrans
+Route::post('midtrans/debug', function (\Illuminate\Http\Request $request) {
+    // Buat nama file dengan timestamp
+    $filename = 'midtrans_debug_' . date('Ymd_His') . '_' . uniqid() . '.json';
+    $filepath = storage_path('logs/' . $filename);
+
+    // Data yang akan disimpan
+    $data = [
+        'received_at' => now()->toDateTimeString(),
+        'ip_address' => $request->ip(),
+        'user_agent' => $request->userAgent(),
+        'headers' => $request->headers->all(),
+        'body' => $request->all(),
+    ];
+
+    // Simpan ke file
+    file_put_contents($filepath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+    // Return response dengan data yang diterima
     return response()->json([
         'status' => true,
-        'message' => 'Webhook endpoint aktif. Gunakan POST method untuk menerima notifikasi dari Midtrans.',
-        'endpoint' => url('/midtrans/notification'),
-        'method' => 'POST',
-        'note' => 'Endpoint ini hanya menerima POST request dari Midtrans.'
+        'message' => 'Payload logged successfully',
+        'saved_to' => $filepath,
+        'received_payload' => $request->all(),
+        'all_headers' => $request->headers->all(),
     ]);
-})->name('midtrans.notification.test');
+})->name('midtrans.debug');
+
+// DEBUG: Route untuk melihat semua file debug yang tersimpan
+Route::get('midtrans/debug/files', function () {
+    $files = glob(storage_path('logs/midtrans_debug_*.json'));
+    rsort($files);
+
+    $list = array_map(function ($file) {
+        return [
+            'filename' => basename($file),
+            'size' => filesize($file) . ' bytes',
+            'modified' => date('Y-m-d H:i:s', filemtime($file)),
+            'view_url' => url('midtrans/debug/view/' . basename($file)),
+        ];
+    }, array_slice($files, 0, 20));
+
+    return response()->json([
+        'total_files' => count($files),
+        'files' => $list,
+    ]);
+})->name('midtrans.debug.files');
+
+// DEBUG: Route untuk melihat isi file debug tertentu
+Route::get('midtrans/debug/view/{filename}', function ($filename) {
+    // Security: hanya izinkan filename dengan pattern yang benar
+    if (!preg_match('/^midtrans_debug_\d{8}_\d{6}_[a-f0-9]+\.json$/', $filename)) {
+        return response()->json(['error' => 'Invalid filename'], 400);
+    }
+
+    $filepath = storage_path('logs/' . $filename);
+
+    if (!file_exists($filepath)) {
+        return response()->json(['error' => 'File not found'], 404);
+    }
+
+    $content = file_get_contents($filepath);
+    return response()->json(json_decode($content, true));
+})->name('midtrans.debug.view');

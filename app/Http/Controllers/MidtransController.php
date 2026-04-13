@@ -34,6 +34,7 @@ class MidtransController extends Controller
 
             $orderId = $notificationData['order_id'];
             $transactionStatus = $notificationData['transaction_status'];
+            $transactionType = $notificationData['transaction_type'] ?? null;
             $paymentType = $notificationData['payment_type'] ?? null;
             $channel = $notificationData['payment_channel'] ?? null;
 
@@ -51,13 +52,13 @@ class MidtransController extends Controller
             ];
 
             // Update metode bayar jika belum ada
-            if ($paymentType && empty($pesanan->metode_bayar)) {
-                $updateData['metode_bayar'] = $paymentType;
+            if ($transactionType && empty($pesanan->metode_bayar)) {
+                $updateData['metode_bayar'] = $transactionType; // Simpan transaction_type sebagai metode_bayar
             }
 
             // Update channel jika ada
-            if ($channel) {
-                $updateData['channel'] = $channel;
+            if ($paymentType && empty($pesanan->channel)) {
+                $updateData['channel'] = $paymentType;
             }
 
             // Update total jika berbeda (dari amount Midtrans)
