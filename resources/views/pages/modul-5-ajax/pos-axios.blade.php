@@ -2,9 +2,9 @@
 
 @section('title', 'Modul 5 - POS Axios')
 
-@push('style-page')
+@section('extra-css')
 <link rel="stylesheet" href="{{ asset('css/pages/modul-5-ajax/pos-axios.css') }}">
-@endpush
+@endsection
 
 @section('content')
 <div class="row">

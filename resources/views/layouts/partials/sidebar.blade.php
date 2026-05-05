@@ -92,6 +92,28 @@
         </div>
       </li>
 
+      {{-- Menu Customer (Studi Kasus 3 - Akses Kamera) --}}
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#customerMenu" aria-expanded="false" aria-controls="customerMenu">
+          <span class="menu-title">Customer</span>
+          <i class="menu-arrow"></i>
+          <i class="mdi mdi-account-multiple menu-icon"></i>
+        </a>
+        <div class="collapse" id="customerMenu">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('customer.index') }}">Data Customer</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('customer.create1') }}">Tambah Customer 1 (BLOB)</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('customer.create2') }}">Tambah Customer 2 (File)</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
     {{-- Menu Vendor (idrole = 2) --}}
     @elseif($userRole == 2)
       <li class="nav-item">

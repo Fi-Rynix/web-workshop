@@ -22,12 +22,8 @@ class PesananController extends Controller
         $this->midtransService = new MidtransService();
     }
 
-    /**
-     * Buat guest user baru (hanya untuk simpan ke DB, tidak login)
-     */
     protected function createGuestUser()
     {
-        // Buat user guest baru
         $lastGuest = User::where('nama', 'like', 'Guest_%')
             ->orderBy('iduser', 'desc')
             ->first();
@@ -46,8 +42,8 @@ class PesananController extends Controller
             'nama' => $guestName,
             'email' => null,
             'password' => bcrypt(uniqid()),
-            'idrole' => 3, // Pelanggan
-            'status_verif' => 1, // Langsung verifikasi
+            'idrole' => 3,
+            'status_verif' => 1,
             'otp' => null,
             'otp_expire_at' => null,
         ]);
@@ -55,9 +51,7 @@ class PesananController extends Controller
         return $user;
     }
 
-    /**
-     * Tampilkan history pesanan pelanggan (untuk user yang login)
-     */
+
     public function index()
     {
         $pesanans = Pesanan::where('iduser', Auth::id())
@@ -68,9 +62,7 @@ class PesananController extends Controller
         return view('pages.pelanggan.index-transaksi', compact('pesanans'));
     }
 
-    /**
-     * Form buat pesanan baru - Public (tanpa login, tanpa session)
-     */
+
     public function createPublic()
     {
         $vendors = Vendor::all();
@@ -78,18 +70,14 @@ class PesananController extends Controller
         return view('pages.pelanggan.create-pesanan', compact('vendors'));
     }
 
-    /**
-     * API: Get all vendors
-     */
+
     public function getVendors()
     {
         $vendors = Vendor::all();
         return response()->json($vendors);
     }
 
-    /**
-     * API: Get menu by vendor
-     */
+
     public function getMenuByVendor()
     {
         $idvendor = request('idvendor');
@@ -105,9 +93,7 @@ class PesananController extends Controller
         return response()->json($menus);
     }
 
-    /**
-     * Simpan pesanan dari guest user
-     */
+
     public function storePublic()
     {
         $request = request();
@@ -124,18 +110,14 @@ class PesananController extends Controller
         try {
             DB::beginTransaction();
 
-            // Buat guest user baru (hanya untuk DB, tidak login)
             $user = $this->createGuestUser();
 
-            // Update email jika diisi
             if ($request->email && empty($user->email)) {
                 $user->update(['email' => $request->email]);
             }
 
-            // Generate unique order_id untuk Midtrans
             $orderId = MidtransService::generateOrderId();
 
-            // Hitung total
             $total = 0;
             $items = [];
 
@@ -154,19 +136,17 @@ class PesananController extends Controller
                 ];
             }
 
-            // Buat pesanan header
             $pesanan = Pesanan::create([
                 'iduser' => $user->iduser,
                 'order_id' => $orderId,
                 'nama' => $request->nama,
                 'timestamp' => now(),
                 'total' => $total,
-                'metode_bayar' => 'midtrans', // Placeholder, akan diupdate webhook dengan payment_type
-                'status_bayar' => 'pending',   // Placeholder, akan diupdate webhook
+                'metode_bayar' => 'midtrans',
+                'status_bayar' => 'pending',
                 'customer_email' => $request->email ?? $user->email,
             ]);
 
-            // Buat detail pesanan
             foreach ($items as $item) {
                 DetailPesanan::create([
                     'idpesanan' => $pesanan->idpesanan,
@@ -181,7 +161,6 @@ class PesananController extends Controller
 
             DB::commit();
 
-            // Generate Snap Token
             $customerDetails = [
                 'first_name' => $request->nama,
             ];
@@ -231,9 +210,7 @@ class PesananController extends Controller
         }
     }
 
-    /**
-     * Detail pesanan
-     */
+
     public function show($id)
     {
         $pesanan = Pesanan::where('idpesanan', $id)
@@ -241,22 +218,26 @@ class PesananController extends Controller
             ->with('detailPesanan.menu', 'user')
             ->firstOrFail();
 
-        return view('pages.pelanggan.detail-transaksi', compact('pesanan'));
+        $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+            new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200, 10),
+            new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+        );
+        $writer = new \BaconQrCode\Writer($renderer);
+        $qrCodeSvg = $writer->writeString((string) $pesanan->idpesanan);
+        $qrCodeBase64 = base64_encode($qrCodeSvg);
+
+        return view('pages.pelanggan.detail-transaksi', compact('pesanan', 'qrCodeBase64'));
     }
 
-    /**
-     * Cek status pembayaran (AJAX)
-     */
+
     public function checkStatus($id)
     {
         $pesanan = Pesanan::where('idpesanan', $id)
             ->firstOrFail();
 
-        // Cek status dari Midtrans API
         $status = $this->midtransService->checkTransactionStatus($pesanan->order_id);
 
         if ($status) {
-            // Update local status dengan string dari Midtrans
             $transactionStatus = $status['transaction_status'] ?? 'pending';
             $pesanan->update([
                 'status_bayar' => $transactionStatus,

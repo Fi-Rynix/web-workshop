@@ -1,217 +1,270 @@
-document.addEventListener('DOMContentLoaded', function() {
-    loadProvinsi();
-    
-    document.getElementById('selectProvinsi').addEventListener('change', function() {
-        const provinsiId = this.value;
+function initWilayahDropdown(config) {
+    const cfg = {
+        selectIds: {
+            provinsi: 'selectProvinsi',
+            kota: 'selectKota',
+            kecamatan: 'selectKecamatan',
+            kelurahan: 'selectKelurahan'
+        },
+        onChange: null,
+        ...config
+    };
+
+    const selectProvinsi = document.getElementById(cfg.selectIds.provinsi);
+    const selectKota = document.getElementById(cfg.selectIds.kota);
+    const selectKecamatan = document.getElementById(cfg.selectIds.kecamatan);
+    const selectKelurahan = document.getElementById(cfg.selectIds.kelurahan);
+
+    let currentData = {};
+
+    if (!selectProvinsi) {
+        console.error('initWilayahDropdown: Element provinsi tidak ditemukan');
+        return null;
+    }
+
+    selectProvinsi.addEventListener('change', function() {
+        const provinsiId = this.options[this.selectedIndex].getAttribute('data-id') || this.value;
+        const provinsiNama = this.options[this.selectedIndex].text;
+
         resetKota();
         resetKecamatan();
         resetKelurahan();
-        
+
+        currentData = {
+            provinsiId: provinsiId,
+            provinsiNama: provinsiId ? provinsiNama : ''
+        };
+
         if(provinsiId) {
             loadKota(provinsiId);
         }
-        updateWilayahTerpilih();
+
+        triggerOnChange();
     });
-    
-    document.getElementById('selectKota').addEventListener('change', function() {
-        const kotaId = this.value;
+
+    selectKota.addEventListener('change', function() {
+        const kotaId = this.options[this.selectedIndex].getAttribute('data-id') || this.value;
+        const kotaNama = this.options[this.selectedIndex].text;
+
         resetKecamatan();
         resetKelurahan();
-        
+
+        currentData.kotaId = kotaId;
+        currentData.kotaNama = kotaId ? kotaNama : '';
+
         if(kotaId) {
             loadKecamatan(kotaId);
         }
-        updateWilayahTerpilih();
+
+        triggerOnChange();
     });
-    
-    document.getElementById('selectKecamatan').addEventListener('change', function() {
-        const kecamatanId = this.value;
+
+    selectKecamatan.addEventListener('change', function() {
+        const kecamatanId = this.options[this.selectedIndex].getAttribute('data-id') || this.value;
+        const kecamatanNama = this.options[this.selectedIndex].text;
+
         resetKelurahan();
-        
+
+        currentData.kecamatanId = kecamatanId;
+        currentData.kecamatanNama = kecamatanId ? kecamatanNama : '';
+
         if(kecamatanId) {
             loadKelurahan(kecamatanId);
         }
-        updateWilayahTerpilih();
+
+        triggerOnChange();
     });
-    
-    document.getElementById('selectKelurahan').addEventListener('change', function() {
-        updateWilayahTerpilih();
+
+    selectKelurahan.addEventListener('change', function() {
+        const kelurahanId = this.options[this.selectedIndex].getAttribute('data-id') || this.value;
+        const kelurahanNama = this.options[this.selectedIndex].text;
+
+        currentData.kelurahanId = kelurahanId;
+        currentData.kelurahanNama = kelurahanId ? kelurahanNama : '';
+
+        triggerOnChange();
     });
-});
 
-
-function loadProvinsi() {
-    axios.get('/api/get-provinsi')
-        .then(function(response) {
-            const selectProvinsi = document.getElementById('selectProvinsi');
-            selectProvinsi.innerHTML = '<option value="">Pilih Provinsi</option>';
-            
-            if (response.data.success && response.data.data) {
-                response.data.data.forEach(function(provinsi) {
-                    const option = document.createElement('option');
-                    option.value = provinsi.idprovinsi;
-                    option.textContent = provinsi.nama_provinsi;
-                    selectProvinsi.appendChild(option);
-                });
-            } else {
-                alert('Data provinsi tidak valid');
-            }
-        })
-        .catch(function(error) {
-            console.error('Error loading provinsi:', error);
-            alert('Gagal memuat data provinsi');
-        });
-}
-
-
-function loadKota(provinsiId) {
-    if(!provinsiId) {
-        resetKota();
-        return;
+    function triggerOnChange() {
+        if (typeof cfg.onChange === 'function') {
+            cfg.onChange({ ...currentData });
+        }
     }
-    
-    axios.get('/api/get-kota', {
-        params: { provinsi_id: provinsiId }
-    })
-        .then(function(response) {
-            const selectKota = document.getElementById('selectKota');
-            selectKota.innerHTML = '<option value="">Pilih Kota</option>';
-            
-            if(response.data.success && response.data.data) {
-                response.data.data.forEach(function(kota) {
-                    const option = document.createElement('option');
-                    option.value = kota.idkota;
-                    option.textContent = kota.nama_kota;
-                    selectKota.appendChild(option);
-                });
-                selectKota.disabled = false;
-            } else {
-                selectKota.disabled = true;
-            }
-        })
-        .catch(function(error) {
-            console.error('Error loading kota:', error);
+
+    function loadProvinsi() {
+        axios.get('/api/get-provinsi')
+            .then(function(response) {
+                selectProvinsi.innerHTML = '<option value="">Pilih Provinsi</option>';
+
+                if (response.data.success && response.data.data) {
+                    response.data.data.forEach(function(provinsi) {
+                        const option = document.createElement('option');
+                        option.value = provinsi.nama_provinsi;
+                        option.setAttribute('data-id', provinsi.idprovinsi);
+                        option.textContent = provinsi.nama_provinsi;
+                        selectProvinsi.appendChild(option);
+                    });
+                }
+            })
+            .catch(function(error) {
+                console.error('Error loading provinsi:', error);
+            });
+    }
+
+    function loadKota(provinsiId) {
+        if(!provinsiId) {
             resetKota();
-        });
-}
+            return;
+        }
 
-
-function loadKecamatan(kotaId) {
-    if(!kotaId) {
-        resetKecamatan();
-        return;
-    }
-    
-    axios.get('/api/get-kecamatan', {
-        params: { kota_id: kotaId }
-    })
-        .then(function(response) {
-            const selectKecamatan = document.getElementById('selectKecamatan');
-            selectKecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
-            
-            if(response.data.success && response.data.data) {
-                response.data.data.forEach(function(kecamatan) {
-                    const option = document.createElement('option');
-                    option.value = kecamatan.idkecamatan;
-                    option.textContent = kecamatan.nama_kecamatan;
-                    selectKecamatan.appendChild(option);
-                });
-                selectKecamatan.disabled = false;
-            } else {
-                selectKecamatan.disabled = true;
-            }
+        axios.get('/api/get-kota', {
+            params: { provinsi_id: provinsiId }
         })
-        .catch(function(error) {
-            console.error('Error loading kecamatan:', error);
+            .then(function(response) {
+                selectKota.innerHTML = '<option value="">Pilih Kota</option>';
+
+                if(response.data.success && response.data.data) {
+                    response.data.data.forEach(function(kota) {
+                        const option = document.createElement('option');
+                        option.value = kota.nama_kota;
+                        option.setAttribute('data-id', kota.idkota);
+                        option.textContent = kota.nama_kota;
+                        selectKota.appendChild(option);
+                    });
+                    selectKota.disabled = false;
+                } else {
+                    selectKota.disabled = true;
+                }
+            })
+            .catch(function(error) {
+                console.error('Error loading kota:', error);
+                resetKota();
+            });
+    }
+
+    function loadKecamatan(kotaId) {
+        if(!kotaId) {
             resetKecamatan();
-        });
-}
+            return;
+        }
 
-
-function loadKelurahan(kecamatanId) {
-    if(!kecamatanId) {
-        resetKelurahan();
-        return;
-    }
-    
-    axios.get('/api/get-kelurahan', {
-        params: { kecamatan_id: kecamatanId }
-    })
-        .then(function(response) {
-            const selectKelurahan = document.getElementById('selectKelurahan');
-            selectKelurahan.innerHTML = '<option value="">Pilih Kelurahan</option>';
-            
-            if(response.data.success && response.data.data) {
-                response.data.data.forEach(function(kelurahan) {
-                    const option = document.createElement('option');
-                    option.value = kelurahan.idkelurahan;
-                    option.textContent = kelurahan.nama_kelurahan;
-                    selectKelurahan.appendChild(option);
-                });
-                selectKelurahan.disabled = false;
-            } else {
-                selectKelurahan.disabled = true;
-            }
+        axios.get('/api/get-kecamatan', {
+            params: { kota_id: kotaId }
         })
-        .catch(function(error) {
-            console.error('Error loading kelurahan:', error);
+            .then(function(response) {
+                selectKecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
+
+                if(response.data.success && response.data.data) {
+                    response.data.data.forEach(function(kecamatan) {
+                        const option = document.createElement('option');
+                        option.value = kecamatan.nama_kecamatan;
+                        option.setAttribute('data-id', kecamatan.idkecamatan);
+                        option.textContent = kecamatan.nama_kecamatan;
+                        selectKecamatan.appendChild(option);
+                    });
+                    selectKecamatan.disabled = false;
+                } else {
+                    selectKecamatan.disabled = true;
+                }
+            })
+            .catch(function(error) {
+                console.error('Error loading kecamatan:', error);
+                resetKecamatan();
+            });
+    }
+
+    function loadKelurahan(kecamatanId) {
+        if(!kecamatanId) {
             resetKelurahan();
-        });
-}
+            return;
+        }
 
+        axios.get('/api/get-kelurahan', {
+            params: { kecamatan_id: kecamatanId }
+        })
+            .then(function(response) {
+                selectKelurahan.innerHTML = '<option value="">Pilih Kelurahan</option>';
 
-function updateWilayahTerpilih() {
-    const selectProvinsi = document.getElementById('selectProvinsi');
-    const selectKota = document.getElementById('selectKota');
-    const selectKecamatan = document.getElementById('selectKecamatan');
-    const selectKelurahan = document.getElementById('selectKelurahan');
-    
-    const provinsi = selectProvinsi.options[selectProvinsi.selectedIndex].text;
-    const kota = selectKota.options[selectKota.selectedIndex].text;
-    const kecamatan = selectKecamatan.options[selectKecamatan.selectedIndex].text;
-    const kelurahan = selectKelurahan.options[selectKelurahan.selectedIndex].text;
-    
-    let result = '';
-    
-    if(provinsi !== 'Pilih Provinsi') {
-        result = provinsi;
+                if(response.data.success && response.data.data) {
+                    response.data.data.forEach(function(kelurahan) {
+                        const option = document.createElement('option');
+                        option.value = kelurahan.nama_kelurahan;
+                        option.setAttribute('data-id', kelurahan.idkelurahan);
+                        option.textContent = kelurahan.nama_kelurahan;
+                        selectKelurahan.appendChild(option);
+                    });
+                    selectKelurahan.disabled = false;
+                } else {
+                    selectKelurahan.disabled = true;
+                }
+            })
+            .catch(function(error) {
+                console.error('Error loading kelurahan:', error);
+                resetKelurahan();
+            });
     }
-    
-    if(result && kota !== 'Pilih Kota') {
-        result += ' -> ' + kota;
+
+    function resetKota() {
+        selectKota.innerHTML = '<option value="">Pilih Kota</option>';
+        selectKota.disabled = true;
     }
-    
-    if(result && kecamatan !== 'Pilih Kecamatan') {
-        result += ' -> ' + kecamatan;
+
+    function resetKecamatan() {
+        selectKecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
+        selectKecamatan.disabled = true;
     }
-    
-    if(result && kelurahan !== 'Pilih Kelurahan') {
-        result += ' -> ' + kelurahan;
+
+    function resetKelurahan() {
+        selectKelurahan.innerHTML = '<option value="">Pilih Kelurahan</option>';
+        selectKelurahan.disabled = true;
     }
-    
-    document.getElementById('wilayahTerpilih').value = result;
+
+    return {
+        loadProvinsi: loadProvinsi,
+        getSelectedValues: function() {
+            return { ...currentData };
+        },
+        updateDropdownValuesToNama: function() {
+            // Enable semua dropdown sebelum submit agar value-nya dikirim
+            // (dropdown yang disabled tidak dikirim dalam form submission)
+            selectKota.disabled = false;
+            selectKecamatan.disabled = false;
+            selectKelurahan.disabled = false;
+        },
+        reset: function() {
+            resetKota();
+            resetKecamatan();
+            resetKelurahan();
+            selectProvinsi.value = '';
+            currentData = {};
+        }
+    };
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('selectProvinsi') &&
+        document.getElementById('selectKota') &&
+        document.getElementById('selectKecamatan') &&
+        document.getElementById('selectKelurahan')) {
 
-function resetKota() {
-    const selectKota = document.getElementById('selectKota');
-    selectKota.innerHTML = '<option value="">Pilih Kota</option>';
-    selectKota.disabled = true;
-    document.getElementById('wilayahTerpilih').value = '';
-}
+        if (!window.wilayahDropdown) {
+            const wilayah = initWilayahDropdown({
+                onChange: function(data) {
+                    const wilayahTerpilih = document.getElementById('wilayahTerpilih');
+                    if (wilayahTerpilih) {
+                        let result = '';
+                        if (data.provinsiNama) result = data.provinsiNama;
+                        if (data.kotaNama) result += ' -> ' + data.kotaNama;
+                        if (data.kecamatanNama) result += ' -> ' + data.kecamatanNama;
+                        if (data.kelurahanNama) result += ' -> ' + data.kelurahanNama;
+                        wilayahTerpilih.value = result;
+                    }
+                }
+            });
 
-
-function resetKecamatan() {
-    const selectKecamatan = document.getElementById('selectKecamatan');
-    selectKecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
-    selectKecamatan.disabled = true;
-    document.getElementById('wilayahTerpilih').value = '';
-}
-
-
-function resetKelurahan() {
-    const selectKelurahan = document.getElementById('selectKelurahan');
-    selectKelurahan.innerHTML = '<option value="">Pilih Kelurahan</option>';
-    selectKelurahan.disabled = true;
-    document.getElementById('wilayahTerpilih').value = '';
-}
+            if (wilayah) {
+                wilayah.loadProvinsi();
+            }
+        }
+    }
+});

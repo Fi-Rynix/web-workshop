@@ -2,6 +2,10 @@
 
 @section('title', 'Detail Pesanan')
 
+@section('extra-css')
+    <link rel="stylesheet" href="{{ asset('css/pages/pelanggan.css') }}">
+@endsection
+
 @section('content')
 <div class="row">
     <div class="col-md-8 mx-auto">
@@ -105,11 +109,24 @@
                     </table>
                 </div>
 
+                <!-- QR Code Section (Hanya untuk pesanan lunas) -->
+                @if(in_array($pesanan->status_bayar, ['settlement', 'capture']))
+                <hr class="my-4">
+                <div class="qr-section text-center">
+                    <h5 class="mb-3"><i class="mdi mdi-qrcode me-2"></i>QR Code Verifikasi</h5>
+                    <p class="text-muted small mb-3">Scan untuk verifikasi pesanan</p>
+                    <img src="data:image/svg+xml;base64,{{ $qrCodeBase64 }}"
+                        alt="QR Code Pesanan"
+                        style="width: 200px; height: 200px; border: 1px solid #ddd; border-radius: 8px;">
+                    <p class="text-muted mt-2 small">ID Pesanan: {{ $pesanan->idpesanan }}</p>
+                </div>
+                @endif
+
                 <div class="mt-4">
                     <a href="{{ route('pelanggan.transaksi.index') }}" class="btn btn-secondary">
                         <i class="mdi mdi-arrow-left me-2"></i>Kembali
                     </a>
-                    @if(!$pesanan->status_bayar)
+                    @if(!in_array($pesanan->status_bayar, ['settlement', 'capture', 'deny', 'expire', 'cancel']))
                     <button type="button" class="btn btn-success" onclick="checkStatus({{ $pesanan->idpesanan }})">
                         <i class="mdi mdi-refresh me-2"></i>Cek Status Bayar
                     </button>

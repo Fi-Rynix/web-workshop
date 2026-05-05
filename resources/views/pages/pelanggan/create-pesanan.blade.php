@@ -3,63 +3,7 @@
 @section('title', 'Pesan Menu')
 
 @section('extra-css')
-<style>
-    .guest-header {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 30px;
-    }
-    .cart-item {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-left: 4px solid #6a11cb;
-    }
-    .menu-card {
-        border: 1px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 15px;
-        transition: all 0.3s;
-    }
-    .menu-card:hover {
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    .menu-image {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-    .btn-add-cart {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        color: white;
-        border: none;
-        padding: 8px 20px;
-        border-radius: 20px;
-        cursor: pointer;
-        width: 100%;
-    }
-    .btn-add-cart:hover {
-        background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
-    }
-    .total-section {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 20px;
-    }
-    .cart-empty {
-        text-align: center;
-        color: #999;
-        padding: 40px 20px;
-    }
-</style>
+    <link rel="stylesheet" href="{{ asset('css/pages/pelanggan.css') }}">
 @endsection
 
 @section('content')
@@ -286,14 +230,6 @@
     }
 
     const API_URL = '{{ url('/') }}';
-
-    /**
-     * ============================================================
-     * MENU & KERANJANG
-     * ============================================================
-     */
-
-    // Event Listener: Select Vendor
     document.getElementById('selectVendor').addEventListener('change', function() {
         const idvendor = this.value;
         if (!idvendor) {
@@ -464,27 +400,15 @@
         btnBayar.style.display = 'block';
     }
 
-    // Remove from Cart
     function removeFromCart(index) {
         cart.splice(index, 1);
         renderCart();
     }
 
-    /**
-     * ============================================================
-     * UTILITY FUNCTIONS
-     * ============================================================
-     */
-
     function formatRupiah(angka) {
         return new Intl.NumberFormat('id-ID').format(angka);
     }
 
-    /**
-     * ============================================================
-     * PEMBAYARAN - MIDTRANS INTEGRATION
-     * ============================================================
-     */
     document.getElementById('btnBayar').addEventListener('click', function() {
         const nama = document.getElementById('inputNama').value.trim();
         const email = document.getElementById('inputEmail').value.trim();
@@ -577,7 +501,6 @@
                         });
                     },
                     onPending: function(result) {
-                        // QR Code URL bisa disimpan jika perlu untuk alur baru
                         if (result && result.actions) {
                             const qrAction = result.actions.find(a => a.name === 'generate-qr-code');
                             if (qrAction && qrAction.url) {
@@ -594,7 +517,6 @@
                         });
                     },
                     onClose: function() {
-                        // Popup ditutup - biarkan user melanjutkan alur baru
                     }
                 });
             } else {

@@ -1,20 +1,273 @@
-/* Nomor 4 Select Kota Styling */
+/* ====================================
+   Modul 4 - Select Kota Styles
+   Purple Theme Standardized
+   ==================================== */
 
+/* CSS Reset */
+.card,
+.card-header,
+.card-body,
+.form-group,
+.form-label,
+.form-control,
+.btn,
+select {
+  box-sizing: border-box !important;
+}
+
+/* Root Color Variables */
+:root {
+  --primary-purple: #7c3aed;
+  --primary-purple-dark: #6d28d9;
+  --primary-purple-light: #a78bfa;
+  --secondary-teal: #14b8a6;
+  --gradient-purple-pink: linear-gradient(135deg, #da8cff 0%, #9a55ff 100%);
+  --gradient-purple-hover: linear-gradient(135deg, #e09fff 0%, #b084ff 100%);
+  --gradient-teal: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  --shadow-lg: 0 20px 25px -5px rgba(124, 58, 237, 0.15);
+  --shadow-md: 0 10px 15px -3px rgba(124, 58, 237, 0.1);
+}
+
+/* Card Styling */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 25px 35px -5px rgba(124, 58, 237, 0.2);
+}
+
+.card.border-dark {
+  border: 1px solid #e2e8f0 !important;
+}
+
+.card-header {
+  padding: 1.25rem 1.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: var(--gradient-purple-pink) !important;
+  color: white !important;
+  border-bottom: none;
+}
+
+.card-header.font-weight-bold {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Form Styling */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label,
+.col-form-label {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.form-control::placeholder {
+  color: #cbd5e1;
+}
+
+.form-control:hover:not(:focus) {
+  border-color: #cbd5e1;
+  background-color: #fafbfc;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+  background-color: #ffffff;
+}
+
+.form-control:read-only {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.form-control.border-primary {
+  border-color: #7c3aed;
+}
+
+/* Button Styling */
+.btn {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-success {
+  background: var(--gradient-teal);
+  color: white;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px rgba(20, 184, 166, 0.3);
+}
+
+.btn-success:active {
+  transform: translateY(0);
+}
+
+/* Select Dropdown Styling */
+select.form-control {
+  appearance: auto;
+  cursor: pointer;
+  background-color: #ffffff;
+  padding-right: 2.5rem;
+}
+
+select.form-control:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+/* Select2 Styling - Override */
+.select2-container--default .select2-selection--single {
+  height: auto;
+  padding: 0.875rem 1.125rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+}
+
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default.select2-container--focus .select2-selection--single {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: normal;
+  padding-left: 0;
+  color: #1e293b;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 100%;
+  right: 1rem;
+}
+
+.select2-dropdown {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background: var(--gradient-purple-pink);
+  color: white;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f5f3ff 100%);
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+/* Spinner */
 .spinner-border-sm {
-    width: 1rem;
-    height: 1rem;
-    margin-right: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  border-width: 0.2em;
 }
 
-.select2 {
-    width: 100% !important;
+/* Background Colors for Form Groups */
+.bg-primary {
+  background: var(--gradient-purple-pink) !important;
+  border-radius: 8px;
+  padding: 1rem 1.25rem !important;
 }
 
-.select2-container--bootstrap4 .select2-selection {
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.select2-container--bootstrap4.select2-container--focus .select2-selection {
-    border-color: #667bc6;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1rem;
+  }
+
+  .card-header {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .form-group.row {
+    margin-bottom: 1rem;
+  }
+
+  .col-sm-3,
+  .col-sm-9,
+  .col-sm-2,
+  .col-sm-10 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .text-end {
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-control {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .card-header {
+    font-size: 0.95rem;
+  }
 }

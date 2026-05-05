@@ -2,10 +2,10 @@
 
 @section('title', 'Modul 4 Nomor 2-3 - DataTables')
 
-@push('style-page')
+@section('extra-css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="{{ asset('css/pages/modul-4-js/datatables.css') }}">
-@endpush
+@endsection
 
 @section('content')
 <div class="row justify-content-center">

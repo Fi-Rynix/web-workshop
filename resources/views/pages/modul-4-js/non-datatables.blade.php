@@ -2,9 +2,9 @@
 
 @section('title', 'Modul 4 Nomor 2-3 - HTML Table')
 
-@push('style-page')
+@section('extra-css')
 <link rel="stylesheet" href="{{ asset('css/pages/modul-4-js/non-datatables.css') }}">
-@endpush
+@endsection
 
 @section('content')
 <div class="row justify-content-center">

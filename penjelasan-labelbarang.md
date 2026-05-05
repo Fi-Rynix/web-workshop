@@ -279,10 +279,10 @@ body {
 
 ```php
 @php
-    $labelWidth = $config['labelWidth'];   // 38mm
-    $labelHeight = $config['labelHeight']; // 18mm
-    $gapX = $config['gapX'];                 // 3mm
-    $gapY = $config['gapY'];                 // 2mm
+    $labelWidth = $config['labelWidth'];
+    $labelHeight = $config['labelHeight'];
+    $gapX = $config['gapX'];
+    $gapY = $config['gapY'];
     $cols = 5;
     $rows = 8;
     $marginLeft = 4;
@@ -293,19 +293,16 @@ body {
     @for ($row = 0; $row < $rows; $row++)
         @for ($col = 0; $col < $cols; $col++)
             @php
-                // Hitung index slot (0-39)
                 $index = ($row * $cols) + $col;
-                
-                // Hitung posisi absolute (mm)
                 $left = $marginLeft + ($col * ($labelWidth + $gapX));
                 $top = $marginTop + ($row * ($labelHeight + $gapY));
             @endphp
             
             @if(isset($labels[$index]) && $labels[$index])
             <div class="label" style="
-                width: {{ $labelWidth }}mm; 
-                height: {{ $labelHeight }}mm; 
-                left: {{ $left }}mm; 
+                width: {{ $labelWidth }}mm;
+                height: {{ $labelHeight }}mm;
+                left: {{ $left }}mm;
                 top: {{ $top }}mm;
             ">
                 <div class="nama-barang">{{ $labels[$index]['nama_barang'] }}</div>
@@ -390,7 +387,363 @@ Ingin mulai dari tengah kertas:
 
 ---
 
-## File Terkait
+## 10. Barcode Implementation (Update)
+
+### 10.1 Instalasi Library
+
+**File yang terkait:** Terminal/Command Line
+
+**Lampiran Perintah:**
+```bash
+composer require picqer/php-barcode-generator
+```
+
+**Penjelasan:**
+- `picqer/php-barcode-generator` adalah library PHP untuk generate Barcode 1D (Code 128, Code 39, EAN, dll)
+- Library ini menggunakan **GD extension** atau **Imagick** untuk render gambar
+- Cocok untuk label barang retail dengan barcode standar
+
+---
+
+### 10.2 Update Controller: Generate Barcode
+
+**File yang terkait:** `app/Http/Controllers/BarangController.php`
+
+**Lampiran Kode - Import:**
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Barang;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Picqer\Barcode\BarcodeGeneratorPNG;  // Import library barcode
+
+class BarangController extends Controller
+{
+    // ... method lain ...
+}
+```
+
+**Lampiran Kode - Method printLabel():**
+```php
+public function printLabel()
+{
+    $barangIds = explode(',', request('barang_ids'));
+    $startX = (int) request('koordinat_x', 1);
+    $startY = (int) request('koordinat_y', 1);
+
+    if (empty($barangIds) || $startX < 1 || $startX > 5 || $startY < 1 || $startY > 8) {
+        return redirect()->route('index-barang')->with('error', 'Input koordinat tidak valid!');
+    }
+
+    $barangList = Barang::whereIn('idbarang', $barangIds)->get();
+
+    if ($barangList->isEmpty()) {
+        return redirect()->route('index-barang')->with('error', 'Tidak ada barang yang dipilih!');
+    }
+
+    $config = [
+        'labelWidth' => 38,
+        'labelHeight' => 18,
+        'gapX' => 3,
+        'gapY' => 2,
+        'cols' => 5,
+        'rows' => 8,
+        'marginLeft' => 4,
+        'marginTop' => 4,
+    ];
+
+    $labels = array_fill(0, 40, null);
+    $startIndex = (($startY - 1) * $config['cols']) + ($startX - 1);
+
+    // Inisialisasi generator barcode
+    $generator = new BarcodeGeneratorPNG();
+
+    foreach ($barangList as $i => $barang) {
+        $position = $startIndex + $i;
+        if ($position < 40) {
+            // Generate barcode dari idbarang
+            $barcodePng = $generator->getBarcode($barang->idbarang, $generator::TYPE_CODE_128);
+            $barcodeBase64 = base64_encode($barcodePng);
+
+            $labels[$position] = [
+                'harga' => 'Rp ' . number_format($barang->harga, 0, ',', '.'),
+                'nama_barang' => $barang->nama_barang,
+                'barcode' => $barcodeBase64,  // Barcode base64 untuk embed di PDF
+            ];
+        }
+    }
+
+    $pdf = Pdf::loadView('pages.barang.cetak', compact('labels', 'config'));
+    $pdf->setPaper('A5', 'portrait');
+
+    return $pdf->download('label_harga_' . date('Y-m-d_H-i-s') . '.pdf');
+}
+```
+
+**Penjelasan Rinci:**
+
+1. **Import Library:**
+   ```php
+   use Picqer\Barcode\BarcodeGeneratorPNG;
+   ```
+   - `BarcodeGeneratorPNG` menghasilkan output PNG binary (GD extension)
+
+2. **Inisialisasi Generator:**
+   ```php
+   $generator = new BarcodeGeneratorPNG();
+   ```
+   - Buat instance generator baru
+
+3. **Generate Barcode:**
+   ```php
+   $barcodePng = $generator->getBarcode($barang->idbarang, $generator::TYPE_CODE_128);
+   ```
+   - `$barang->idbarang` - Data yang di-encode (ID barang)
+   - `$generator::TYPE_CODE_128` - Format barcode (Code 128 = paling umum, support alphanumeric)
+
+4. **Base64 Encoding:**
+   ```php
+   $barcodeBase64 = base64_encode($barcodePng);
+   ```
+   - PNG binary di-encode ke base64 untuk embed di template PDF
+
+5. **Simpan ke Array:**
+   ```php
+   'barcode' => $barcodeBase64
+   ```
+   - Barcode base64 disimpan bersama data lain (nama, harga)
+
+---
+
+### 10.3 Update View PDF: Render Barcode
+
+**File yang terkait:** `resources/views/pages/barang/cetak.blade.php`
+
+**Lampiran Kode:**
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style>
+        @page {
+            size: 210mm 165mm;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: sans-serif;
+            width: 210mm;
+            height: 165mm;
+        }
+
+        .label-wrapper {
+            position: relative;
+            width: 210mm;
+            height: 165mm;
+        }
+
+        .label {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .barcode-img {
+            width: 34mm;
+            height: 8mm;
+            margin-bottom: 1px;
+        }
+
+        .nama-barang {
+            font-size: 10px;
+            margin-bottom: 2px;
+            font-weight: 500;
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
+
+        .harga {
+            font-size: 13px;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+@php
+    $labelWidth = $config['labelWidth'];
+    $labelHeight = $config['labelHeight'];
+    $gapX = $config['gapX'];
+    $gapY = $config['gapY'];
+    $cols = $config['cols'];
+    $rows = $config['rows'];
+    $marginLeft = $config['marginLeft'];
+    $marginTop = $config['marginTop'];
+@endphp
+
+<div class="label-wrapper">
+    @for ($row = 0; $row < $rows; $row++)
+        @for ($col = 0; $col < $cols; $col++)
+            @php
+                $index = ($row * $cols) + $col;
+                $left = $marginLeft + ($col * ($labelWidth + $gapX));
+                $top = $marginTop + ($row * ($labelHeight + $gapY));
+            @endphp
+            @if(isset($labels[$index]) && $labels[$index])
+            <div class="label" style="width: {{ $labelWidth }}mm; height: {{ $labelHeight }}mm; left: {{ $left }}mm; top: {{ $top }}mm;">
+                <!-- Barcode Image -->
+                <img src="data:image/png;base64,{{ $labels[$index]['barcode'] }}"
+                     class="barcode-img"
+                     alt="Barcode">
+
+                <!-- Nama Barang -->
+                <div class="nama-barang">{{ $labels[$index]['nama_barang'] }}</div>
+
+                <!-- Harga -->
+                <div class="harga">{{ $labels[$index]['harga'] }}</div>
+            </div>
+            @endif
+        @endfor
+    @endfor
+</div>
+
+</body>
+</html>
+```
+
+**Penjelasan Rinci:**
+
+1. **CSS Barcode:**
+   ```css
+   .barcode-img {
+       width: 34mm;
+       height: 8mm;
+       margin-bottom: 1px;
+   }
+   ```
+   - Ukuran barcode di label: lebar 34mm, tinggi 8mm
+   - Margin bawah untuk spacing dengan nama barang
+
+2. **Render Barcode:**
+   ```html
+   <img src="data:image/png;base64,{{ $labels[$index]['barcode'] }}"
+        class="barcode-img"
+        alt="Barcode">
+   ```
+   - `data:image/png;base64,` - Data URI scheme untuk PNG
+   - `{{ $labels[$index]['barcode'] }}` - Base64 string dari controller
+   - PNG binary dari Picqer dirender sebagai image
+
+3. **Struktur Label:**
+   ```
+   [BARCODE]
+   [NAMA BARANG]
+   [HARGA]
+   ```
+   - Barcode di atas (scanning area)
+   - Nama barang di tengah
+   - Harga di bawah (bold, merah)
+
+---
+
+### 10.4 Format Barcode: CODE_128
+
+**Penjelasan Format:**
+
+| Property | CODE_128 | Keterangan |
+|----------|----------|------------|
+| **Characters** | 128 ASCII | Support semua karakter keyboard |
+| **Type** | 1D Linear | Garis vertikal (bars & spaces) |
+| **Density** | High | Bisa encode banyak data di area kecil |
+| **Usage** | Retail, Logistik | Paling umum di industri |
+| **Numeric** | Excellent | Cocok untuk ID numerik |
+
+**Mengapa CODE_128?**
+- **Compact** - Lebih padat daripada CODE_39 untuk data numerik
+- **Versatile** - Support alphanumeric (huruf + angka)
+- **Standard** - Dibaca oleh semua barcode scanner
+- **Check Digit** - Built-in error detection
+
+---
+
+### 10.5 Perbedaan Barcode vs QR Code
+
+| Aspek | Barcode (Label Barang) | QR Code (Pesanan) |
+|-------|------------------------|-------------------|
+| **Library** | `picqer/php-barcode-generator` | `bacon/bacon-qr-code` |
+| **Dimensi** | 1D (garis horizontal) | 2D (kotak-kotak) |
+| **Data** | `idbarang` (numerik) | `idpesanan` (numerik) |
+| **Format Output** | PNG (bitmap binary) | SVG (vector text) |
+| **Backend** | `GdImageBackEnd` (butuh GD) | `SvgImageBackEnd` (no extension) |
+| **Output File** | PDF Download | Display Web |
+| **Scan Device** | Laser/Linear scanner | Camera/Smartphone |
+| **Data Capacity** | ~20-25 karakter | Ratusan karakter |
+| **Use Case** | Kasir retail (cepat) | Verifikasi mobile |
+
+---
+
+### 10.6 Troubleshooting Barcode
+
+#### Error: "Unable to find font"
+
+**Solusi:**
+Code 128 tidak menggunakan font, ini error jika pakai format yang salah.
+
+#### Error: "GD library is not installed"
+
+**Solusi untuk Windows (Laragon):**
+1. Buka `php.ini` (Laragon → Menu → PHP → php.ini)
+2. Uncomment line: `extension=gd`
+3. Restart Apache
+
+#### Barcode tidak muncul di PDF:
+
+**Penyebab:** Base64 atau MIME type salah
+
+**Cek:**
+```html
+<!-- Pastikan MIME type PNG -->
+<img src="data:image/png;base64,{{ $barcode }}">
+
+<!-- Jangan pakai SVG atau JPEG -->
+```
+
+#### Barcode tidak bisa discan:
+
+| Penyebab | Solusi |
+|----------|--------|
+| Ukuran terlalu kecil | Minimal 30mm lebar |
+| Print quality buruk | Gunakan printer laser |
+| Kontras rendah | Pastikan hitam putih |
+| Scanner incompatible | CODE_128 universal |
+
+---
+
+### 10.7 Keuntungan Barcode di Label
+
+1. **Scan Cepat** - Laser scanner bisa baca dalam milidetik
+2. **Hemat Tempat** - 1D lebih ramping daripada QR di label kecil
+3. **Standard Retail** - Semua kasir familiar dengan barcode
+4. **Murah** - Tidak perlu camera, laser scanner lebih murah
+5. **Akurat** - Error rate sangat rendah untuk data pendek
+
+---
+
+## File Terkait (Update)
 
 | File | Fungsi |
 |------|--------|

@@ -10,17 +10,11 @@ use Midtrans\Transaction;
 
 class MidtransService
 {
-    /**
-     * Constructor - Setup Midtrans configuration
-     */
     public function __construct()
     {
         $this->setupConfig();
     }
 
-    /**
-     * Setup Midtrans configuration
-     */
     private function setupConfig(): void
     {
         Config::$serverKey = config('midtrans.server_key') ?: env('MIDTRANS_SERVER_KEY');
@@ -29,29 +23,18 @@ class MidtransService
         Config::$is3ds = config('midtrans.is_3ds') ?: env('MIDTRANS_3DS', true);
     }
 
-    /**
-     * Create Snap Token untuk transaksi
-     *
-     * @param Pesanan $pesanan
-     * @param array $items Array of items (dari detail_pesanan)
-     * @param array $customerData ['first_name', 'email', 'phone']
-     * @return array ['token' => string]
-     * @throws \Exception
-     */
+
     public function createSnapToken(Pesanan $pesanan, array $items, array $customerData): array
     {
         try {
-            // Build customer details
             $customerDetails = [
                 'first_name' => $customerData['first_name'] ?? $pesanan->nama,
             ];
 
-            // Only add email if provided and valid
             if (!empty($customerData['email']) && filter_var($customerData['email'], FILTER_VALIDATE_EMAIL)) {
                 $customerDetails['email'] = $customerData['email'];
             }
 
-            // Only add phone if provided
             if (!empty($customerData['phone'])) {
                 $customerDetails['phone'] = $customerData['phone'];
             }
@@ -94,9 +77,6 @@ class MidtransService
         }
     }
 
-    /**
-     * Format items untuk Midtrans
-     */
     private function formatItems(array $items): array
     {
         return array_map(function ($item) {
@@ -109,12 +89,7 @@ class MidtransService
         }, $items);
     }
 
-    /**
-     * Handle notification dari Midtrans (Webhook)
-     *
-     * @param array $notificationData Data dari Midtrans
-     * @return bool
-     */
+
     public function handleNotification(array $notificationData): bool
     {
         try {
@@ -130,7 +105,6 @@ class MidtransService
                 return false;
             }
 
-            // Cari pesanan
             $pesanan = Pesanan::where('order_id', $orderId)->first();
 
             if (!$pesanan) {
@@ -138,10 +112,8 @@ class MidtransService
                 return false;
             }
 
-            // Tentukan status bayar berdasarkan transaction_status dari Midtrans
             $statusBayar = $this->resolvePaymentStatus($transactionStatus, $fraudStatus);
 
-            // Update pesanan
             $pesanan->update([
                 'status_bayar' => $statusBayar,
                 'metode_bayar' => $paymentType,
@@ -164,40 +136,25 @@ class MidtransService
         }
     }
 
-    /**
-     * Resolve payment status dari Midtrans transaction_status
-     *
-     * @param string $transactionStatus Status dari Midtrans
-     * @param string|null $fraudStatus Fraud status (untuk kartu kredit)
-     * @return string Status bayar yang disimpan ke DB
-     */
+
     private function resolvePaymentStatus(string $transactionStatus, ?string $fraudStatus): string
     {
-        // Kartu kredit: cek fraud status dulu
         if ($transactionStatus === 'capture') {
             return $fraudStatus === 'accept' ? 'capture' : 'challenge';
         }
 
-        // Status berhasil: settlement (transfer/VA/QRIS)
         if ($transactionStatus === 'settlement') {
             return 'settlement';
         }
 
-        // Status gagal/expired
         if (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
             return $transactionStatus;
         }
 
-        // Default: pending atau status lain dari Midtrans
         return $transactionStatus;
     }
 
-    /**
-     * Cek status transaksi di Midtrans
-     *
-     * @param string $orderId
-     * @return array|null
-     */
+
     public function checkTransactionStatus(string $orderId): ?array
     {
         try {
@@ -212,21 +169,13 @@ class MidtransService
         }
     }
 
-    /**
-     * Generate unique order ID
-     *
-     * @return string
-     */
+
     public static function generateOrderId(): string
     {
         return 'ORDER-' . date('Ymd') . '-' . strtoupper(uniqid());
     }
 
-    /**
-     * Get Snap.js URL berdasarkan environment
-     *
-     * @return string
-     */
+
     public static function getSnapUrl(): string
     {
         $isProduction = env('MIDTRANS_IS_PRODUCTION', false);
@@ -235,11 +184,7 @@ class MidtransService
             : 'https://app.sandbox.midtrans.com/snap/snap.js';
     }
 
-    /**
-     * Get Client Key
-     *
-     * @return string
-     */
+
     public static function getClientKey(): string
     {
         return env('MIDTRANS_CLIENT_KEY', '');

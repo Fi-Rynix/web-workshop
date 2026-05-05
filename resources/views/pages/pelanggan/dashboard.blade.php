@@ -2,6 +2,10 @@
 
 @section('title', 'Dashboard Pelanggan')
 
+@section('extra-css')
+    <link rel="stylesheet" href="{{ asset('css/pages/pelanggan.css') }}">
+@endsection
+
 @section('content')
 <div class="row">
     <div class="col-md-12 grid-margin stretch-card">

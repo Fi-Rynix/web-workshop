@@ -16,9 +16,6 @@ class MidtransController extends Controller
         $this->midtransService = new MidtransService();
     }
 
-    /**
-     * Handle notification dari Midtrans (Webhook)
-     */
     public function notification(Request $request)
     {
         try {
@@ -26,7 +23,6 @@ class MidtransController extends Controller
 
             Log::info('Midtrans Webhook Received', $notificationData);
 
-            // Validasi data
             if (empty($notificationData['order_id']) || empty($notificationData['transaction_status'])) {
                 Log::error('Invalid webhook data', $notificationData);
                 return response()->json(['status' => false, 'message' => 'Invalid data'], 400);
@@ -36,7 +32,6 @@ class MidtransController extends Controller
             $transactionStatus = $notificationData['transaction_status'];
             $paymentType = $notificationData['payment_type'] ?? null;
 
-            // Cari pesanan
             $pesanan = Pesanan::where('order_id', $orderId)->first();
 
             if (!$pesanan) {
@@ -44,17 +39,14 @@ class MidtransController extends Controller
                 return response()->json(['status' => false, 'message' => 'Order not found'], 404);
             }
 
-            // Update pesanan dengan data dari Midtrans
             $updateData = [
-                'status_bayar' => $transactionStatus, // Simpan status string langsung (pending, settlement, deny, etc)
+                'status_bayar' => $transactionStatus,
             ];
 
-            // Update metode bayar dari payment_type selama payment_type valid
             if ($paymentType) {
-                $updateData['metode_bayar'] = $paymentType; // payment_type: credit_card, qris, bank_transfer, dll
+                $updateData['metode_bayar'] = $paymentType;
             }
 
-            // Update total jika berbeda (dari amount Midtrans)
             if (isset($notificationData['gross_amount'])) {
                 $grossAmount = (int) $notificationData['gross_amount'];
                 if ($grossAmount != $pesanan->total) {
@@ -88,9 +80,7 @@ class MidtransController extends Controller
         }
     }
 
-    /**
-     * Manual check status endpoint
-     */
+
     public function checkStatus($orderId)
     {
         $pesanan = Pesanan::where('order_id', $orderId)->first();
@@ -102,7 +92,6 @@ class MidtransController extends Controller
         $status = $this->midtransService->checkTransactionStatus($orderId);
 
         if ($status) {
-            // Update local status dengan string dari Midtrans
             $transactionStatus = $status['transaction_status'] ?? 'pending';
 
             $pesanan->update([
@@ -123,9 +112,7 @@ class MidtransController extends Controller
         return response()->json(['status' => false, 'message' => 'Failed to check status'], 500);
     }
 
-    /**
-     * Cek status webhook untuk order (digunakan oleh frontend polling)
-     */
+
     public function webhookStatus($orderId)
     {
         $pesanan = Pesanan::where('order_id', $orderId)->first();
@@ -137,7 +124,6 @@ class MidtransController extends Controller
             ], 404);
         }
 
-        // Webhook dianggap diterima kalau status sudah settlement/capture (dari database)
         $webhookReceived = in_array($pesanan->status_bayar, ['settlement', 'capture']);
 
         return response()->json([

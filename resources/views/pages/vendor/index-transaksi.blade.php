@@ -61,8 +61,6 @@
                     </td>
                 </tr>
 
-                @include('pages.vendor.detail-transaksi', ['row' => $row])
-
                 @empty
                 <tr>
                     <td colspan="8">
@@ -79,6 +77,11 @@
         </table>
     </div>
 </div>
+
+{{-- Modals outside of table --}}
+@foreach ($pesanans as $row)
+    @include('pages.vendor.detail-transaksi', ['row' => $row])
+@endforeach
 
 @endsection
 

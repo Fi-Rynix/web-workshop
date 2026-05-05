@@ -436,8 +436,8 @@ public function storePublic()
             'nama' => $request->nama,
             'timestamp' => now(),
             'total' => $total,
-            'metode_bayar' => 'Midtrans',  // Placeholder, akan diupdate webhook dengan payment_type
-            'status_bayar' => 'Pending',   // Placeholder, akan diupdate webhook
+            'metode_bayar' => 'midtrans',  // Placeholder lowercase, akan diupdate webhook dengan payment_type
+            'status_bayar' => 'pending',   // Placeholder lowercase, akan diupdate webhook
             'customer_email' => $request->email ?? $user->email,
         ]);
 
@@ -882,8 +882,8 @@ public function webhookStatus($orderId)
 {
     $pesanan = Pesanan::where('order_id', $orderId)->first();
     
-    // Cek apakah webhook sudah datang (metode_bayar tidak null)
-    $webhookReceived = !is_null($pesanan->metode_bayar);
+    // Webhook dianggap diterima kalau status sudah settlement/capture (dari database)
+    $webhookReceived = in_array($pesanan->status_bayar, ['settlement', 'capture']);
     
     return response()->json([
         'status' => true,
@@ -1045,9 +1045,9 @@ public function notification(Request $request)
             'status_bayar' => $transactionStatus,
         ];
 
-        // Update metode bayar dari payment_type webhook
-        if ($paymentType && empty($pesanan->metode_bayar)) {
-            $updateData['metode_bayar'] = $paymentType;
+        // Update metode bayar dari payment_type selama payment_type valid
+        if ($paymentType) {
+            $updateData['metode_bayar'] = $paymentType; // payment_type: credit_card, qris, bank_transfer, dll
         }
 
         // Update total jika berbeda
@@ -1304,7 +1304,7 @@ Service ini setup konfigurasi Midtrans library saat di-instantiate.
 │      * Buat Guest User (tidak login ke session)                         │
 │      * Generate Order ID                                                │
 │      * Simpan Pesanan & Detail ke Database                              │
-│      * Set default: metode_bayar='Midtrans'                             │
+│      * Set default: metode_bayar='midtrans' (lowercase)                   │
 │      * Panggil MidtransService::createSnapToken()                       │
 │      * Komunikasi ke API Midtrans → Dapat Snap Token                    │
 │    - Response: snap_token, order_id, total                              │
@@ -1383,7 +1383,50 @@ Auth::login($user);  // DIHAPUS
 $user = $this->createGuestUser();  // Langsung create, tidak login
 ```
 
-### 2. Tidak Ada QR Code URL di Response
+### 2. Default Value Lowercase
+**Sebelumnya:**
+```php
+'metode_bayar' => 'Midtrans',
+'status_bayar' => 'Pending',
+```
+
+**Sekarang:**
+```php
+'metode_bayar' => 'midtrans',  // lowercase
+'status_bayar' => 'pending',   // lowercase
+```
+
+### 3. Webhook Notification Logic
+**Sebelumnya:**
+```php
+// Update metode bayar dari payment_type webhook
+if ($paymentType && empty($pesanan->metode_bayar)) {
+    $updateData['metode_bayar'] = $paymentType;
+}
+```
+
+**Sekarang:**
+```php
+// Update metode bayar dari payment_type selama payment_type valid
+if ($paymentType) {
+    $updateData['metode_bayar'] = $paymentType;
+}
+```
+
+### 4. Webhook Status Polling Logic
+**Sebelumnya:**
+```php
+// Cek apakah webhook sudah datang (metode_bayar tidak null)
+$webhookReceived = !is_null($pesanan->metode_bayar);
+```
+
+**Sekarang:**
+```php
+// Webhook dianggap diterima kalau status sudah settlement/capture
+$webhookReceived = in_array($pesanan->status_bayar, ['settlement', 'capture']);
+```
+
+### 5. Tidak Ada QR Code URL di Response
 **Sebelumnya:**
 ```php
 return [
@@ -1399,7 +1442,7 @@ return [
 ];
 ```
 
-### 3. Section Status dengan Polling Webhook
+### 6. Section Status dengan Polling Webhook
 **Sebelumnya:** Section muncul saat `onClose` popup (tidak reliable)
 
 **Sekarang:** 
@@ -1408,7 +1451,7 @@ return [
 - Tombol "Bayar Sekarang" untuk buka popup lagi
 - Auto-update UI saat webhook diterima
 
-### 4. Debug Routes
+### 7. Debug Routes
 **Baru ditambahkan:**
 - `POST /midtrans/debug` - Simpan payload ke file
 - `GET /midtrans/debug/files` - List semua file debug

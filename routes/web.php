@@ -65,6 +65,17 @@ Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
     Route::get('api/pos/get-barang', [App\Http\Controllers\PosController::class, 'getBarang'])->name('pos-get-barang');
     Route::get('api/pos/get-barang-detail', [App\Http\Controllers\PosController::class, 'getBarangDetail'])->name('pos-get-barang-detail');
     Route::post('api/pos/save-penjualan', [App\Http\Controllers\PosController::class, 'savePenjualan'])->name('pos-save-penjualan');
+
+    // Customer Routes (Studi Kasus 3 - Akses Kamera)
+    Route::get('customer/index-customer', [App\Http\Controllers\CustomerController::class, 'index'])->name('customer.index');
+    Route::get('customer/tambah-customer1', [App\Http\Controllers\CustomerController::class, 'create1'])->name('customer.create1');
+    Route::post('customer/tambah-customer1', [App\Http\Controllers\CustomerController::class, 'store1'])->name('customer.store1');
+    Route::get('customer/tambah-customer2', [App\Http\Controllers\CustomerController::class, 'create2'])->name('customer.create2');
+    Route::post('customer/tambah-customer2', [App\Http\Controllers\CustomerController::class, 'store2'])->name('customer.store2');
+    Route::get('customer/{id}/edit', [App\Http\Controllers\CustomerController::class, 'edit'])->name('customer.edit');
+    Route::put('customer/{id}', [App\Http\Controllers\CustomerController::class, 'update'])->name('customer.update');
+    Route::delete('customer/{id}', [App\Http\Controllers\CustomerController::class, 'destroy'])->name('customer.destroy');
+    Route::get('customer/{id}/foto-blob', [App\Http\Controllers\CustomerController::class, 'showBlob'])->name('customer.show-blob');
 });
 
 // Routes untuk Vendor (idrole = 2)
@@ -109,67 +120,8 @@ Route::middleware(['auth', 'check_verif', 'check.role:3'])->group(function () {
 Route::post('midtrans/notification', [App\Http\Controllers\MidtransController::class, 'notification'])->name('midtrans.notification');
 
 
-// DEBUG: Route untuk melihat payload lengkap dari Midtrans
-Route::post('midtrans/debug', function (\Illuminate\Http\Request $request) {
-    // Buat nama file dengan timestamp
-    $filename = 'midtrans_debug_' . date('Ymd_His') . '_' . uniqid() . '.json';
-    $filepath = storage_path('logs/' . $filename);
 
-    // Data yang akan disimpan
-    $data = [
-        'received_at' => now()->toDateTimeString(),
-        'ip_address' => $request->ip(),
-        'user_agent' => $request->userAgent(),
-        'headers' => $request->headers->all(),
-        'body' => $request->all(),
-    ];
 
-    // Simpan ke file
-    file_put_contents($filepath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-    // Return response dengan data yang diterima
-    return response()->json([
-        'status' => true,
-        'message' => 'Payload logged successfully',
-        'saved_to' => $filepath,
-        'received_payload' => $request->all(),
-        'all_headers' => $request->headers->all(),
-    ]);
-})->name('midtrans.debug');
 
-// DEBUG: Route untuk melihat semua file debug yang tersimpan
-Route::get('midtrans/debug/files', function () {
-    $files = glob(storage_path('logs/midtrans_debug_*.json'));
-    rsort($files);
 
-    $list = array_map(function ($file) {
-        return [
-            'filename' => basename($file),
-            'size' => filesize($file) . ' bytes',
-            'modified' => date('Y-m-d H:i:s', filemtime($file)),
-            'view_url' => url('midtrans/debug/view/' . basename($file)),
-        ];
-    }, array_slice($files, 0, 20));
-
-    return response()->json([
-        'total_files' => count($files),
-        'files' => $list,
-    ]);
-})->name('midtrans.debug.files');
-
-// DEBUG: Route untuk melihat isi file debug tertentu
-Route::get('midtrans/debug/view/{filename}', function ($filename) {
-    // Security: hanya izinkan filename dengan pattern yang benar
-    if (!preg_match('/^midtrans_debug_\d{8}_\d{6}_[a-f0-9]+\.json$/', $filename)) {
-        return response()->json(['error' => 'Invalid filename'], 400);
-    }
-
-    $filepath = storage_path('logs/' . $filename);
-
-    if (!file_exists($filepath)) {
-        return response()->json(['error' => 'File not found'], 404);
-    }
-
-    $content = file_get_contents($filepath);
-    return response()->json(json_decode($content, true));
-})->name('midtrans.debug.view');
