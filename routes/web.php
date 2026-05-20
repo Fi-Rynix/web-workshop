@@ -43,6 +43,8 @@ Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
     Route::delete('barang/delete-barang/{id}', [App\Http\Controllers\BarangController::class, 'destroy'])->name('delete-barang');
     Route::post('barang/generate-label', [App\Http\Controllers\BarangController::class, 'generateLabel'])->name('generate-label');
     Route::post('barang/print-label', [App\Http\Controllers\BarangController::class, 'printLabel'])->name('print-label');
+    Route::get('barang/scan-barang', [App\Http\Controllers\BarangController::class, 'scanIndex'])->name('scan-barang');
+    Route::get('api/barang/{id}', [App\Http\Controllers\BarangController::class, 'getBarangById'])->name('api-barang-detail');
 
     Route::get('pdf/generate-pdf', [App\Http\Controllers\PdfController::class, 'generatePdf'])->name('generate-pdf');
 

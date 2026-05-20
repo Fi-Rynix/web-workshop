@@ -44,6 +44,33 @@ class BarangController extends Controller
         return redirect()->route('index-barang')->with('success', 'Barang berhasil dihapus.');
     }
 
+    public function scanIndex()
+    {
+        return view('pages.barang.scan-barang');
+    }
+
+    public function getBarangById($id)
+    {
+        $barang = Barang::find($id);
+
+        if (!$barang) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Barang tidak ditemukan',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'idbarang' => $barang->idbarang,
+                'nama_barang' => $barang->nama_barang,
+                'harga' => $barang->harga,
+                'harga_format' => 'Rp ' . number_format($barang->harga, 0, ',', '.'),
+            ],
+        ]);
+    }
+
     public function generateLabel()
     {
         $barangIds = request('barang_ids', []);

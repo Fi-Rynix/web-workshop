@@ -1,0 +1,606 @@
+/* ====================================
+   Scan Barcode Page Styles - Purple Theme
+   ==================================== */
+
+/* CSS Reset */
+.scan-header,
+.scan-container,
+.scan-header-section,
+.scan-header-actions,
+.scan-body,
+.scan-camera-wrapper,
+.scan-result-wrapper,
+.scan-result-card,
+.scan-result-error,
+.scan-history-section,
+.scan-history-table,
+.btn-add-scan,
+.scan-select {
+  box-sizing: border-box !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Root Color Variables */
+:root {
+  --primary-purple: #7c3aed;
+  --primary-purple-dark: #6d28d9;
+  --primary-purple-light: #a78bfa;
+  --gradient-purple-pink: linear-gradient(135deg, #da8cff 0%, #9a55ff 100%);
+  --gradient-purple-hover: linear-gradient(135deg, #e09fff 0%, #b084ff 100%);
+  --gradient-success: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  --shadow-lg: 0 20px 25px -5px rgba(124, 58, 237, 0.15);
+  --shadow-md: 0 10px 15px -3px rgba(124, 58, 237, 0.1);
+}
+
+/* ====================================
+   HEADER
+   ==================================== */
+
+.scan-header {
+  margin-bottom: 2rem;
+  animation: slideInDown 0.5s ease-out;
+}
+
+.scan-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e1b4b;
+  letter-spacing: -0.5px;
+}
+
+/* ====================================
+   CONTAINER
+   ==================================== */
+
+.scan-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
+  transition: all 0.3s ease;
+}
+
+.scan-container:hover {
+  box-shadow: 0 25px 35px -5px rgba(124, 58, 237, 0.2);
+}
+
+/* ====================================
+   HEADER SECTION (toolbar)
+   ==================================== */
+
+.scan-header-section {
+  padding: 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  flex-wrap: wrap;
+}
+
+.scan-header-section h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.scan-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Camera Select */
+.scan-select {
+  padding: 0.625rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #1e293b;
+  background: #ffffff;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  min-width: 180px;
+  cursor: pointer;
+}
+
+.scan-select:focus {
+  outline: none;
+  border-color: var(--primary-purple);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.scan-select:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Start Scan Button */
+.btn-add-scan {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--gradient-purple-pink);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-add-scan:hover {
+  background: var(--gradient-purple-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px rgba(124, 58, 237, 0.3);
+}
+
+.btn-add-scan:active {
+  transform: translateY(0);
+}
+
+.btn-add-scan svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2.5;
+}
+
+.btn-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2.5;
+}
+
+.empty-icon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+/* Stop button reuses .btn-action.btn-delete from existing styles */
+.btn-action {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+}
+
+.btn-action.btn-delete {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.btn-action.btn-delete:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* ====================================
+   BODY (camera + result)
+   ==================================== */
+
+.scan-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+/* Camera Wrapper */
+.scan-camera-wrapper {
+  position: relative;
+  background: #1e1b4b;
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e9d5ff;
+  box-shadow: inset 0 0 0 4px rgba(124, 58, 237, 0.08);
+}
+
+.scan-reader {
+  width: 100%;
+  min-height: 360px;
+}
+
+.scan-reader video {
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 10px;
+}
+
+.scan-idle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #c4b5fd;
+  text-align: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+}
+
+.scan-idle p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.scan-idle strong {
+  color: #ffffff;
+}
+
+.scan-idle .empty-icon {
+  width: 5rem;
+  height: 5rem;
+  opacity: 0.7;
+}
+
+/* ====================================
+   RESULT WRAPPER
+   ==================================== */
+
+.scan-result-wrapper {
+  background: #faf5ff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px dashed #e9d5ff;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Empty state */
+.scan-result-empty {
+  text-align: center;
+  color: #94a3b8;
+}
+
+.scan-result-empty p {
+  margin: 0;
+}
+
+/* Success Card */
+.scan-result-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.75rem;
+  width: 100%;
+  box-shadow: 0 12px 24px rgba(124, 58, 237, 0.12);
+  border: 1px solid #e9d5ff;
+  animation: scanPulse 0.4s ease-out;
+}
+
+.scan-result-card-flash {
+  animation: scanPulse 0.4s ease-out;
+}
+
+/* Badge state cooldown */
+.scan-result-badge.is-cooldown {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+.scan-result-badge {
+  display: inline-block;
+  background: var(--gradient-success);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 8px rgba(20, 184, 166, 0.25);
+}
+
+.scan-result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  gap: 1rem;
+}
+
+.scan-result-row:last-of-type {
+  border-bottom: none;
+}
+
+.scan-result-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.scan-result-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: right;
+  word-break: break-word;
+}
+
+.scan-result-price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: var(--gradient-purple-pink);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.scan-result-time {
+  margin: 1rem 0 0 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-align: right;
+}
+
+/* Error State */
+.scan-result-error {
+  width: 100%;
+  text-align: center;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  padding: 2rem 1.5rem;
+  color: #991b1b;
+  animation: scanShake 0.4s ease-out;
+}
+
+.scan-result-error .empty-icon {
+  color: #dc2626;
+  opacity: 0.8;
+}
+
+.scan-result-error-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #991b1b;
+}
+
+.scan-result-error-text {
+  font-size: 0.9rem;
+  color: #7f1d1d;
+  margin: 0;
+}
+
+.scan-result-error-text strong {
+  font-family: 'Courier New', monospace;
+  background: #fee2e2;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* ====================================
+   HISTORY SECTION
+   ==================================== */
+
+.scan-history-section {
+  padding: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.scan-history-section h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e1b4b;
+  margin: 0 0 1rem 0;
+}
+
+.scan-history-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.scan-history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scan-history-table thead {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f5f3ff 100%);
+  border-bottom: 2px solid #e9d5ff;
+}
+
+.scan-history-table th {
+  padding: 0.875rem 1.25rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #5e21b6;
+}
+
+.scan-history-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s ease;
+}
+
+.scan-history-table tbody tr:hover {
+  background-color: #faf5ff;
+}
+
+.scan-history-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.scan-history-table td {
+  padding: 0.875rem 1.25rem;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.scan-history-table td:nth-child(2) {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #7c3aed;
+}
+
+.scan-history-table td:nth-child(4) {
+  font-weight: 600;
+  color: #7c3aed;
+}
+
+.scan-history-empty {
+  text-align: center;
+  padding: 1.5rem;
+  color: #94a3b8;
+}
+
+.scan-history-empty p {
+  margin: 0;
+}
+
+/* ====================================
+   ANIMATIONS
+   ==================================== */
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scanPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  60% {
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scanShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+/* ====================================
+   RESPONSIVE
+   ==================================== */
+
+@media (max-width: 992px) {
+  .scan-body {
+    grid-template-columns: 1fr;
+  }
+
+  .scan-camera-wrapper,
+  .scan-reader,
+  .scan-result-wrapper {
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .scan-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .scan-header-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .scan-header-actions {
+    width: 100%;
+  }
+
+  .scan-select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .btn-add-scan {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .scan-history-table th,
+  .scan-history-table td {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .scan-header {
+    margin-bottom: 1rem;
+  }
+
+  .scan-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .scan-result-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .scan-result-value {
+    text-align: left;
+  }
+
+  .scan-result-price {
+    font-size: 1.2rem;
+  }
+}

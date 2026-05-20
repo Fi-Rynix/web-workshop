@@ -45,6 +45,12 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="{{ route('scan-barang') }}">
+          <span class="menu-title">Scan Barcode</span>
+          <i class="mdi mdi-barcode-scan menu-icon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="{{ route('generate-pdf') }}">
           <span class="menu-title">Generate PDF</span>
           <i class="mdi mdi-file menu-icon"></i>
