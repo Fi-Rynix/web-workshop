@@ -93,6 +93,10 @@ Route::middleware(['auth', 'check_verif', 'check.role:2'])->group(function () {
     // Pesanan yang masuk ke vendor
     Route::get('vendor/pesanan', [App\Http\Controllers\Vendor\TransaksiController::class, 'index'])->name('vendor.pesanan.index');
     Route::get('vendor/pesanan/{id}', [App\Http\Controllers\Vendor\TransaksiController::class, 'show'])->name('vendor.pesanan.show');
+
+    // Scan QR Pesanan (vendor) - menampilkan detail pesanan dari hasil scan QR customer
+    Route::get('vendor/scan-pesanan', [App\Http\Controllers\Vendor\TransaksiController::class, 'scanIndex'])->name('vendor.scan-pesanan');
+    Route::get('vendor/api/pesanan/{id}', [App\Http\Controllers\Vendor\TransaksiController::class, 'getPesananDetail'])->name('vendor.api.pesanan-detail');
 });
 
 // Public Route - Pesan Tanpa Login (Guest)
@@ -105,6 +109,11 @@ Route::get('api/get-menu-by-vendor', [App\Http\Controllers\Pelanggan\PesananCont
 
 // API: Cek status webhook untuk order (public, untuk guest mode)
 Route::get('pesanan/{order_id}/webhook-status', [App\Http\Controllers\MidtransController::class, 'webhookStatus'])->name('pesanan.webhook-status');
+
+// Riwayat Pesanan KHUSUS GUEST (public, tanpa auth)
+// Menampilkan semua pesanan yang dibuat oleh user dengan nama Guest_xxx
+Route::get('pesanan/riwayat', [App\Http\Controllers\Pelanggan\PesananController::class, 'indexForGuest'])->name('pesanan.guest.riwayat');
+Route::get('pesanan/{id}/detail-guest', [App\Http\Controllers\Pelanggan\PesananController::class, 'showForGuest'])->name('pesanan.guest.show');
 
 // Routes untuk Pelanggan (idrole = 3)
 Route::middleware(['auth', 'check_verif', 'check.role:3'])->group(function () {

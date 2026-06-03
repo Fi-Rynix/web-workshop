@@ -140,6 +140,12 @@
           <i class="mdi mdi-cart menu-icon"></i>
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('vendor.scan-pesanan') }}">
+          <span class="menu-title">Scan QR Pesanan</span>
+          <i class="mdi mdi-qrcode-scan menu-icon"></i>
+        </a>
+      </li>
 
     {{-- Menu Pelanggan (idrole = 3) --}}
     @elseif($userRole == 3)
@@ -159,6 +165,27 @@
         <a class="nav-link" href="{{ route('pelanggan.transaksi.index') }}">
           <span class="menu-title">Riwayat Pesanan</span>
           <i class="mdi mdi-history menu-icon"></i>
+        </a>
+      </li>
+
+    {{-- Menu Tamu (tidak login) --}}
+    @elseif(auth()->guest())
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('pesan.public') }}">
+          <span class="menu-title">Pesan Menu</span>
+          <i class="mdi mdi-food menu-icon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('pesanan.guest.riwayat') }}">
+          <span class="menu-title">Riwayat Pesanan Guest</span>
+          <i class="mdi mdi-history menu-icon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('login') }}">
+          <span class="menu-title">Login</span>
+          <i class="mdi mdi-login menu-icon"></i>
         </a>
       </li>
     @endif

@@ -29,4 +29,59 @@ class TransaksiController extends Controller
 
         return view('pages.vendor.detail-transaksi', compact('pesanan'));
     }
+
+    /**
+     * Halaman scan QR pesanan.
+     * Vendor scan QR dari customer, hasil scan adalah idpesanan.
+     * Tampilan: detail pesanan lengkap (display only, tanpa aksi).
+     */
+    public function scanIndex()
+    {
+        return view('pages.vendor.scan-pesanan');
+    }
+
+    /**
+     * API: Ambil detail pesanan by idpesanan (untuk frontend scanner).
+     * Return JSON berisi data pesanan + list item (semua, tanpa filter idvendor).
+     * 404 kalau pesanan tidak ditemukan.
+     */
+    public function getPesananDetail($id)
+    {
+        $pesanan = Pesanan::with(['user', 'detailPesanan.menu'])
+            ->find($id);
+
+        if (!$pesanan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Pesanan tidak ditemukan',
+            ], 404);
+        }
+
+        $items = $pesanan->detailPesanan->map(function ($detail) {
+            return [
+                'nama_menu' => $detail->menu->nama_menu ?? 'Menu tidak ditemukan',
+                'harga' => (int) $detail->harga,
+                'jumlah' => (int) $detail->jumlah,
+                'subtotal' => (int) $detail->subtotal,
+                'catatan' => $detail->catatan,
+            ];
+        })->values();
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'idpesanan' => $pesanan->idpesanan,
+                'order_id' => $pesanan->order_id,
+                'nama' => $pesanan->nama,
+                'customer_email' => $pesanan->customer_email,
+                'total' => (int) $pesanan->total,
+                'total_format' => 'Rp ' . number_format($pesanan->total, 0, ',', '.'),
+                'metode_bayar' => $pesanan->metode_bayar,
+                'channel' => $pesanan->channel,
+                'status_bayar' => $pesanan->status_bayar,
+                'timestamp' => $pesanan->timestamp ? $pesanan->timestamp->format('d M Y H:i') : null,
+                'items' => $items,
+            ],
+        ]);
+    }
 }

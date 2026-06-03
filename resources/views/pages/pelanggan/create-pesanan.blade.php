@@ -143,11 +143,14 @@
                 </div>
 
                 <!-- Tombol Buka Snap Lagi -->
-                <div class="text-center mt-3">
+                <div id="paymentActionArea" class="text-center mt-3">
                     <button id="btnOpenSnap" class="btn btn-primary btn-lg" onclick="reopenSnapPopup()">
                         <i class="mdi mdi-credit-card me-2"></i>Bayar Sekarang
                     </button>
-                    <p class="text-muted small mt-2 mb-0">
+                    <button id="btnFinishOrder" class="btn btn-success btn-lg" onclick="finishOrder()" style="display: none;">
+                        <i class="mdi mdi-check-circle me-2"></i>Selesai
+                    </button>
+                    <p id="paymentActionHint" class="text-muted small mt-2 mb-0">
                         <i class="mdi mdi-information-outline me-1"></i>
                         Klik tombol di atas untuk melanjutkan pembayaran
                     </p>
@@ -219,12 +222,35 @@
 
     // Restore currentOrder dari localStorage (kalau ada order yang belum selesai)
     const savedOrder = localStorage.getItem('currentOrder');
+    console.log('[restore] savedOrder:', savedOrder);
     if (savedOrder) {
         try {
-            currentOrder = JSON.parse(savedOrder);
-            showPaymentDetailSection();
-            startStatusPolling();
+            const parsed = JSON.parse(savedOrder);
+            currentOrder = parsed;
+            console.log('[restore] parsed.status_bayar:', parsed.status_bayar);
+            const section = document.getElementById('paymentStatusSection');
+            console.log('[restore] section exists:', !!section, 'display:', section ? section.style.display : 'n/a');
+            showPaymentStatusSection({
+                order_id: parsed.order_id,
+                total: parsed.total,
+            });
+            console.log('[restore] after showPaymentStatusSection, section display:', section ? section.style.display : 'n/a');
+
+            // kalau status di localStorage sudah final, render state LUNAS
+            // tanpa perlu polling lagi.
+            if (['settlement', 'capture'].includes(parsed.status_bayar)) {
+                console.log('[restore] rendering LUNAS state from localStorage');
+                updatePaymentStatusUI({
+                    status_bayar: parsed.status_bayar,
+                    metode_bayar: parsed.metode_bayar || null,
+                });
+                console.log('[restore] after updatePaymentStatusUI, section display:', section ? section.style.display : 'n/a');
+            } else {
+                // status masih pending/expire/cancel: lanjut polling buat sync.
+                startWebhookPolling(parsed.order_id);
+            }
         } catch(e) {
+            console.error('[restore] error:', e);
             localStorage.removeItem('currentOrder');
         }
     }
@@ -487,18 +513,16 @@
                 // Open Midtrans Snap
                 snap.pay(data.data.snap_token, {
                     onSuccess: function(result) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Pembayaran Berhasil!',
-                            text: 'Pesanan Anda telah dibayar',
-                            showConfirmButton: true,
-                        }).then(() => {
-                            @if(Auth::check())
-                                window.location.href = '{{ route('pelanggan.transaksi.index') }}';
-                            @else
-                                window.location.href = '{{ route('login') }}';
-                            @endif
-                        });
+                        console.log('Snap onSuccess triggered', result);
+                        // update order_id referensi (kalau midtrans mengembalikan settlement)
+                        if (result && result.order_id) {
+                            currentOrder.order_id = result.order_id;
+                        }
+                        // poll sekali buat trigger update UI dari data server.
+                        // redirect DIHAPUS: user tetap di halaman /pesan.
+                        if (currentOrder && currentOrder.order_id) {
+                            checkWebhookStatus(currentOrder.order_id);
+                        }
                     },
                     onPending: function(result) {
                         if (result && result.actions) {
@@ -510,13 +534,16 @@
                         }
                     },
                     onError: function(result) {
+                        // Tampilkan notif error, tetap di halaman.
                         Swal.fire({
                             icon: 'error',
                             title: 'Pembayaran Gagal',
-                            text: 'Silakan coba lagi',
+                            text: 'Silakan coba lagi atau gunakan metode bayar lain',
+                            showConfirmButton: true,
                         });
                     },
                     onClose: function() {
+                        // popup ditutup: polling tetap jalan sampai status final.
                     }
                 });
             } else {
@@ -594,6 +621,24 @@
                 // Selalu update UI dengan status terbaru dari database
                 updatePaymentStatusUI(data);
 
+                // Selalu sinkronkan status bayar ke localStorage supaya restore on-load akurat.
+                // Patch robust: kalau currentOrder null tapi ada order_id di localStorage, restore dulu.
+                if (!currentOrder) {
+                    const saved = localStorage.getItem('currentOrder');
+                    if (saved) {
+                        try { currentOrder = JSON.parse(saved); } catch(e) {}
+                    }
+                }
+                if (currentOrder) {
+                    currentOrder.status_bayar = data.status_bayar;
+                    if (data.metode_bayar) currentOrder.metode_bayar = data.metode_bayar;
+                    currentOrder.order_id = data.order_id || currentOrder.order_id;
+                    localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+                    console.log('localStorage updated:', localStorage.getItem('currentOrder'));
+                } else {
+                    console.warn('currentOrder null, skip localStorage sync');
+                }
+
                 // Kalau sudah settlement/capture di database, hentikan polling
                 if (['settlement', 'capture'].includes(data.status_bayar)) {
                     console.log('Settlement/Capture from DB, stopping polling...');
@@ -612,6 +657,8 @@
         const metodeInput = document.getElementById('paymentMetode');
         const waitingInfo = document.getElementById('webhookWaitingInfo');
         const btnOpenSnap = document.getElementById('btnOpenSnap');
+        const btnFinish = document.getElementById('btnFinishOrder');
+        const actionHint = document.getElementById('paymentActionHint');
         const card = document.querySelector('#paymentStatusSection .card');
 
         // Update badge status
@@ -651,31 +698,48 @@
         // Sembunyikan waiting info
         waitingInfo.style.display = 'none';
 
-        // Kalau sudah settlement/capture, sembunyikan tombol bayar dan tutup section
+        // kalau settlement/capture: sembunyikan tombol Bayar, tampilkan tombol Selesai.
+        // section TIDAK di-remove otomatis. user klik Selesai untuk menutup.
+        // localStorage TIDAK dihapus di sini: biarkan status_final tercatat supaya
+        // restore on-load berikutnya render state LUNAS dengan benar.
         console.log('Checking settlement condition, status:', data.status_bayar);
         if (['settlement', 'capture'].includes(data.status_bayar)) {
-            console.log('Settlement/Capture detected! Hiding button, closing section, and showing success...');
+            console.log('Settlement/Capture detected! Showing Selesai button.');
             btnOpenSnap.style.display = 'none';
+            btnFinish.style.display = 'inline-flex';
+            actionHint.innerHTML = '<i class="mdi mdi-check-circle-outline me-1 text-success"></i>Pembayaran berhasil. Klik <strong>Selesai</strong> untuk membuat pesanan baru.';
 
-            // Tutup section status pembayaran setelah 2 detik (biar user lihat status sukses)
-            setTimeout(() => {
-                document.getElementById('paymentStatusSection').remove();
-            }, 2000);
+            // hentikan polling: status final, tidak perlu cek lagi
+            if (webhookPollingInterval) {
+                clearInterval(webhookPollingInterval);
+                webhookPollingInterval = null;
+            }
 
-            // Tampilkan pesan sukses
-            Swal.fire({
-                icon: 'success',
-                title: 'Pembayaran Berhasil!',
-                text: 'Pesanan Anda telah dibayar',
-                showConfirmButton: true,
-            }).then(() => {
-                @if(Auth::check())
-                    window.location.href = '{{ route('pelanggan.transaksi.index') }}';
-                @else
-                    window.location.href = '{{ route('login') }}';
-                @endif
-            });
+            // TULIS status final ke localStorage dari sini juga (backup kalau sinkron
+            // di checkWebhookStatus tidak jalan karena currentOrder null).
+            try {
+                let stored = JSON.parse(localStorage.getItem('currentOrder') || 'null');
+                if (!stored) stored = { order_id: data.order_id };
+                stored.order_id = data.order_id || stored.order_id;
+                stored.status_bayar = data.status_bayar;
+                if (data.metode_bayar) stored.metode_bayar = data.metode_bayar;
+                localStorage.setItem('currentOrder', JSON.stringify(stored));
+                console.log('[updatePaymentStatusUI] localStorage forced-write:', localStorage.getItem('currentOrder'));
+            } catch (e) {
+                console.warn('[updatePaymentStatusUI] localStorage write failed:', e);
+            }
         }
+    }
+
+    // Tutup section status pembayaran atas permintaan user (setelah sukses).
+    // localStorage dibersihkan di sini karena user mau mulai order baru.
+    function finishOrder() {
+        const section = document.getElementById('paymentStatusSection');
+        if (section) {
+            section.style.display = 'none';
+        }
+        localStorage.removeItem('currentOrder');
+        currentOrder = null;
     }
 
     // Buka popup Snap lagi
@@ -692,23 +756,11 @@
         snap.pay(currentOrder.snap_token, {
             onSuccess: function(result) {
                 console.log('onSuccess triggered', result);
-                // Force check status immediately (jangan tunggu polling)
+                // redirect DIHAPUS: user tetap di halaman /pesan.
+                // update UI langsung dari polling.
                 if (currentOrder && currentOrder.order_id) {
                     checkWebhookStatus(currentOrder.order_id);
                 }
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Pembayaran Berhasil!',
-                    text: 'Pesanan Anda telah dibayar',
-                    showConfirmButton: true,
-                }).then(() => {
-                    @if(Auth::check())
-                        window.location.href = '{{ route('pelanggan.transaksi.index') }}';
-                    @else
-                        window.location.href = '{{ route('login') }}';
-                    @endif
-                });
             },
             onPending: function(result) {
                 console.log('onPending triggered', result);
@@ -726,10 +778,12 @@
                 }
             },
             onError: function(result) {
+                // Tampilkan notif error, tetap di halaman.
                 Swal.fire({
                     icon: 'error',
                     title: 'Pembayaran Gagal',
-                    text: 'Silakan coba lagi',
+                    text: 'Silakan coba lagi atau gunakan metode bayar lain',
+                    showConfirmButton: true,
                 });
             },
             onClose: function() {

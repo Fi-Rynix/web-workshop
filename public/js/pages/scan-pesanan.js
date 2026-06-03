@@ -1,8 +1,8 @@
 // ========================================
-// javascript page - scan barang
+// javascript page - scan pesanan (vendor)
 // ========================================
 // file ini berisi semua fungsi javascript
-// untuk halaman scan barcode barang.
+// untuk halaman scan QR pesanan vendor.
 //
 // struktur:
 // - inisialisasi/setup
@@ -27,21 +27,19 @@
     let lastScannedAt = 0;           // timestamp scan terakhir
     let scanHistory = [];            // riwayat scan in-memory (max 10)
     let isCooldown = false;          // saat true, semua hasil scan di-skip
-    let cooldownTimer = null;        // interval untuk update progress bar
 
     const DEBOUNCE_MS = 1500;        // jeda minimal sebelum kode sama bisa di-scan ulang
     const COOLDOWN_MS = 3000;        // cooldown global setelah scan berhasil/error
+    const BEEP_DELAY_MS = 1000;      // delay render setelah beep
     const MAX_HISTORY = 10;          // batas riwayat scan
-    const API_URL = window.SCAN_BARANG_API || '';
+    const API_URL = window.SCAN_PESANAN_API || '';
 
     // ====================================
     // INISIALISASI
     // ====================================
 
-    // entry point halaman scan barang.
-    // dipanggil saat dom siap.
-    function initScanBarangPage() {
-        console.log('Scan Barang Page Initialized');
+    function initScanPesananPage() {
+        console.log('Scan Pesanan Page Initialized');
 
         if (typeof Html5Qrcode === 'undefined') {
             console.error('Html5Qrcode library belum dimuat');
@@ -57,8 +55,6 @@
     // SETUP KAMERA
     // ====================================
 
-    // ambil daftar kamera lewat html5-qrcode dan
-    // isi dropdown #cameraselect.
     function setupCameraList() {
         const select = document.getElementById('cameraSelect');
 
@@ -79,7 +75,6 @@
                     select.appendChild(opt);
                 });
 
-                // pilih kamera belakang sebagai default kalau ada
                 const back = devices.find((d) => /back|belakang|environment|rear/i.test(d.label));
                 activeCameraId = back ? back.id : devices[0].id;
                 select.value = activeCameraId;
@@ -96,7 +91,6 @@
     // EVENT LISTENERS
     // ====================================
 
-    // pasang listener pada tombol start/stop dan dropdown kamera.
     function setupButtonEvents() {
         const btnStart = document.getElementById('btnStartScan');
         const btnStop = document.getElementById('btnStopScan');
@@ -114,7 +108,6 @@
             stopScan();
         });
 
-        // ganti kamera saat sedang scan: stop dulu, baru start dengan id baru.
         select.addEventListener('change', (e) => {
             activeCameraId = e.target.value;
             if (isScanning) {
@@ -127,8 +120,6 @@
     // SCAN LOGIC
     // ====================================
 
-    // mulai scan dengan kamera tertentu.
-    // @param {string} cameraid - id kamera dari getcameras()
     function startScan(cameraId) {
         if (isScanning) return;
 
@@ -140,13 +131,9 @@
 
         const config = {
             fps: 10,
-            qrbox: { width: 280, height: 180 },
-            aspectRatio: 1.7777778,
+            qrbox: { width: 280, height: 280 },
+            aspectRatio: 1.0,
             formatsToSupport: [
-                Html5QrcodeSupportedFormats.CODE_128,
-                Html5QrcodeSupportedFormats.CODE_39,
-                Html5QrcodeSupportedFormats.EAN_13,
-                Html5QrcodeSupportedFormats.EAN_8,
                 Html5QrcodeSupportedFormats.QR_CODE,
             ],
         };
@@ -165,8 +152,6 @@
             });
     }
 
-    // hentikan scan dan reset ui.
-    // @returns {promise}
     function stopScan() {
         if (!html5Qrcode || !isScanning) return Promise.resolve();
 
@@ -183,15 +168,10 @@
             .catch((err) => console.warn('Stop scan error:', err));
     }
 
-    // callback ketika berhasil decode barcode.
-    // @param {string} decodedtext - isi barcode (idbarang)
     function onScanSuccess(decodedText) {
-        // skip kalau masih dalam cooldown global.
         if (isCooldown) return;
 
         const now = Date.now();
-
-        // debounce: skip kalau kode sama dan belum lewat jeda.
         if (decodedText === lastScannedCode && now - lastScannedAt < DEBOUNCE_MS) {
             return;
         }
@@ -199,23 +179,19 @@
         lastScannedCode = decodedText;
         lastScannedAt = now;
 
-        fetchBarangDetail(decodedText);
+        fetchPesananDetail(decodedText);
     }
 
-    // callback saat decode gagal (frame tidak ada barcode).
-    // dibiarkan diam supaya tidak spam console.
     function onScanFailure(_error) {
         // no-op
     }
 
     // ====================================
-    // FETCH DETAIL BARANG
+    // FETCH DETAIL PESANAN
     // ====================================
 
-    // panggil endpoint api detail barang lalu render.
-    // @param {string} idbarang - id dari hasil scan
-    function fetchBarangDetail(idBarang) {
-        fetch(`${API_URL}/${encodeURIComponent(idBarang)}`, {
+    function fetchPesananDetail(idPesanan) {
+        fetch(`${API_URL}/${encodeURIComponent(idPesanan)}`, {
             headers: {
                 Accept: 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
@@ -227,70 +203,91 @@
             })
             .then(({ ok, body }) => {
                 if (ok && body.status && body.data) {
-                    // BEEP DULU: putar beep, tunggu promise-nya (audio mulai),
-                    // delay 1 detik supaya user lebih merasakan beep, baru render visual.
                     playBeep().then(() => {
                         setTimeout(() => {
                             renderResult(body.data);
                             addHistory(body.data);
-                        }, 1000);
+                        }, BEEP_DELAY_MS);
                     });
                 } else {
-                    renderError(idBarang);
+                    renderError(idPesanan);
                 }
                 startCooldown();
             })
             .catch((err) => {
-                console.error('Fetch barang error:', err);
-                renderError(idBarang);
+                console.error('Fetch pesanan error:', err);
+                renderError(idPesanan);
                 startCooldown();
             });
-    }
-
-    // ====================================
-    // COOLDOWN
-    // ====================================
-
-    // mulai cooldown global setelah scan berhasil/gagal.
-    // selama cooldown, callback onscansuccess akan return cepat
-    // sehingga decode di-ignore.
-    function startCooldown() {
-        isCooldown = true;
-
-        if (cooldownTimer) clearTimeout(cooldownTimer);
-
-        cooldownTimer = setTimeout(() => {
-            cooldownTimer = null;
-            isCooldown = false;
-        }, COOLDOWN_MS);
     }
 
     // ====================================
     // RENDER UI
     // ====================================
 
-    // tampilkan card hasil scan sukses.
-    // @param {object} data - {idbarang, nama_barang, harga, harga_format}
     function renderResult(data) {
         document.getElementById('scanResultEmpty').style.display = 'none';
         document.getElementById('scanResultError').style.display = 'none';
 
         const card = document.getElementById('scanResultCard');
         card.style.display = 'block';
-
-        // re-trigger animasi pulse setiap kali ada hasil baru.
-        card.classList.remove('scan-result-card-flash');
+        card.classList.remove('vscan-result-card-flash');
         void card.offsetWidth;
-        card.classList.add('scan-result-card-flash');
+        card.classList.add('vscan-result-card-flash');
 
-        document.getElementById('resultIdBarang').textContent = data.idbarang;
-        document.getElementById('resultNamaBarang').textContent = data.nama_barang;
-        document.getElementById('resultHarga').textContent = data.harga_format;
+        document.getElementById('resultOrderId').textContent = data.order_id;
+        document.getElementById('resultNama').textContent = data.nama;
+        document.getElementById('resultEmail').textContent = data.customer_email || '-';
+        document.getElementById('resultTotal').textContent = data.total_format;
+        document.getElementById('resultStatusBayar').innerHTML = renderStatusBadge(data.status_bayar);
+        document.getElementById('resultMetode').textContent =
+            (data.metode_bayar || '-') + (data.channel ? ' (' + data.channel + ')' : '');
+        document.getElementById('resultTanggal').textContent = data.timestamp || '-';
         document.getElementById('resultWaktu').textContent = formatTime(new Date());
+
+        renderItems(data.items || []);
     }
 
-    // tampilkan panel error "barang tidak ditemukan".
-    // @param {string} kode - kode hasil scan yang tidak match.
+    function renderStatusBadge(status) {
+        if (['settlement', 'capture'].includes(status)) {
+            return '<span class="vscan-result-status-lunas">Lunas</span>';
+        }
+        if (status === 'pending') {
+            return '<span class="vscan-result-status-pending">Pending</span>';
+        }
+        if (['deny', 'expire', 'cancel'].includes(status)) {
+            return '<span class="vscan-result-status-gagal">' + escapeHtml(capitalize(status)) + '</span>';
+        }
+        return '<span class="vscan-result-status-other">' + escapeHtml(status || '-') + '</span>';
+    }
+
+    function renderItems(items) {
+        const container = document.getElementById('resultItems');
+
+        if (items.length === 0) {
+            container.innerHTML = '<p class="vscan-history-empty"><em>Tidak ada item</em></p>';
+            return;
+        }
+
+        const html = items
+            .map((it) => {
+                const subtotal = formatRupiah(it.subtotal);
+                const harga = formatRupiah(it.harga);
+                return `
+                <div class="vscan-result-item">
+                    <div class="vscan-result-item-info">
+                        <p class="vscan-result-item-name">${escapeHtml(it.nama_menu)}</p>
+                        <p class="vscan-result-item-meta">Rp ${harga} &times; ${escapeHtml(String(it.jumlah))}</p>
+                        ${it.catatan ? `<p class="vscan-result-item-note"><i class="mdi mdi-note-text-outline"></i> ${escapeHtml(it.catatan)}</p>` : ''}
+                    </div>
+                    <div class="vscan-result-item-subtotal">Rp ${subtotal}</div>
+                </div>`;
+            })
+            .join('');
+
+        container.innerHTML = html;
+    }
+
     function renderError(kode) {
         document.getElementById('scanResultEmpty').style.display = 'none';
         document.getElementById('scanResultCard').style.display = 'none';
@@ -305,14 +302,13 @@
     // HISTORY
     // ====================================
 
-    // tambah entri scan ke riwayat (in-memory) dan render tabel.
-    // @param {object} data - detail barang dari api.
     function addHistory(data) {
         scanHistory.unshift({
             waktu: formatTime(new Date()),
-            idbarang: data.idbarang,
-            nama_barang: data.nama_barang,
-            harga_format: data.harga_format,
+            order_id: data.order_id,
+            nama: data.nama,
+            total_format: data.total_format,
+            status_bayar: data.status_bayar,
         });
 
         if (scanHistory.length > MAX_HISTORY) {
@@ -322,15 +318,14 @@
         renderHistory();
     }
 
-    // render tabel riwayat scan.
     function renderHistory() {
         const tbody = document.getElementById('scanHistoryBody');
 
         if (scanHistory.length === 0) {
             tbody.innerHTML = `
                 <tr id="scanHistoryEmpty">
-                    <td colspan="4">
-                        <div class="scan-history-empty">
+                    <td colspan="5">
+                        <div class="vscan-history-empty">
                             <p>Belum ada riwayat scan</p>
                         </div>
                     </td>
@@ -344,9 +339,10 @@
                 (row) => `
                 <tr>
                     <td>${escapeHtml(row.waktu)}</td>
-                    <td>${escapeHtml(String(row.idbarang))}</td>
-                    <td>${escapeHtml(row.nama_barang)}</td>
-                    <td>${escapeHtml(row.harga_format)}</td>
+                    <td>${escapeHtml(row.order_id)}</td>
+                    <td>${escapeHtml(row.nama)}</td>
+                    <td>${escapeHtml(row.total_format)}</td>
+                    <td>${renderStatusBadge(row.status_bayar)}</td>
                 </tr>
             `,
             )
@@ -354,13 +350,22 @@
     }
 
     // ====================================
+    // COOLDOWN
+    // ====================================
+
+    function startCooldown() {
+        isCooldown = true;
+        if (cooldownTimer) clearTimeout(cooldownTimer);
+        cooldownTimer = setTimeout(() => {
+            cooldownTimer = null;
+            isCooldown = false;
+        }, COOLDOWN_MS);
+    }
+
+    // ====================================
     // FUNGSI HELPER
     // ====================================
 
-    // putar suara beep.
-    // pakai clonenode supaya scan beruntun tetap kedengeran.
-    // return promise supaya caller bisa tunggu audio benar-benar mulai.
-    // @returns {promise<void>}
     function playBeep() {
         const beep = document.getElementById('beepSound');
         if (!beep) return Promise.resolve();
@@ -379,9 +384,10 @@
         }
     }
 
-    // format jam:menit:detik (id-id).
-    // @param {date} date
-    // @returns {string}
+    function formatRupiah(angka) {
+        return new Intl.NumberFormat('id-ID').format(angka || 0);
+    }
+
     function formatTime(date) {
         const hh = String(date.getHours()).padStart(2, '0');
         const mm = String(date.getMinutes()).padStart(2, '0');
@@ -389,9 +395,11 @@
         return `${hh}:${mm}:${ss}`;
     }
 
-    // escape karakter html untuk mencegah injection saat render history.
-    // @param {string} str
-    // @returns {string}
+    function capitalize(str) {
+        if (!str) return '-';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     function escapeHtml(str) {
         return String(str)
             .replace(/&/g, '&amp;')
@@ -406,13 +414,12 @@
     // ====================================
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initScanBarangPage);
+        document.addEventListener('DOMContentLoaded', initScanPesananPage);
     } else {
-        initScanBarangPage();
+        initScanPesananPage();
     }
 
-    // expose untuk akses global (debug / testing).
-    window.ScanBarangPage = {
+    window.ScanPesananPage = {
         startScan: () => startScan(activeCameraId),
         stopScan,
         getHistory: () => scanHistory.slice(),

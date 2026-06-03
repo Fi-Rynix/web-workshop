@@ -62,6 +62,61 @@ class PesananController extends Controller
         return view('pages.pelanggan.index-transaksi', compact('pesanans'));
     }
 
+    /**
+     * Riwayat pesanan KHUSUS GUEST.
+     * Menampilkan SEMUA pesanan yang dibuat oleh user dengan nama Guest_xxxxx.
+     * Tidak ada filter per user — semua guest bisa lihat pesanan guest lain.
+     * Akses: publik (tanpa auth).
+     */
+    public function indexForGuest()
+    {
+        $guestIds = User::where('nama', 'like', 'Guest_%')->pluck('iduser')->all();
+
+        $pesanans = Pesanan::whereIn('iduser', $guestIds)
+            ->with(['detailPesanan.menu', 'user'])
+            ->orderBy('timestamp', 'desc')
+            ->paginate(15);
+
+        $guestCount = count($guestIds);
+
+        return view('pages.pelanggan.index-transaksi-guest', compact('pesanans', 'guestCount'));
+    }
+
+    /**
+     * Detail pesanan KHUSUS GUEST.
+     * Hanya menampilkan pesanan yang iduser-nya user Guest.
+     * Akses: publik (tanpa auth).
+     */
+    public function showForGuest($id)
+    {
+        $guestIds = User::where('nama', 'like', 'Guest_%')->pluck('iduser')->all();
+
+        $pesanan = Pesanan::where('idpesanan', $id)
+            ->whereIn('iduser', $guestIds)
+            ->with(['detailPesanan.menu', 'user'])
+            ->firstOrFail();
+
+        $qrCodeBase64 = $this->generateQrCodeBase64($pesanan->idpesanan);
+
+        return view('pages.pelanggan.detail-transaksi-guest', compact('pesanan', 'qrCodeBase64'));
+    }
+
+    /**
+     * Generate QR Code SVG (Base64 encoded) berisi idpesanan.
+     * Helper internal yang di-reuse oleh show() dan showForGuest().
+     */
+    private function generateQrCodeBase64($payload): string
+    {
+        $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+            new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200, 10),
+            new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+        );
+        $writer = new \BaconQrCode\Writer($renderer);
+        $qrCodeSvg = $writer->writeString((string) $payload);
+
+        return base64_encode($qrCodeSvg);
+    }
+
 
     public function createPublic()
     {
@@ -110,7 +165,8 @@ class PesananController extends Controller
         try {
             DB::beginTransaction();
 
-            $user = $this->createGuestUser();
+            // Pakai user yang sedang login kalau ada. kalau guest, buat user Guest_ baru.
+            $user = Auth::check() ? Auth::user() : $this->createGuestUser();
 
             if ($request->email && empty($user->email)) {
                 $user->update(['email' => $request->email]);
@@ -218,13 +274,7 @@ class PesananController extends Controller
             ->with('detailPesanan.menu', 'user')
             ->firstOrFail();
 
-        $renderer = new \BaconQrCode\Renderer\ImageRenderer(
-            new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200, 10),
-            new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
-        );
-        $writer = new \BaconQrCode\Writer($renderer);
-        $qrCodeSvg = $writer->writeString((string) $pesanan->idpesanan);
-        $qrCodeBase64 = base64_encode($qrCodeSvg);
+        $qrCodeBase64 = $this->generateQrCodeBase64($pesanan->idpesanan);
 
         return view('pages.pelanggan.detail-transaksi', compact('pesanan', 'qrCodeBase64'));
     }
