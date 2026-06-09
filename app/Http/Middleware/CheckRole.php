@@ -30,6 +30,8 @@ class CheckRole
                 return redirect()->route('dashboard');
             } elseif ($user->idrole == 2) {
                 return redirect()->route('pelanggan.dashboard');
+            } elseif ($user->idrole == 4) {
+                return redirect()->route('sales.dashboard');
             }
 
             // Jika role tidak dikenali, logout

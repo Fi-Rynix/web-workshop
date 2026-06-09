@@ -51,6 +51,12 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="{{ route('index-kunjungan-toko') }}">
+          <span class="menu-title">Kunjungan Toko</span>
+          <i class="mdi mdi-store-marker menu-icon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="{{ route('generate-pdf') }}">
           <span class="menu-title">Generate PDF</span>
           <i class="mdi mdi-file menu-icon"></i>
@@ -186,6 +192,21 @@
         <a class="nav-link" href="{{ route('login') }}">
           <span class="menu-title">Login</span>
           <i class="mdi mdi-login menu-icon"></i>
+        </a>
+      </li>
+
+    {{-- Menu Sales (idrole = 4) --}}
+    @elseif($userRole == 4)
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('sales.dashboard') }}">
+          <span class="menu-title">Dashboard</span>
+          <i class="mdi mdi-home menu-icon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('sales.scan-toko') }}">
+          <span class="menu-title">Scan Toko</span>
+          <i class="mdi mdi-qrcode-scan menu-icon"></i>
         </a>
       </li>
     @endif

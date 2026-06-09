@@ -46,6 +46,14 @@ Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
     Route::get('barang/scan-barang', [App\Http\Controllers\BarangController::class, 'scanIndex'])->name('scan-barang');
     Route::get('api/barang/{id}', [App\Http\Controllers\BarangController::class, 'getBarangById'])->name('api-barang-detail');
 
+    // Kunjungan Toko (admin)
+    Route::get('kunjungan-toko/index-kunjungan-toko', [App\Http\Controllers\KunjunganTokoController::class, 'index'])->name('index-kunjungan-toko');
+    Route::post('kunjungan-toko/create-kunjungan-toko', [App\Http\Controllers\KunjunganTokoController::class, 'store'])->name('create-kunjungan-toko');
+    Route::put('kunjungan-toko/edit-kunjungan-toko/{barcode}', [App\Http\Controllers\KunjunganTokoController::class, 'update'])->name('edit-kunjungan-toko');
+    Route::delete('kunjungan-toko/delete-kunjungan-toko/{barcode}', [App\Http\Controllers\KunjunganTokoController::class, 'destroy'])->name('delete-kunjungan-toko');
+    Route::get('kunjungan-toko/{barcode}', [App\Http\Controllers\KunjunganTokoController::class, 'show'])->name('show-kunjungan-toko');
+    Route::get('api/next-toko-barcode', [App\Http\Controllers\KunjunganTokoController::class, 'nextBarcode'])->name('api-next-toko-barcode');
+
     Route::get('pdf/generate-pdf', [App\Http\Controllers\PdfController::class, 'generatePdf'])->name('generate-pdf');
 
     Route::get('modul-4-js/non-datatables', function () {return view('pages.modul-4-js.non-datatables');})->name('modul-4-js-non-datatables');
@@ -129,6 +137,23 @@ Route::middleware(['auth', 'check_verif', 'check.role:3'])->group(function () {
 
 // Webhook untuk Midtrans notification (public)
 Route::post('midtrans/notification', [App\Http\Controllers\MidtransController::class, 'notification'])->name('midtrans.notification');
+
+// Routes untuk Sales (idrole = 4)
+Route::middleware(['auth', 'check_verif', 'check.role:4'])->group(function () {
+    Route::get('sales/dashboard', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'dashboard'])->name('sales.dashboard');
+
+    // Halaman scan QR toko
+    Route::get('sales/scan-toko', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'scanIndex'])->name('sales.scan-toko');
+
+    // API: get detail toko by barcode (untuk frontend scanner)
+    Route::get('sales/api/toko/{barcode}', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'getTokoByBarcode'])->name('sales.api.toko');
+
+    // API: submit laporan kunjungan
+    Route::post('sales/api/submit-kunjungan', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'submitKunjungan'])->name('sales.api.submit-kunjungan');
+
+    // API: ambil riwayat kunjungan sales (untuk tabel di halaman scan)
+    Route::get('sales/api/riwayat-kunjungan', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'riwayatKunjungan'])->name('sales.api.riwayat-kunjungan');
+});
 
 
 

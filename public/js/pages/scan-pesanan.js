@@ -1,43 +1,25 @@
-// ========================================
-// javascript page - scan pesanan (vendor)
-// ========================================
-// file ini berisi semua fungsi javascript
-// untuk halaman scan QR pesanan vendor.
-//
-// struktur:
-// - inisialisasi/setup
-// - event listeners
-// - scan logic (html5-qrcode)
-// - render hasil & history
-// - fungsi helper
-// ========================================
-
+// Scan Pesanan Vendor - QR scanner untuk detail pesanan
 (function () {
     'use strict';
 
-    // ====================================
-    // STATE
-    // ====================================
+    // State
+    let html5Qrcode = null;
+    let isScanning = false;
+    let availableCameras = [];
+    let activeCameraId = null;
+    let lastScannedCode = null;
+    let lastScannedAt = 0;
+    let scanHistory = [];
+    let isCooldown = false;
 
-    let html5Qrcode = null;          // instance Html5Qrcode aktif
-    let isScanning = false;          // status apakah kamera sedang aktif
-    let availableCameras = [];       // daftar kamera dari getCameras()
-    let activeCameraId = null;       // id kamera yang dipakai saat ini
-    let lastScannedCode = null;      // kode terakhir yang di-scan (debounce)
-    let lastScannedAt = 0;           // timestamp scan terakhir
-    let scanHistory = [];            // riwayat scan in-memory (max 10)
-    let isCooldown = false;          // saat true, semua hasil scan di-skip
-
-    const DEBOUNCE_MS = 1500;        // jeda minimal sebelum kode sama bisa di-scan ulang
-    const COOLDOWN_MS = 3000;        // cooldown global setelah scan berhasil/error
-    const BEEP_DELAY_MS = 1000;      // delay render setelah beep
-    const MAX_HISTORY = 10;          // batas riwayat scan
+    // Constants
+    const DEBOUNCE_MS = 1500;
+    const COOLDOWN_MS = 3000;
+    const BEEP_DELAY_MS = 1000;
+    const MAX_HISTORY = 10;
     const API_URL = window.SCAN_PESANAN_API || '';
 
-    // ====================================
-    // INISIALISASI
-    // ====================================
-
+    // Init
     function initScanPesananPage() {
         console.log('Scan Pesanan Page Initialized');
 
@@ -50,10 +32,6 @@
         setupCameraList();
         setupButtonEvents();
     }
-
-    // ====================================
-    // SETUP KAMERA
-    // ====================================
 
     function setupCameraList() {
         const select = document.getElementById('cameraSelect');
@@ -87,10 +65,6 @@
             });
     }
 
-    // ====================================
-    // EVENT LISTENERS
-    // ====================================
-
     function setupButtonEvents() {
         const btnStart = document.getElementById('btnStartScan');
         const btnStop = document.getElementById('btnStopScan');
@@ -104,9 +78,7 @@
             startScan(activeCameraId);
         });
 
-        btnStop.addEventListener('click', () => {
-            stopScan();
-        });
+        btnStop.addEventListener('click', () => stopScan());
 
         select.addEventListener('change', (e) => {
             activeCameraId = e.target.value;
@@ -115,10 +87,6 @@
             }
         });
     }
-
-    // ====================================
-    // SCAN LOGIC
-    // ====================================
 
     function startScan(cameraId) {
         if (isScanning) return;
@@ -133,9 +101,7 @@
             fps: 10,
             qrbox: { width: 280, height: 280 },
             aspectRatio: 1.0,
-            formatsToSupport: [
-                Html5QrcodeSupportedFormats.QR_CODE,
-            ],
+            formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
         };
 
         html5Qrcode
@@ -172,9 +138,7 @@
         if (isCooldown) return;
 
         const now = Date.now();
-        if (decodedText === lastScannedCode && now - lastScannedAt < DEBOUNCE_MS) {
-            return;
-        }
+        if (decodedText === lastScannedCode && now - lastScannedAt < DEBOUNCE_MS) return;
 
         lastScannedCode = decodedText;
         lastScannedAt = now;
@@ -186,10 +150,7 @@
         // no-op
     }
 
-    // ====================================
-    // FETCH DETAIL PESANAN
-    // ====================================
-
+    // Fetch detail pesanan dari API
     function fetchPesananDetail(idPesanan) {
         fetch(`${API_URL}/${encodeURIComponent(idPesanan)}`, {
             headers: {
@@ -203,6 +164,7 @@
             })
             .then(({ ok, body }) => {
                 if (ok && body.status && body.data) {
+                    // beep dulu, delay 1 detik, baru render
                     playBeep().then(() => {
                         setTimeout(() => {
                             renderResult(body.data);
@@ -221,10 +183,17 @@
             });
     }
 
-    // ====================================
-    // RENDER UI
-    // ====================================
+    // Cooldown 3 detik
+    function startCooldown() {
+        isCooldown = true;
+        if (cooldownTimer) clearTimeout(cooldownTimer);
+        cooldownTimer = setTimeout(() => {
+            cooldownTimer = null;
+            isCooldown = false;
+        }, COOLDOWN_MS);
+    }
 
+    // Render card success
     function renderResult(data) {
         document.getElementById('scanResultEmpty').style.display = 'none';
         document.getElementById('scanResultError').style.display = 'none';
@@ -248,6 +217,7 @@
         renderItems(data.items || []);
     }
 
+    // Render badge status (Lunas/Pending/Gagal/Other)
     function renderStatusBadge(status) {
         if (['settlement', 'capture'].includes(status)) {
             return '<span class="vscan-result-status-lunas">Lunas</span>';
@@ -261,6 +231,7 @@
         return '<span class="vscan-result-status-other">' + escapeHtml(status || '-') + '</span>';
     }
 
+    // Render list item pesanan
     function renderItems(items) {
         const container = document.getElementById('resultItems');
 
@@ -294,14 +265,10 @@
 
         const errorEl = document.getElementById('scanResultError');
         errorEl.style.display = 'block';
-
         document.getElementById('resultErrorKode').textContent = kode;
     }
 
-    // ====================================
-    // HISTORY
-    // ====================================
-
+    // Tambah entri history (max 10)
     function addHistory(data) {
         scanHistory.unshift({
             waktu: formatTime(new Date()),
@@ -349,23 +316,7 @@
             .join('');
     }
 
-    // ====================================
-    // COOLDOWN
-    // ====================================
-
-    function startCooldown() {
-        isCooldown = true;
-        if (cooldownTimer) clearTimeout(cooldownTimer);
-        cooldownTimer = setTimeout(() => {
-            cooldownTimer = null;
-            isCooldown = false;
-        }, COOLDOWN_MS);
-    }
-
-    // ====================================
-    // FUNGSI HELPER
-    // ====================================
-
+    // Play beep. cloneNode supaya scan beruntun gak saling override. Return Promise.
     function playBeep() {
         const beep = document.getElementById('beepSound');
         if (!beep) return Promise.resolve();
@@ -409,10 +360,7 @@
             .replace(/'/g, '&#039;');
     }
 
-    // ====================================
-    // DOM READY
-    // ====================================
-
+    // DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initScanPesananPage);
     } else {
