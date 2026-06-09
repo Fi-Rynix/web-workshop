@@ -59,6 +59,11 @@
                       <i class="mdi mdi-facebook me-2"></i>Connect using facebook </button>
                   </div>
                   <div class="mb-2 d-grid gap-2">
+                    <a href="{{ route('antrian.form') }}" class="btn btn-block btn-warning auth-form-btn" style="background-color: #f59e0b; color: white;">
+                      <i class="mdi mdi-clipboard-list-outline me-2"></i>Daftar Antrian
+                    </a>
+                  </div>
+                  <div class="mb-2 d-grid gap-2">
                     <a href="{{ route('pesan.public') }}" class="btn btn-block btn-success auth-form-btn">
                       <i class="mdi mdi-food me-2"></i>Pesan Menu (Tanpa Login)
                     </a>

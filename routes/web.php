@@ -11,6 +11,43 @@ Route::get('/', function () {
 Auth::routes();
 
 
+// =====================================================
+// Public Routes - Antrian Digital (Tanpa Login)
+// =====================================================
+Route::get('antrian-form', [App\Http\Controllers\AntrianController::class, 'form'])->name('antrian.form')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+Route::post('antrian-form', [App\Http\Controllers\AntrianController::class, 'store'])->name('antrian.store')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+Route::get('queue/{id}', [App\Http\Controllers\AntrianController::class, 'display'])->name('antrian.display')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+Route::get('antrian/api/{id}', [App\Http\Controllers\AntrianController::class, 'getStatus'])->name('antrian.api.status');
+
+// =====================================================
+// SSE Stream - Antrian (Tanpa session, agar page lain bisa diakses)
+// =====================================================
+Route::get('sse/antrian', [App\Http\Controllers\SseAntrianController::class, 'stream'])
+    ->name('sse.antrian')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+
+// =====================================================
+// Admin Routes - Antrian (Perlu Login)
+// =====================================================
+Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
+    Route::get('admin/antrian', [App\Http\Controllers\AdminAntrianController::class, 'index'])->name('admin.antrian')
+        ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+    Route::post('admin/antrian/call/{id}', [App\Http\Controllers\AdminAntrianController::class, 'call'])->name('admin.antrian.call');
+    Route::post('admin/antrian/late/{id}', [App\Http\Controllers\AdminAntrianController::class, 'late'])->name('admin.antrian.late');
+    Route::post('admin/antrian/complete/{id}', [App\Http\Controllers\AdminAntrianController::class, 'complete'])->name('admin.antrian.complete');
+    Route::post('admin/antrian/recall/{id}', [App\Http\Controllers\AdminAntrianController::class, 'recall'])->name('admin.antrian.recall');
+});
+
+// =====================================================
+// Public Routes - Papan Antrian (Display Board)
+// =====================================================
+Route::get('board/antrian', [App\Http\Controllers\BoardAntrianController::class, 'index'])->name('board.antrian')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+
 Route::get('auth/google/redirect', [App\Http\Controllers\SocialiteController::class, 'redirect'])->name('google-redirect');
 Route::get('auth/google/callback', [App\Http\Controllers\SocialiteController::class, 'callback'])->name('google-callback');
 
@@ -161,3 +198,14 @@ Route::middleware(['auth', 'check_verif', 'check.role:4'])->group(function () {
 
 
 
+Route::get('test-antrian', [App\Http\Controllers\TestController::class, 'test'])->name('test.antrian')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+
+Route::get('test-plain', [App\Http\Controllers\SimpleController::class, 'plain'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+
+Route::get('test-blade', [App\Http\Controllers\SimpleController::class, 'blade'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+
+Route::get('test-layout', [App\Http\Controllers\SimpleController::class, 'layout'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);

@@ -27,6 +27,12 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="{{ route('admin.antrian') }}">
+          <span class="menu-title">Kelola Antrian</span>
+          <i class="mdi mdi-clipboard-list-outline menu-icon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="{{ route('index-kategori') }}">
           <span class="menu-title">Kategori</span>
           <i class="mdi mdi-tag menu-icon"></i>
@@ -176,6 +182,18 @@
 
     {{-- Menu Tamu (tidak login) --}}
     @elseif(auth()->guest())
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('antrian.form') }}">
+          <span class="menu-title">Daftar Antrian</span>
+          <i class="mdi mdi-clipboard-list-outline menu-icon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ route('board.antrian') }}" target="_blank">
+          <span class="menu-title">Papan Antrian</span>
+          <i class="mdi mdi-monitor menu-icon"></i>
+        </a>
+      </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ route('pesan.public') }}">
           <span class="menu-title">Pesan Menu</span>
