@@ -65,7 +65,7 @@
     </div>
 </div>
 
-<audio id="bellAudio" src="{{ asset('sounds/dingdong.mp3') }}?t={{ now()->timestamp }}"></audio>
+<audio id="bellAudio" src="{{ asset('sounds/announce.mp3') }}?t={{ now()->timestamp }}"></audio>
 
 @endsection
 
@@ -104,13 +104,27 @@
     
     function speakAntrian(nomor, nama) {
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(
-                `Nomor antrian ${nomor}. ${nama}. Silakan menuju bagian pelayanan.`
-            );
-            utterance.lang = 'id-ID';
-            utterance.rate = 0.85;
-            window.speechSynthesis.speak(utterance);
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(
+                    `Nomor antrian ${nomor}. ${nama}. Silakan menuju bagian pelayanan.`
+                );
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.85;
+                utterance.onerror = (e) => {
+                    console.error('Speech error:', e);
+                    isPlaying = false;
+                };
+                utterance.onend = () => {
+                    console.log('Speech ended');
+                    isPlaying = false;
+                };
+                window.speechSynthesis.speak(utterance);
+                console.log('Speech started');
+            } catch (e) {
+                console.error('Speech error:', e);
+                isPlaying = false;
+            }
         }
     }
     
@@ -119,17 +133,46 @@
         isPlaying = true;
         
         const bellAudio = document.getElementById('bellAudio');
-        bellAudio.currentTime = 0;
-        bellAudio.play().then(() => {
-            console.log('Bell playing');
-        }).catch(e => {
+        if (!bellAudio) {
+            console.error('Audio element not found');
             isPlaying = false;
-        });
+            return;
+        }
         
-        bellAudio.onended = function() {
-            speakAntrian(nomor, nama);
+        try {
+            bellAudio.currentTime = 0;
+            
+            const playPromise = bellAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log('Bell playing');
+                }).catch(e => {
+                    console.error('Audio play error:', e);
+                    // If autoplay fails, try speech directly
+                    speakAntrian(nomor, nama);
+                });
+            }
+            
+            // Remove old listener and add new one
+            bellAudio.onended = function() {
+                console.log('Bell ended, starting speech');
+                speakAntrian(nomor, nama);
+            };
+            
+            // Add timeout fallback (5 seconds)
+            const timeout = setTimeout(() => {
+                if (isPlaying) {
+                    console.warn('Audio timeout, resetting isPlaying');
+                    isPlaying = false;
+                }
+            }, 5000);
+            
+            bellAudio.addEventListener('ended', () => clearTimeout(timeout), { once: true });
+            
+        } catch (e) {
+            console.error('Error in playBellAndSpeech:', e);
             isPlaying = false;
-        };
+        }
     }
 
     const sseIndicator = document.getElementById('sseIndicator');
