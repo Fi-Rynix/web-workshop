@@ -10,9 +10,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-
 // =====================================================
-// Public Routes - Antrian Digital (Tanpa Login)
+// Public Routes - Antrian Digital (Tanpa Login, Tanpa Session)
 // =====================================================
 Route::get('antrian-form', [App\Http\Controllers\AntrianController::class, 'form'])->name('antrian.form')
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
@@ -23,19 +22,16 @@ Route::get('queue/{id}', [App\Http\Controllers\AntrianController::class, 'displa
 Route::get('antrian/api/{id}', [App\Http\Controllers\AntrianController::class, 'getStatus'])->name('antrian.api.status');
 
 // =====================================================
-// SSE Stream - Antrian (Tanpa session, agar page lain bisa diakses)
+// SSE Stream - Antrian (Tanpa Session)
 // =====================================================
-Route::get('sse/antrian', [App\Http\Controllers\SseAntrianController::class, 'stream'])
-    ->name('sse.antrian')
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+Route::get('sse/antrian', [App\Http\Controllers\SseAntrianController::class, 'stream'])->name('sse.antrian')
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
 
 // =====================================================
 // Admin Routes - Antrian (Perlu Login)
 // =====================================================
 Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
-    Route::get('admin/antrian', [App\Http\Controllers\AdminAntrianController::class, 'index'])->name('admin.antrian')
-        ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+    Route::get('admin/antrian', [App\Http\Controllers\AdminAntrianController::class, 'index'])->name('admin.antrian');
     Route::post('admin/antrian/call/{id}', [App\Http\Controllers\AdminAntrianController::class, 'call'])->name('admin.antrian.call');
     Route::post('admin/antrian/late/{id}', [App\Http\Controllers\AdminAntrianController::class, 'late'])->name('admin.antrian.late');
     Route::post('admin/antrian/complete/{id}', [App\Http\Controllers\AdminAntrianController::class, 'complete'])->name('admin.antrian.complete');
@@ -43,7 +39,7 @@ Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
 });
 
 // =====================================================
-// Public Routes - Papan Antrian (Display Board)
+// Public Routes - Papan Antrian (Display Board, Tanpa Session)
 // =====================================================
 Route::get('board/antrian', [App\Http\Controllers\BoardAntrianController::class, 'index'])->name('board.antrian')
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
@@ -51,14 +47,11 @@ Route::get('board/antrian', [App\Http\Controllers\BoardAntrianController::class,
 Route::get('auth/google/redirect', [App\Http\Controllers\SocialiteController::class, 'redirect'])->name('google-redirect');
 Route::get('auth/google/callback', [App\Http\Controllers\SocialiteController::class, 'callback'])->name('google-callback');
 
-
-
 Route::middleware(['auth'])->group(function(){
     Route::get('verify', [App\Http\Controllers\VerifController::class, 'index'])->name('index-verify');
     Route::post('/verify', [VerifController::class, 'checkOtp'])->name('check-verify');
     Route::post('/resend-otp', [VerifController::class, 'resendOtp'])->name('resend-verify');
 });
-
 
 // Routes untuk Admin (idrole = 1)
 Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
@@ -83,7 +76,6 @@ Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
     Route::get('barang/scan-barang', [App\Http\Controllers\BarangController::class, 'scanIndex'])->name('scan-barang');
     Route::get('api/barang/{id}', [App\Http\Controllers\BarangController::class, 'getBarangById'])->name('api-barang-detail');
 
-    // Kunjungan Toko (admin)
     Route::get('kunjungan-toko/index-kunjungan-toko', [App\Http\Controllers\KunjunganTokoController::class, 'index'])->name('index-kunjungan-toko');
     Route::post('kunjungan-toko/create-kunjungan-toko', [App\Http\Controllers\KunjunganTokoController::class, 'store'])->name('create-kunjungan-toko');
     Route::put('kunjungan-toko/edit-kunjungan-toko/{barcode}', [App\Http\Controllers\KunjunganTokoController::class, 'update'])->name('edit-kunjungan-toko');
@@ -97,7 +89,6 @@ Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
     Route::get('modul-4-js/datatables', function () {return view('pages.modul-4-js.datatables');})->name('modul-4-js-datatables');
     Route::get('modul-4-js/select-kota', function () {return view('pages.modul-4-js.select-kota');})->name('modul-4-js-select-kota');
 
-    // Modul 5 - Wilayah Ajax
     Route::get('modul-5-ajax/wilayah-ajax', function () {return view('pages.modul-5-ajax.wilayah-ajax');})->name('modul-5-ajax-wilayah-ajax');
     Route::get('api/get-provinsi', [App\Http\Controllers\WilayahController::class, 'getProvinsi'])->name('get-provinsi');
     Route::get('api/get-kota', [App\Http\Controllers\WilayahController::class, 'getKota'])->name('get-kota');
@@ -108,12 +99,10 @@ Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
     Route::get('modul-5-ajax/pos-ajax', [App\Http\Controllers\PosController::class, 'indexAjax'])->name('modul-5-ajax-pos-ajax');
     Route::get('modul-5-ajax/pos-axios', [App\Http\Controllers\PosController::class, 'indexAxios'])->name('modul-5-ajax-pos-axios');
 
-    // API POS AJAX & Axios
     Route::get('api/pos/get-barang', [App\Http\Controllers\PosController::class, 'getBarang'])->name('pos-get-barang');
     Route::get('api/pos/get-barang-detail', [App\Http\Controllers\PosController::class, 'getBarangDetail'])->name('pos-get-barang-detail');
     Route::post('api/pos/save-penjualan', [App\Http\Controllers\PosController::class, 'savePenjualan'])->name('pos-save-penjualan');
 
-    // Customer Routes (Studi Kasus 3 - Akses Kamera)
     Route::get('customer/index-customer', [App\Http\Controllers\CustomerController::class, 'index'])->name('customer.index');
     Route::get('customer/tambah-customer1', [App\Http\Controllers\CustomerController::class, 'create1'])->name('customer.create1');
     Route::post('customer/tambah-customer1', [App\Http\Controllers\CustomerController::class, 'store1'])->name('customer.store1');
@@ -129,17 +118,13 @@ Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
 Route::middleware(['auth', 'check_verif', 'check.role:2'])->group(function () {
     Route::get('vendor/dashboard', [App\Http\Controllers\Vendor\VendorController::class, 'index'])->name('vendor.dashboard');
 
-    // Menu Management
     Route::get('vendor/menu', [App\Http\Controllers\Vendor\MenuController::class, 'index'])->name('vendor.menu.index');
     Route::post('vendor/menu', [App\Http\Controllers\Vendor\MenuController::class, 'store'])->name('vendor.menu.store');
     Route::put('vendor/menu/{id}', [App\Http\Controllers\Vendor\MenuController::class, 'update'])->name('vendor.menu.update');
     Route::delete('vendor/menu/{id}', [App\Http\Controllers\Vendor\MenuController::class, 'destroy'])->name('vendor.menu.destroy');
 
-    // Pesanan yang masuk ke vendor
     Route::get('vendor/pesanan', [App\Http\Controllers\Vendor\TransaksiController::class, 'index'])->name('vendor.pesanan.index');
     Route::get('vendor/pesanan/{id}', [App\Http\Controllers\Vendor\TransaksiController::class, 'show'])->name('vendor.pesanan.show');
-
-    // Scan QR Pesanan (vendor) - menampilkan detail pesanan dari hasil scan QR customer
     Route::get('vendor/scan-pesanan', [App\Http\Controllers\Vendor\TransaksiController::class, 'scanIndex'])->name('vendor.scan-pesanan');
     Route::get('vendor/api/pesanan/{id}', [App\Http\Controllers\Vendor\TransaksiController::class, 'getPesananDetail'])->name('vendor.api.pesanan-detail');
 });
@@ -148,15 +133,10 @@ Route::middleware(['auth', 'check_verif', 'check.role:2'])->group(function () {
 Route::get('pesan', [App\Http\Controllers\Pelanggan\PesananController::class, 'createPublic'])->name('pesan.public');
 Route::post('pesan', [App\Http\Controllers\Pelanggan\PesananController::class, 'storePublic'])->name('pesan.store');
 
-// API untuk get menu by vendor (public)
 Route::get('api/get-vendors', [App\Http\Controllers\Pelanggan\PesananController::class, 'getVendors'])->name('api.get-vendors');
 Route::get('api/get-menu-by-vendor', [App\Http\Controllers\Pelanggan\PesananController::class, 'getMenuByVendor'])->name('api.get-menu-by-vendor');
-
-// API: Cek status webhook untuk order (public, untuk guest mode)
 Route::get('pesanan/{order_id}/webhook-status', [App\Http\Controllers\MidtransController::class, 'webhookStatus'])->name('pesanan.webhook-status');
 
-// Riwayat Pesanan KHUSUS GUEST (public, tanpa auth)
-// Menampilkan semua pesanan yang dibuat oleh user dengan nama Guest_xxx
 Route::get('pesanan/riwayat', [App\Http\Controllers\Pelanggan\PesananController::class, 'indexForGuest'])->name('pesanan.guest.riwayat');
 Route::get('pesanan/{id}/detail-guest', [App\Http\Controllers\Pelanggan\PesananController::class, 'showForGuest'])->name('pesanan.guest.show');
 
@@ -166,7 +146,6 @@ Route::middleware(['auth', 'check_verif', 'check.role:3'])->group(function () {
         return view('pages.pelanggan.dashboard');
     })->name('pelanggan.dashboard');
 
-    // Transaksi (History pesanan) untuk pelanggan yang login
     Route::get('pelanggan/transaksi', [App\Http\Controllers\Pelanggan\PesananController::class, 'index'])->name('pelanggan.transaksi.index');
     Route::get('pelanggan/transaksi/{id}', [App\Http\Controllers\Pelanggan\PesananController::class, 'show'])->name('pelanggan.transaksi.show');
     Route::get('pelanggan/transaksi/{id}/check-status', [App\Http\Controllers\Pelanggan\PesananController::class, 'checkStatus'])->name('pelanggan.transaksi.check-status');
@@ -178,34 +157,8 @@ Route::post('midtrans/notification', [App\Http\Controllers\MidtransController::c
 // Routes untuk Sales (idrole = 4)
 Route::middleware(['auth', 'check_verif', 'check.role:4'])->group(function () {
     Route::get('sales/dashboard', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'dashboard'])->name('sales.dashboard');
-
-    // Halaman scan QR toko
     Route::get('sales/scan-toko', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'scanIndex'])->name('sales.scan-toko');
-
-    // API: get detail toko by barcode (untuk frontend scanner)
     Route::get('sales/api/toko/{barcode}', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'getTokoByBarcode'])->name('sales.api.toko');
-
-    // API: submit laporan kunjungan
     Route::post('sales/api/submit-kunjungan', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'submitKunjungan'])->name('sales.api.submit-kunjungan');
-
-    // API: ambil riwayat kunjungan sales (untuk tabel di halaman scan)
     Route::get('sales/api/riwayat-kunjungan', [App\Http\Controllers\Sales\SalesScanTokoController::class, 'riwayatKunjungan'])->name('sales.api.riwayat-kunjungan');
 });
-
-
-
-
-
-
-
-Route::get('test-antrian', [App\Http\Controllers\TestController::class, 'test'])->name('test.antrian')
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
-
-Route::get('test-plain', [App\Http\Controllers\SimpleController::class, 'plain'])
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
-
-Route::get('test-blade', [App\Http\Controllers\SimpleController::class, 'blade'])
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
-
-Route::get('test-layout', [App\Http\Controllers\SimpleController::class, 'layout'])
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);

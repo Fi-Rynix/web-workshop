@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Antrian;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class AntrianController extends Controller
 {
+    private const CACHE_KEY = 'antrian_sse_broadcast';
+
     /**
      * Halaman form daftar antrian untuk guest.
      */
@@ -30,6 +33,9 @@ class AntrianController extends Controller
             'status' => 'waiting',
             'created_at' => now(),
         ]);
+
+        // Broadcast event baru ke semua client
+        $this->broadcast('new', $antrian);
 
         // Redirect ke halaman display personal dengan nomor antrian
         return redirect()->route('antrian.display', ['id' => $antrian->id])
@@ -70,5 +76,24 @@ class AntrianController extends Controller
                 'called_at' => $antrian->called_at?->format('H:i:s'),
             ],
         ]);
+    }
+
+    /**
+     * Broadcast event ke SSE clients.
+     */
+    private function broadcast(string $event, Antrian $antrian): void
+    {
+        $data = json_encode([
+            'event' => $event,
+            'data' => [
+                'id' => $antrian->id,
+                'nama' => $antrian->nama,
+                'status' => $antrian->status,
+                'called_at' => $antrian->called_at?->format('H:i:s'),
+            ],
+        ]);
+
+        Cache::put(self::CACHE_KEY, $data, now()->addMinutes(5));
+        Cache::put('antrian_sse_modified', microtime(true), now()->addMinutes(5));
     }
 }

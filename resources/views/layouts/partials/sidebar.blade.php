@@ -1,5 +1,8 @@
 @php
     $userRole = auth()->user()->idrole ?? null;
+    $currentRoute = Route::currentRouteName();
+    $isGuestPage = in_array($currentRoute, ['antrian.form', 'board.antrian', 'antrian.display', 'antrian.store']);
+    $isPublicBoard = $currentRoute === 'board.antrian';
 @endphp
 
 <nav class="sidebar sidebar-offcanvas" id="sidebar">

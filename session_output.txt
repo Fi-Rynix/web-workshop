@@ -1,0 +1,2864 @@
+Total entries: 279
+
+=== USER MESSAGE 2 ===
+coba kamu update skill graphify itu agar lebih menggunakan versi terminal saja jangan /, contoh /graphify query itu bentuk terminalnya graphify query
+
+=== CUSTOM MESSAGE 3 ===
+Before answering, call the name_session tool with a concise, descriptive title (3-8 words) that captures the user's intent for this conversation. Use Title Case. Examples: 'Fix CSS Layout Bug', 'Add User Authentication', 'Refactor Database Layer'. Do NOT use the user's exact prompt as the title—summarize it instead.
+
+=== ASSISTANT MESSAGE 4 ===
+<think></think>
+
+=== ASSISTANT THINKING 4 ===
+The user wants me to update the graphify skill to use terminal-style commands instead of slash commands. For example, instead of `/graphify query`, it should be `graphify query`.
+
+Let me first find and read the graphify skill file to understand its current structure.
+
+
+=== ASSISTANT MESSAGE 10 ===
+<think></think>
+
+=== ASSISTANT THINKING 10 ===
+Let me search more broadly for skills files.
+
+
+=== ASSISTANT MESSAGE 15 ===
+<think></think>
+
+=== ASSISTANT THINKING 15 ===
+The user wants me to update a "graphify skill" to use terminal-style commands without the `/` prefix. But I can't find any graphify skill files in the current directory. Let me search more broadly.
+
+
+=== ASSISTANT MESSAGE 19 ===
+<think></think>
+
+=== ASSISTANT THINKING 19 ===
+The user is working in a Laravel project. There's a `.code-review-graph/` directory which might contain skill definitions. Let me explore
+
+=== ASSISTANT MESSAGE 22 ===
+<think></think>
+
+=== ASSISTANT THINKING 22 ===
+Hmm, there's no skill file in `.code-review-graph`. The graphify tools are actually MCP tools - they come from the MCP server `code-review-graph` (30 tools). These aren't customizable skill files but are built-in MCP tools.
+
+Let me check the MCP server tools to understand the current naming convention and see what could be updated
+
+=== ASSISTANT MESSAGE 25 ===
+<think></think>
+
+=== ASSISTANT THINKING 25 ===
+Hmm, the MCP server doesn't have graphify tools. Let me check what MCP servers are available.
+
+
+=== ASSISTANT MESSAGE 28 ===
+<think></think>
+
+=== ASSISTANT THINKING 28 ===
+The user wants to update a graphify skill. Looking at the results, I see there are tools related to graphify through the code-review-graph server. Let me look at what graphify tools are available.
+
+Actually, I think the user is referring to a Pi skill file for graphify. Let me search more broadly for skill
+
+=== ASSISTANT MESSAGE 33 ===
+<think></think>
+
+=== ASSISTANT THINKING 33 ===
+It seems like there's no skill file in this project. Let me search more broadly for any skill definitions or configuration files that might contain graphify skill definitions
+
+=== ASSISTANT MESSAGE 37 ===
+<think></think>
+
+Ketemu! Skills ada di `~/.claude/skills/`. Sekarang saya update semua skill agar menggunakan style terminal tanpa slash.
+
+
+=== ASSISTANT THINKING 37 ===
+The user wants me to update the graphify skill to use terminal-style commands without the slash. For example, `/graphify query` should become `graphify query` (terminal style).
+
+The skills are in `~/.claude/skills/` directory. The current examples in the skills use commands like:
+- `semantic_search_nodes`
+- `query_graph`
+- `get_flow`
+- `detect_changes`
+- `get_impact_radius`
+
+These don't have slashes - they're the actual tool names from the MCP server. Let me re-read the user's request.
+
+The user says: "coba kamu update skill graphify itu agar lebih menggunakan versi terminal saja jangan /, contoh /graphify query itu bentuk terminalnya graphify query"
+
+So the user wants:
+1. The skills to reference commands in terminal style (no slash prefix)
+2. Examples like `/graphify query` → `graphify qu
+
+=== ASSISTANT MESSAGE 40 ===
+<think></think>
+
+=== ASSISTANT THINKING 40 ===
+Saya perlu update file-file .md di ~/.claude/skills/. Mari kita baca dan update satu per satu
+
+=== ASSISTANT MESSAGE 46 ===
+<think></think>
+
+=== ASSISTANT THINKING 46 ===
+The paths need to be Windows-style, not with /c/. Let me try the Windows path format
+
+=== ASSISTANT MESSAGE 52 ===
+<think></think>
+
+Sekarang saya paham - ubah format dari MCP tool names ke style terminal. Update semua 4 skill files:
+
+
+=== ASSISTANT THINKING 52 ===
+Now I understand the issue. The skills use MCP tool names like `semantic_search_nodes`, `query_graph`, etc. But the user is saying these should use a terminal-style format without slashes, like `graphify query` instead of `/graphify query`.
+
+Looking at the file content, I see this line at the end:
+```
+graphify_query({ question: "What system concepts are connected to debug-issue.md?", budget: 1200 })
+```
+
+This is showing the function call format. The user wants these to be more like terminal commands. So instead of showing MCP tool names directly, it should show terminal-style commands.
+
+Let me update the skills to:
+1. Use terminal-style command format instead of MCP tool names
+2. Remove the slash prefix (since these are skill documentation, not slash commands)
+3. Make it look more like CLI
+
+=== USER MESSAGE 55 ===
+C:\Users\Kafuu\.pi\agent\skills\graphify this skill i want to update
+
+=== ASSISTANT MESSAGE 56 ===
+<think></think>
+
+=== ASSISTANT THINKING 56 ===
+The user is pointing me to the actual skill location at C:\Users\Kafuu\.pi\agent\skills\graphify. Let me read those
+
+=== ASSISTANT MESSAGE 59 ===
+<think></think>
+
+=== ASSISTANT THINKING 59 ===
+Let me read the SKILL.md file to see the current content.
+
+=== ASSISTANT MESSAGE 62 ===
+<think></think>
+
+Ketemu! Sekarang update semua `/graphify` ke style terminal `graphify` (tanpa slash).
+
+
+=== ASSISTANT THINKING 62 ===
+Now I can see the full skill file. The user wants to update the style from using `/graphify` (with slash) to terminal-style `graphify` (without slash). Let me identify all the places where `/graphify` is used and change them to `graphify`.
+
+Key changes needed:
+1. `/graphify` → `graphify` (the main command invocation)
+2. `/graphify query` → `graphify query`
+3. `/graphify path` → `graphify path`
+4. `/graphify explain` → `graphify explain`
+5. `/graphify add` → `graphify add`
+6. `/graphify --help` → `graphify --help`
+7. etc.
+
+Let me make theseedits.
+
+=== ASSISTANT MESSAGE 65 ===
+<think></think>
+
+=== ASSISTANT THINKING 65 ===
+The last two edits match two occurrences each. Let me re-read the file to get more context around each one.
+
+=== ASSISTANT MESSAGE 68 ===
+<think></think>
+
+=== ASSISTANT THINKING 68 ===
+I see the issue - I need to provide more context for the duplicate "## For /graphify query" edit. Let me read the file again to get the full context around those sections.
+
+=== ASSISTANT MESSAGE 71 ===
+<think></think>
+
+=== ASSISTANT THINKING 71 ===
+I see the context now. Let me do the edits one by one with more specificcontext.
+
+=== ASSISTANT MESSAGE 74 ===
+<think></think>
+
+SKILL.md updated. Sekarang cek reference files.
+
+
+=== ASSISTANT THINKING 74 ===
+SKILL.md sudah diupdate. Sekarang cek reference files juga untuk memastikan konsistensi.
+
+=== ASSISTANT MESSAGE 77 ===
+<think></think>
+
+=== ASSISTANT THINKING 77 ===
+I need to check and update these reference files too. Let me grep for `/graphify` in all of them.
+
+
+=== ASSISTANT MESSAGE 80 ===
+<think></think>
+
+=== ASSISTANT THINKING 80 ===
+I need to update all these reference files. Let me do them one by one.
+
+
+=== ASSISTANT MESSAGE 86 ===
+<think></think>
+
+=== ASSISTANT THINKING 86 ===
+Now I need to update all these reference files to remove the `/graphify` prefix. Let me do that:
+
+
+=== ASSISTANT MESSAGE 92 ===
+<think></think>
+
+=== ASSISTANT THINKING 92 ===
+All references updated. Let me verify there are no more `/graphify` references.
+
+
+=== ASSISTANT MESSAGE 95 ===
+<think></think>
+
+=== ASSISTANT THINKING 95 ===
+Remaining matches:
+- SKILL.md: `/graphify` header (should stay as comment, not command reference)
+- SKILL.md line 51: `/graphify` in context - but this is actually referring to the command invocation, should be updated
+- SKILL.md line 136: `graphify-out/` - this is a path, not a command
+- SKILL.md line 248: `graphify-out/` - path
+- SKILL.md line 532: `graphify-out/` - path
+- exports.md: `graphify-out/` - path
+- github-and-merge.md: `graphify-out/` - path
+
+Let me check line 51 specifically to see if itneeds updating.
+
+=== ASSISTANT MESSAGE 98 ===
+<think></think>
+
+=== ASSISTANT THINKING 98 ===
+The remaining `/graphify` references are legitimate - they're either:1. Internal path references like `graphify-out/` (correct)2. Section references like `## For /graphify query` (which I've already updated)
+
+Let me verify that I got all the section headers and fix the one remaining reference.
+
+
+=== ASSISTANT MESSAGE 101 ===
+<think></think>Done. Updated:
+
+| File | Changes |
+|------|---------|
+| `SKILL.md` | 6 occurrences |
+| `references/add-watch.md` | 3 occurrences |
+| `references/query.md` | 5 occurrences |
+| `references/hooks.md` | 2 occurrences |
+| `references/github-and-merge.md` | 1 occurrence |
+
+Sisa matches = `/graphify-out/` (valid path) dan exports JSON. Semua command references sudah ubah ke style terminal tanpa slash.
+
+=== ASSISTANT THINKING 101 ===
+Sisa `/graphify-out/` itu valid (path), bukan command reference. Exports.md juga valid (JSON path). Semua sudah bersih.
+
+Summary:
+- SKILL.md: Updated 6 occurrences
+- references/add-watch.md: Updated 3 occurrences
+- references/query.md: Updated 5 occurrences
+- references/hooks.md: Updated 2 occurrences
+- references/github-and-merge.md: Updated 1 occurrence
+
+All `/graphify` command references changed to `graphify` terminal style.
+
+
+=== USER MESSAGE 104 ===
+<skill name="graphify" location="C:\Users\Kafuu\.pi\agent\skills\graphify\SKILL.md">
+References are relative to C:\Users\Kafuu\.pi\agent\skills\graphify.
+
+# /graphify
+
+Turn any folder of files into a navigable knowledge graph with community detection, an honest audit trail, and three outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language GRAPH_REPORT.md.
+
+## Usage
+
+```
+graphify                                             # full pipeline on current directory → Obsidian vault
+graphify <path>                                      # full pipeline on specific path
+graphify https://github.com/<owner>/<repo>           # clone repo then run full pipeline on it
+graphify https://github.com/<owner>/<repo> --branch <branch>  # clone a specific branch
+graphify <url1> <url2> ...                           # clone multiple repos, build each, merge into one cross-repo graph
+graphify <path> --mode deep                          # thorough extraction, richer INFERRED edges
+graphify <path> --update                             # incremental - re-extract only new/changed files
+graphify <path> --directed                            # build directed graph (preserves edge direction: source→target)
+graphify <path> --whisper-model medium                # use a larger Whisper model for better transcription accuracy
+graphify <path> --cluster-only                       # rerun clustering on existing graph
+graphify <path> --no-viz                             # skip visualization, just report + JSON
+graphify <path> --html                               # (HTML is generated by default - this flag is a no-op)
+graphify <path> --svg                                # also export graph.svg (embeds in Notion, GitHub)
+graphify <path> --graphml                            # export graph.graphml (Gephi, yEd)
+graphify <path> --neo4j                              # generate graphify-out/cypher.txt for Neo4j
+graphify <path> --neo4j-push bolt://localhost:7687   # push directly to Neo4j
+graphify <path> --mcp                                # start MCP stdio server for agent access
+graphify <path> --watch                              # watch folder, auto-rebuild on code changes (no LLM needed)
+graphify <path> --wiki                               # build agent-crawlable wiki (index.md + one article per community)
+graphify <path> --obsidian --obsidian-dir ~/vaults/my-project  # write vault to custom path (e.g. existing vault)
+graphify add <url>                                   # fetch URL, save to ./raw, update graph
+graphify add <url> --author "Name"                   # tag who wrote it
+graphify add <url> --contributor "Name"              # tag who added it to the corpus
+graphify query "<question>"                          # BFS traversal - broad context
+graphify query "<question>" --dfs                    # DFS - trace a specific path
+graphify query "<question>" --budget 1500            # cap answer at N tokens
+graphify path "AuthModule" "Database"                # shortest path between two concepts
+graphify explain "SwinTransformer"                   # plain-language explanation of a node
+```
+
+## What graphify is for
+
+Drop any folder of code, docs, papers, images, or video into graphify and get a queryable knowledge graph. Persistent across sessions, honest audit trail (EXTRACTED/INFERRED/AMBIGUOUS), community detection surfaces cross-document connections you wouldn't think to ask about.
+
+## What You Must Do When Invoked
+
+If the user invoked `graphify --help` or `graphify -h` (with no other arguments), print the contents of the `## Usage` section above verbatim and stop. Do not run any commands, do not detect files, do not default the path to `.`. Just print the Usage block and return.
+
+**Fast path — existing graph:** Before doing anything else, check whether `graphify-out/graph.json` exists. The expected location is `graphify-out/graph.json` relative to the **current working directory** (i.e. the project root where you are running commands). If it exists AND the user's request is a natural-language question about the codebase (e.g. "How does X work?", "What calls Y?", "Trace the data flow through Z") and NOT an explicit rebuild command (`--update`, `--cluster-only`, or a bare path/URL that implies fresh extraction): **skip Steps 1–5 entirely and jump straight to `## For graphify query`.** Run `graphify query "<question>"` immediately. Do not run detect. Do not check corpus size. Do not ask the user to narrow. The graph is already built — use it.
+
+If no path was given, use `.` (current directory). Do not ask the user for a path.
+
+If the path argument starts with `https://github.com/` or `http://github.com/`, treat it as a GitHub URL - run Step 0 before anything else, then continue with the resolved local path.
+
+Follow these steps in order. Do not skip steps.
+
+### Step 0 - GitHub repos and multi-path merge (only if a URL or several paths)
+
+Only when the path is one or more `https://github.com/...` URLs, or several local subfolders to merge. See `references/github-and-merge.md` for the clone, cross-repo merge, and monorepo flow, then continue with the resolved local path. A plain local path skips this step.
+
+### Step 1 - Ensure graphify is installed
+
+```bash
+# Detect the correct Python interpreter (handles uv tool, pipx, venv, system installs)
+PYTHON=""
+GRAPHIFY_BIN=$(which graphify 2>/dev/null)
+# 1. uv tool installs — most reliable on modern Mac/Linux
+if [ -z "$PYTHON" ] && command -v uv >/dev/null 2>&1; then
+    _UV_PY=$(uv tool run graphifyy python -c "import sys; print(sys.executable)" 2>/dev/null)
+    if [ -n "$_UV_PY" ]; then PYTHON="$_UV_PY"; fi
+fi
+# 2. Read shebang from graphify binary (pipx and direct pip installs)
+if [ -z "$PYTHON" ] && [ -n "$GRAPHIFY_BIN" ]; then
+    _SHEBANG=$(head -1 "$GRAPHIFY_BIN" | tr -d '#!')
+    case "$_SHEBANG" in
+        *[!a-zA-Z0-9/_.-]*) ;;
+        *) "$_SHEBANG" -c "import graphify" 2>/dev/null && PYTHON="$_SHEBANG" ;;
+    esac
+fi
+# 3. Fall back to python3
+if [ -z "$PYTHON" ]; then PYTHON="python3"; fi
+if ! "$PYTHON" -c "import graphify" 2>/dev/null; then
+    if command -v uv >/dev/null 2>&1; then
+        uv tool install --upgrade graphifyy -q 2>&1 | tail -3
+        _UV_PY=$(uv tool run graphifyy python -c "import sys; print(sys.executable)" 2>/dev/null)
+        if [ -n "$_UV_PY" ]; then PYTHON="$_UV_PY"; fi
+    else
+        "$PYTHON" -m pip install graphifyy -q 2>/dev/null \
+          || "$PYTHON" -m pip install graphifyy -q --break-system-packages 2>&1 | tail -3
+    fi
+fi
+# Write interpreter path for all subsequent steps (persists across invocations)
+mkdir -p graphify-out
+"$PYTHON" -c "import sys; open('graphify-out/.graphify_python', 'w', encoding='utf-8').write(sys.executable)"
+# Save scan root so `graphify update` (no args) knows where to look next time
+echo "$(cd INPUT_PATH && pwd)" > graphify-out/.graphify_root
+```
+
+If the import succeeds, print nothing and move straight to Step 2.
+
+**In every subsequent bash block, replace `python3` with `$(cat graphify-out/.graphify_python)` to use the correct interpreter.**
+
+### Step 2 - Detect files
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from graphify.detect import detect
+from pathlib import Path
+result = detect(Path('INPUT_PATH'))
+print(json.dumps(result, ensure_ascii=False))
+" > graphify-out/.graphify_detect.json
+```
+
+Replace INPUT_PATH with the actual path the user provided. Do NOT cat or print the JSON - read it silently and present a clean summary instead:
+
+```
+Corpus: X files · ~Y words
+  code:     N files (.py .ts .go ...)
+  docs:     N files (.md .txt ...)
+  papers:   N files (.pdf ...)
+  images:   N files
+  video:    N files (.mp4 .mp3 ...)
+```
+
+Omit any category with 0 files from the summary.
+
+Then act on it:
+- If `total_files` is 0: stop with "No supported files found in [path]."
+- If `skipped_sensitive` is non-empty: mention file count skipped, not the file names.
+- If `total_words` > 2,000,000 OR `total_files` > 500: show the warning. Then compute the top 5 first-level subdirectories by file count:
+  - Read `scan_root` from the detect JSON (always an absolute path to the resolved INPUT_PATH).
+  - Concatenate all file lists across all types (`code`, `document`, `paper`, `image`, `video`).
+  - Filter out any path that starts with `scan_root + "/graphify-out/"` to exclude converted sidecars.
+  - For each file, strip the `scan_root` prefix and take the first path component. Files directly in `scan_root` with no subdirectory count as `(root)`.
+  - If all files are in `(root)` with no subdirectories, do not ask to narrow — no subfolders exist. Instead suggest `--no-cluster` to skip the expensive clustering step and proceed.
+  - Otherwise rank by count, show the top 5 with file counts, then ask which subfolder to run on. Wait for the user's answer before proceeding.
+- Otherwise: proceed directly to Step 2.5 if video files were detected, or Step 3 if not.
+
+### Step 2.5 - Video and audio (only if video files detected)
+
+Skip this step entirely if `detect` returned zero `video` files. When the corpus has video or audio, see `references/transcribe.md` to transcribe them to text first, then treat the transcripts as doc files in Step 3.
+
+### Step 3 - Extract entities and relationships
+
+**Before starting:** note whether `--mode deep` was given. You must pass `DEEP_MODE=true` to every subagent in Step B2 if it was. Track this from the original invocation - do not lose it.
+
+This step has two parts: **structural extraction** (deterministic, free) and **semantic extraction** (LLM, costs tokens).
+
+**Before dispatching subagents:** check whether `GEMINI_API_KEY` or `GOOGLE_API_KEY` is set. If neither is set, print this one-liner to the user:
+> Tip: set `GEMINI_API_KEY` or `GOOGLE_API_KEY` to use Gemini for semantic extraction (`pip install 'graphifyy[gemini]'`).
+
+Print it once, then continue. If `GEMINI_API_KEY` or `GOOGLE_API_KEY` IS set, use `graphify.llm.extract_corpus_parallel(files, backend="gemini")` for semantic extraction instead of dispatching Claude subagents. The default Gemini model is `gemini-3-flash-preview`; set `GRAPHIFY_GEMINI_MODEL` or pass `--model` in headless CLI flows to override it.
+
+> **No other API keys are read.** If `GEMINI_API_KEY`/`GOOGLE_API_KEY` are unset, fall straight through to Claude Code subagent dispatch (Part B below) — the host session itself is the LLM. graphify does **not** read `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or any other provider key from the environment. If a host agent prompts the user for `ANTHROPIC_API_KEY` to run extraction, that prompt is a misread of this skill — ignore it and dispatch subagents as written.
+
+**Run Part A (AST) and Part B (semantic) in parallel. Dispatch all semantic subagents AND start AST extraction in the same message. Both can run simultaneously since they operate on different file types. Merge results in Part C as before.**
+
+Note: Parallelizing AST + semantic saves 5-15s on large corpora. AST is deterministic and fast; start it while subagents are processing docs/papers.
+
+#### Part A - Structural extraction for code files
+
+For any code files detected, run AST extraction in parallel with Part B subagents:
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import sys, json
+from graphify.extract import collect_files, extract
+from pathlib import Path
+import json
+
+code_files = []
+detect = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+for f in detect.get('files', {}).get('code', []):
+    code_files.extend(collect_files(Path(f)) if Path(f).is_dir() else [Path(f)])
+
+if code_files:
+    result = extract(code_files, cache_root=Path('.'))
+    Path('graphify-out/.graphify_ast.json').write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+    print(f'AST: {len(result[\"nodes\"])} nodes, {len(result[\"edges\"])} edges')
+else:
+    Path('graphify-out/.graphify_ast.json').write_text(json.dumps({'nodes':[],'edges':[],'input_tokens':0,'output_tokens':0}, ensure_ascii=False), encoding=\"utf-8\")
+    print('No code files - skipping AST extraction')
+"
+```
+
+#### Part B - Semantic extraction (parallel subagents)
+
+**Fast path:** If detection found zero docs, papers, and images (code-only corpus), skip Part B entirely and go straight to Part C. AST handles code - there is nothing for semantic subagents to do.
+
+**MANDATORY: You MUST use the Agent tool here. Reading files yourself one-by-one is forbidden - it is 5-10x slower. If you do not use the Agent tool you are doing this wrong.**
+
+Before dispatching subagents, print a timing estimate:
+- Load `total_words` and file counts from `graphify-out/.graphify_detect.json`
+- Estimate agents needed: `ceil(uncached_non_code_files / 22)` (chunk size is 20-25)
+- Estimate time: ~45s per agent batch (they run in parallel, so total ≈ 45s × ceil(agents/parallel_limit))
+- Print: "Semantic extraction: ~N files → X agents, estimated ~Ys"
+
+**Step B0 - Check extraction cache first**
+
+Before dispatching any subagents, check which files already have cached extraction results:
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from graphify.cache import check_semantic_cache
+from pathlib import Path
+
+detect = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+all_files = [f for files in detect['files'].values() for f in files]
+
+cached_nodes, cached_edges, cached_hyperedges, uncached = check_semantic_cache(all_files)
+
+if cached_nodes or cached_edges or cached_hyperedges:
+    Path('graphify-out/.graphify_cached.json').write_text(json.dumps({'nodes': cached_nodes, 'edges': cached_edges, 'hyperedges': cached_hyperedges}, ensure_ascii=False), encoding=\"utf-8\")
+Path('graphify-out/.graphify_uncached.txt').write_text('\n'.join(uncached), encoding=\"utf-8\")
+print(f'Cache: {len(all_files)-len(uncached)} files hit, {len(uncached)} files need extraction')
+"
+```
+
+Only dispatch subagents for files listed in `graphify-out/.graphify_uncached.txt`. If all files are cached, skip to Part C directly.
+
+**Step B1 - Split into chunks**
+
+Load files from `graphify-out/.graphify_uncached.txt`. Split into chunks of 20-25 files each. Each image gets its own chunk (vision needs separate context). When splitting, group files from the same directory together so related artifacts land in the same chunk and cross-file relationships are more likely to be extracted.
+
+**Step B2 - Dispatch ALL subagents in a single message**
+
+Call the Agent tool multiple times IN THE SAME RESPONSE - one call per chunk. This is the only way they run in parallel. If you make one Agent call, wait, then make another, you are doing it sequentially and defeating the purpose.
+
+**IMPORTANT - subagent type:** Always use `subagent_type="general-purpose"`. Do NOT use `Explore` - it is read-only and cannot write chunk files to disk, which silently drops extraction results. General-purpose has Write and Bash access which the subagent needs.
+
+Concrete example for 3 chunks:
+```
+[Agent tool call 1: files 1-15, subagent_type="general-purpose"]
+[Agent tool call 2: files 16-30, subagent_type="general-purpose"]
+[Agent tool call 3: files 31-45, subagent_type="general-purpose"]
+```
+All three in one message. Not three separate messages.
+
+Each subagent receives this exact prompt (substitute FILE_LIST, CHUNK_NUM, TOTAL_CHUNKS, DEEP_MODE, and CHUNK_PATH).
+
+CHUNK_PATH must be an **absolute** path — derive it before dispatching:
+```bash
+PROJECT_ROOT=$(cat graphify-out/.graphify_root)
+# Then for chunk N: CHUNK_PATH="${PROJECT_ROOT}/graphify-out/.graphify_chunk_0N.json"
+```
+
+Subagent prompt template:
+
+See `references/extraction-spec.md` for the exact subagent prompt (JSON schema, node-ID rules, confidence rubric, frontmatter, hyperedge, and vision rules). Load it only here, only when at least one chunk holds a doc, paper, or image; a pure-code corpus has skipped Part B and never reads it. Pass each subagent that prompt verbatim with FILE_LIST, CHUNK_NUM, TOTAL_CHUNKS, DEEP_MODE, and CHUNK_PATH substituted, and have it write the result to CHUNK_PATH.
+
+**Step B3 - Collect, cache, and merge**
+
+Wait for all subagents. For each result:
+- Check that `graphify-out/.graphify_chunk_NN.json` exists on disk — this is the success signal
+- If the file exists and contains valid JSON with `nodes` and `edges`, include it and save to cache
+- If the file is missing, the subagent was likely dispatched as read-only (Explore type) — print a warning: "chunk N missing from disk — subagent may have been read-only. Re-run with general-purpose agent." Do not silently skip.
+- If a subagent failed or returned invalid JSON, print a warning and skip that chunk - do not abort
+
+If more than half the chunks failed or are missing, stop and tell the user to re-run and ensure `subagent_type="general-purpose"` is used.
+
+Merge all chunk files into `.graphify_semantic_new.json`. **After each Agent call completes, read the real token counts from the Agent tool result's `usage` field and write them back into the chunk JSON before merging** — the chunk JSON itself always has placeholder zeros. Then run:
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json, glob
+from pathlib import Path
+
+chunks = sorted(glob.glob('graphify-out/.graphify_chunk_*.json'))
+all_nodes, all_edges, all_hyperedges = [], [], []
+total_in, total_out = 0, 0
+for c in chunks:
+    d = json.loads(Path(c).read_text(encoding=\"utf-8\"))
+    all_nodes += d.get('nodes', [])
+    all_edges += d.get('edges', [])
+    all_hyperedges += d.get('hyperedges', [])
+    total_in += d.get('input_tokens', 0)
+    total_out += d.get('output_tokens', 0)
+Path('graphify-out/.graphify_semantic_new.json').write_text(json.dumps({
+    'nodes': all_nodes, 'edges': all_edges, 'hyperedges': all_hyperedges,
+    'input_tokens': total_in, 'output_tokens': total_out,
+}, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+print(f'Merged {len(chunks)} chunks: {total_in:,} in / {total_out:,} out tokens')
+"
+```
+
+Save new results to cache:
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from graphify.cache import save_semantic_cache
+from pathlib import Path
+
+new = json.loads(Path('graphify-out/.graphify_semantic_new.json').read_text(encoding=\"utf-8\")) if Path('graphify-out/.graphify_semantic_new.json').exists() else {'nodes':[],'edges':[],'hyperedges':[]}
+saved = save_semantic_cache(new.get('nodes', []), new.get('edges', []), new.get('hyperedges', []))
+print(f'Cached {saved} files')
+"
+```
+
+Merge cached + new results into `graphify-out/.graphify_semantic.json`:
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from pathlib import Path
+
+cached = json.loads(Path('graphify-out/.graphify_cached.json').read_text(encoding=\"utf-8\")) if Path('graphify-out/.graphify_cached.json').exists() else {'nodes':[],'edges':[],'hyperedges':[]}
+new = json.loads(Path('graphify-out/.graphify_semantic_new.json').read_text(encoding=\"utf-8\")) if Path('graphify-out/.graphify_semantic_new.json').exists() else {'nodes':[],'edges':[],'hyperedges':[]}
+
+all_nodes = cached['nodes'] + new.get('nodes', [])
+all_edges = cached['edges'] + new.get('edges', [])
+all_hyperedges = cached.get('hyperedges', []) + new.get('hyperedges', [])
+seen = set()
+deduped = []
+for n in all_nodes:
+    if n['id'] not in seen:
+        seen.add(n['id'])
+        deduped.append(n)
+
+merged = {
+    'nodes': deduped,
+    'edges': all_edges,
+    'hyperedges': all_hyperedges,
+    'input_tokens': new.get('input_tokens', 0),
+    'output_tokens': new.get('output_tokens', 0),
+}
+Path('graphify-out/.graphify_semantic.json').write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+print(f'Extraction complete - {len(deduped)} nodes, {len(all_edges)} edges ({len(cached[\"nodes\"])} from cache, {len(new.get(\"nodes\",[]))} new)')
+"
+```
+Clean up temp files: `rm -f graphify-out/.graphify_cached.json graphify-out/.graphify_uncached.txt graphify-out/.graphify_semantic_new.json`
+
+#### Part C - Merge AST + semantic into final extraction
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import sys, json
+from pathlib import Path
+
+ast = json.loads(Path('graphify-out/.graphify_ast.json').read_text(encoding=\"utf-8\"))
+sem = json.loads(Path('graphify-out/.graphify_semantic.json').read_text(encoding=\"utf-8\"))
+
+# Merge: AST nodes first, semantic nodes deduplicated by id
+seen = {n['id'] for n in ast['nodes']}
+merged_nodes = list(ast['nodes'])
+for n in sem['nodes']:
+    if n['id'] not in seen:
+        merged_nodes.append(n)
+        seen.add(n['id'])
+
+merged_edges = ast['edges'] + sem['edges']
+merged_hyperedges = sem.get('hyperedges', [])
+merged = {
+    'nodes': merged_nodes,
+    'edges': merged_edges,
+    'hyperedges': merged_hyperedges,
+    'input_tokens': sem.get('input_tokens', 0),
+    'output_tokens': sem.get('output_tokens', 0),
+}
+Path('graphify-out/.graphify_extract.json').write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+total = len(merged_nodes)
+edges = len(merged_edges)
+print(f'Merged: {total} nodes, {edges} edges ({len(ast[\"nodes\"])} AST + {len(sem[\"nodes\"])} semantic)')
+"
+```
+
+### Step 4 - Build graph, cluster, analyze, generate outputs
+
+**Before starting:** note whether `--directed` was given. If so, pass `directed=True` to `build_from_json()` in the code block below. This builds a `DiGraph` that preserves edge direction (source→target) instead of the default undirected `Graph`.
+
+```bash
+mkdir -p graphify-out
+$(cat graphify-out/.graphify_python) -c "
+import sys, json
+from graphify.build import build_from_json
+from graphify.cluster import cluster, score_all
+from graphify.analyze import god_nodes, surprising_connections, suggest_questions
+from graphify.report import generate
+from graphify.export import to_json
+from pathlib import Path
+
+extraction = json.loads(Path('graphify-out/.graphify_extract.json').read_text(encoding=\"utf-8\"))
+detection  = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+
+G = build_from_json(extraction)
+communities = cluster(G)
+cohesion = score_all(G, communities)
+tokens = {'input': extraction.get('input_tokens', 0), 'output': extraction.get('output_tokens', 0)}
+gods = god_nodes(G)
+surprises = surprising_connections(G, communities)
+labels = {cid: 'Community ' + str(cid) for cid in communities}
+# Placeholder questions - regenerated with real labels in Step 5
+questions = suggest_questions(G, communities, labels)
+
+report = generate(G, communities, cohesion, labels, gods, surprises, detection, tokens, '.', suggested_questions=questions)
+Path('graphify-out/GRAPH_REPORT.md').write_text(report, encoding=\"utf-8\")
+to_json(G, communities, 'graphify-out/graph.json')
+
+analysis = {
+    'communities': {str(k): v for k, v in communities.items()},
+    'cohesion': {str(k): v for k, v in cohesion.items()},
+    'gods': gods,
+    'surprises': surprises,
+    'questions': questions,
+}
+Path('graphify-out/.graphify_analysis.json').write_text(json.dumps(analysis, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+if G.number_of_nodes() == 0:
+    print('ERROR: Graph is empty - extraction produced no nodes.')
+    print('Possible causes: all files were skipped, binary-only corpus, or extraction failed.')
+    raise SystemExit(1)
+print(f'Graph: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges, {len(communities)} communities')
+"
+```
+
+If this step prints `ERROR: Graph is empty`, stop and tell the user what happened - do not proceed to labeling or visualization.
+
+Replace INPUT_PATH with the actual path.
+
+### Step 5 - Label communities
+
+Read `graphify-out/.graphify_analysis.json`. For each community key, look at its node labels and write a 2-5 word plain-language name (e.g. "Attention Mechanism", "Training Pipeline", "Data Loading").
+
+Then regenerate the report and save the labels for the visualizer:
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import sys, json
+from graphify.build import build_from_json
+from graphify.cluster import score_all
+from graphify.analyze import god_nodes, surprising_connections, suggest_questions
+from graphify.report import generate
+from pathlib import Path
+
+extraction = json.loads(Path('graphify-out/.graphify_extract.json').read_text(encoding=\"utf-8\"))
+detection  = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+analysis   = json.loads(Path('graphify-out/.graphify_analysis.json').read_text(encoding=\"utf-8\"))
+
+G = build_from_json(extraction)
+communities = {int(k): v for k, v in analysis['communities'].items()}
+cohesion = {int(k): v for k, v in analysis['cohesion'].items()}
+tokens = {'input': extraction.get('input_tokens', 0), 'output': extraction.get('output_tokens', 0)}
+
+# LABELS - replace these with the names you chose above
+labels = LABELS_DICT
+
+# Regenerate questions with real community labels (labels affect question phrasing)
+questions = suggest_questions(G, communities, labels)
+
+report = generate(G, communities, cohesion, labels, analysis['gods'], analysis['surprises'], detection, tokens, '.', suggested_questions=questions)
+Path('graphify-out/GRAPH_REPORT.md').write_text(report, encoding=\"utf-8\")
+Path('graphify-out/.graphify_labels.json').write_text(json.dumps({str(k): v for k, v in labels.items()}, ensure_ascii=False), encoding=\"utf-8\")
+print('Report updated with community labels')
+"
+```
+
+Replace `LABELS_DICT` with the actual dict you constructed (e.g. `{0: "Attention Mechanism", 1: "Training Pipeline"}`).
+Replace INPUT_PATH with the actual path.
+
+### Step 6 - Generate Obsidian vault (opt-in) + HTML
+
+**Generate HTML always** (unless `--no-viz`). **Obsidian vault only if `--obsidian` was explicitly given** — skip it otherwise, it generates one file per node.
+
+If `--obsidian` was given:
+
+- If `--obsidian-dir <path>` was also given, pass it via `--dir`. Otherwise defaults to `graphify-out/obsidian`.
+
+```bash
+graphify export obsidian
+# or with custom dir: graphify export obsidian --dir ~/vaults/my-project
+```
+
+Generate the HTML graph (always, unless `--no-viz`):
+
+```bash
+graphify export html  # auto-aggregates to community view if graph > 5000 nodes
+# or: graphify export html --no-viz
+```
+
+### Steps 6b-8 - Wiki, Neo4j, SVG, GraphML, MCP, benchmark (only on their flags)
+
+These run only when their flag is present (`--wiki`, `--neo4j`/`--neo4j-push`, `--svg`, `--graphml`, `--mcp`) or, for the token-reduction benchmark, when `total_words` exceeds 5,000. A default run with no export flags skips all of them. See `references/exports.md` for each one. Run any `--wiki` export before Step 9 cleanup so `.graphify_labels.json` is still available.
+
+---
+
+### Step 9 - Save manifest, update cost tracker, clean up, and report
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from pathlib import Path
+from datetime import datetime, timezone
+from graphify.detect import save_manifest
+
+# Save manifest for --update
+detect = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+# In --update mode, 'all_files' carries the full corpus; 'files' is the changed
+# subset. Full-rebuild mode populates only 'files', so the fallback handles that.
+save_manifest(detect.get('all_files') or detect['files'])
+
+# Update cumulative cost tracker
+extract = json.loads(Path('graphify-out/.graphify_extract.json').read_text(encoding=\"utf-8\"))
+input_tok = extract.get('input_tokens', 0)
+output_tok = extract.get('output_tokens', 0)
+
+cost_path = Path('graphify-out/cost.json')
+if cost_path.exists():
+    cost = json.loads(cost_path.read_text(encoding=\"utf-8\"))
+else:
+    cost = {'runs': [], 'total_input_tokens': 0, 'total_output_tokens': 0}
+
+cost['runs'].append({
+    'date': datetime.now(timezone.utc).isoformat(),
+    'input_tokens': input_tok,
+    'output_tokens': output_tok,
+    'files': detect.get('total_files', 0),
+})
+cost['total_input_tokens'] += input_tok
+cost['total_output_tokens'] += output_tok
+cost_path.write_text(json.dumps(cost, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+
+print(f'This run: {input_tok:,} input tokens, {output_tok:,} output tokens')
+print(f'All time: {cost[\"total_input_tokens\"]:,} input, {cost[\"total_output_tokens\"]:,} output ({len(cost[\"runs\"])} runs)')
+"
+rm -f graphify-out/.graphify_detect.json graphify-out/.graphify_extract.json graphify-out/.graphify_ast.json graphify-out/.graphify_semantic.json graphify-out/.graphify_analysis.json
+find graphify-out -maxdepth 1 -name '.graphify_chunk_*.json' -delete 2>/dev/null
+rm -f graphify-out/.needs_update 2>/dev/null || true
+```
+
+Tell the user (omit the obsidian line unless --obsidian was given):
+```
+Graph complete. Outputs in PATH_TO_DIR/graphify-out/
+
+  graph.html            - interactive graph, open in browser
+  GRAPH_REPORT.md       - audit report
+  graph.json            - raw graph data
+  obsidian/             - Obsidian vault (only if --obsidian was given)
+```
+
+If graphify saved you time, consider supporting it: https://github.com/sponsors/safishamsi
+
+Replace PATH_TO_DIR with the actual absolute path of the directory that was processed.
+
+Then paste these sections from GRAPH_REPORT.md directly into the chat:
+- God Nodes
+- Surprising Connections
+- Suggested Questions
+
+Do NOT paste the full report - just those three sections. Keep it concise.
+
+Then immediately offer to explore. Pick the single most interesting suggested question from the report - the one that crosses the most community boundaries or has the most surprising bridge node - and ask:
+
+> "The most interesting question this graph can answer: **[question]**. Want me to trace it?"
+
+If the user says yes, run `graphify query "[question]"` on the graph and walk them through the answer using the graph structure - which nodes connect, which community boundaries get crossed, what the path reveals. Keep going as long as they want to explore. Each answer should end with a natural follow-up ("this connects to X - want to go deeper?") so the session feels like navigation, not a one-shot report.
+
+The graph is the map. Your job after the pipeline is to be the guide.
+
+---
+
+## Interpreter guard for subcommands
+
+Before running any subcommand below (`--update`, `--cluster-only`, `query`, `path`, `explain`, `add`), check that `.graphify_python` exists. If it's missing (e.g. user deleted `graphify-out/`), re-resolve the interpreter first:
+
+```bash
+if [ ! -f graphify-out/.graphify_python ]; then
+    GRAPHIFY_BIN=$(which graphify 2>/dev/null)
+    if [ -n "$GRAPHIFY_BIN" ]; then
+        PYTHON=$(head -1 "$GRAPHIFY_BIN" | tr -d '#!')
+        case "$PYTHON" in *[!a-zA-Z0-9/_.-]*) PYTHON="python3" ;; esac
+    else
+        PYTHON="python3"
+    fi
+    mkdir -p graphify-out
+    "$PYTHON" -c "import sys; open('graphify-out/.graphify_python', 'w', encoding='utf-8').write(sys.executable)"
+fi
+```
+
+## For --update and --cluster-only
+
+Both are non-default subcommands. `--update` re-extracts only new or changed files; `--cluster-only` reruns clustering on the existing graph. See `references/update.md` for both flows.
+
+---
+
+## For graphify query
+
+When `graphify-out/graph.json` already exists and the user asks a question about the corpus, answer from the graph rather than rebuilding it:
+
+```bash
+graphify query "<question>"
+```
+
+If the `graphify query` CLI is unavailable, fall back to an inline NetworkX traversal of `graphify-out/graph.json`. Answer using only what the graph output contains, and quote `source_location` when citing a specific fact. For the BFS/DFS traversal modes, the `--budget` cap, the NetworkX fallback, `save-result` feedback, and the `graphify path` and `graphify explain` flows, see `references/query.md`.
+
+---
+
+## For graphify add and --watch
+
+Neither is part of the default build. When the user runs `graphify add <url>` to fetch a URL into the corpus, or passes `--watch` to auto-rebuild on file changes, see `references/add-watch.md`.
+
+---
+
+## For the commit hook and native CLAUDE.md integration
+
+When the user asks to install the post-commit auto-rebuild hook or wire graphify into a project's CLAUDE.md, see `references/hooks.md`.
+
+---
+
+## Honesty Rules
+
+- Never invent an edge. If unsure, use AMBIGUOUS.
+- Never skip the corpus check warning.
+- Always show token cost in the report.
+- Never hide cohesion scores behind symbols - show the raw number.
+- Never run HTML viz on a graph with more than 5,000 nodes without warning the user.
+</skill>
+
+test out all the tools, does u run on ur terminal
+
+=== ASSISTANT MESSAGE 105 ===
+<think></think>
+
+=== ASSISTANT THINKING 105 ===
+The user wants me to test if the graphify tools actually work on my terminal. Let me run some basic graphify commands to verify.
+
+
+=== ASSISTANT MESSAGE 109 ===
+<think></think>
+
+=== ASSISTANT THINKING 109 ===
+The graphify CLI is available. Let me test a few more commands to make sure theywork.
+
+=== ASSISTANT MESSAGE 112 ===
+<think></think>
+
+=== ASSISTANT THINKING 112 ===
+CLI works. Now let me test `graphify query` on an existinggraph.
+
+=== ASSISTANT MESSAGE 115 ===
+<think></think>
+
+=== ASSISTANT THINKING 115 ===
+The graph query is working but it's finding codemirror (a vendor library) instead of the actual book management code. This is because the query is matching "book" in "book.blade.php" but the graph might have more relevant nodes that aren't being matched well. Let me try a morespecific query.
+
+=== ASSISTANT MESSAGE 118 ===
+<think></think>
+
+=== ASSISTANT THINKING 118 ===
+The query is only finding the blade template. The graph exists but the question matching is not picking up relevant nodes. Let me try another query or check the graph stats.
+
+=== ASSISTANT MESSAGE 121 ===
+<think></think>
+
+=== ASSISTANT THINKING 121 ===
+The query result shows the graph is built but the query matching is returning irrelevant results (codemirror library instead of actual project code). The explain command can't find BookController either. This suggests the graph might have incomplete extraction or the query matching needs improvement.
+
+Let me check what the graph actuallycontains.
+
+=== ASSISTANT MESSAGE 124 ===
+<think></think>
+
+=== ASSISTANT THINKING 124 ===
+The graph exists but doesn't have good semantic extraction for the app code. It seems the graph is mostly built from the vendor library (codemirror). The app code extraction didn't work well.
+
+Let me check what's in the graph.json to understand the structurebetter.
+
+=== ASSISTANT MESSAGE 127 ===
+<think></think>
+
+=== ASSISTANT THINKING 127 ===
+jq not installed. Let me use python instead.
+
+=== ASSISTANT MESSAGE 130 ===
+<think></think>
+
+=== ASSISTANT THINKING 130 ===
+The graph exists and has 2505 nodes. The query returned codemirror because that file contains "book" in its name (book.blade.php). The problem is the query engine is matching node labels with low relevance.
+
+Let me check what the actual BookController looks like in the graph:
+
+
+=== ASSISTANT MESSAGE 133 ===
+<think></think>
+
+=== ASSISTANT THINKING 133 ===
+Hmm, no nodes with 'Book' in the label. Let me check what kind of nodes exist.
+
+
+=== ASSISTANT MESSAGE 136 ===
+<think></think>
+
+=== ASSISTANT THINKING 136 ===
+The graph exists and has 2505 nodes. The query tool is working, but the results are showing codemirror (a vendor library) instead of the actual application code. This is because the graph has a lot of vendor code that gets picked up first.
+
+Let me test a few more things to confirm the CLI is working properly.
+
+=== ASSISTANT MESSAGE 139 ===
+<think></think>
+
+=== ASSISTANT THINKING 139 ===
+The graph has 2505 nodes and 5663 edges. The graph is working. The issue is that the graph query is matching nodes based on term overlap, and "Book" isn't found. Let me check if there are any nodes with "Barang" (which might be the Indonesian word for "book" or "item"):
+
+
+=== ASSISTANT MESSAGE 142 ===
+<think></think>
+
+=== ASSISTANT THINKING 142 ===
+The graph exists and has nodes. Let me try to query for Barang since that's what I found.
+
+
+=== ASSISTANT MESSAGE 145 ===
+<think></think>
+
+**Tools verified working:**
+
+| Command | Status |
+|---------|--------|
+| `graphify --help` | ✅ Shows all commands |
+| `graphify query "..."` | ✅ BFS traversal returns nodes/edges |
+| `graphify explain "..."` | ✅ Node explanation |
+| `graphify path "A" "B"` | ✅ Shortest path |
+| `graphify diagnose multigraph` | ✅ Edge collapse analysis |
+
+**Example output:** `graphify query "How does BarangController work?"` →56 nodes found with method edges `.index()`, `.store()`, `.update()`, `.delete()`, etc.
+
+**Note:** Graph has 2505 nodes, but some nodes missing (e.g., `BookController` not found — likely extraction skipped certain files). Re-run `graphify .` to rebuild if needed.
+
+=== ASSISTANT THINKING 145 ===
+The tool works. Now let me update the title session and provide a summary.
+
+=== USER MESSAGE 148 ===
+<skill name="graphify" location="C:\Users\Kafuu\.pi\agent\skills\graphify\SKILL.md">
+References are relative to C:\Users\Kafuu\.pi\agent\skills\graphify.
+
+# /graphify
+
+Turn any folder of files into a navigable knowledge graph with community detection, an honest audit trail, and three outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language GRAPH_REPORT.md.
+
+## Usage
+
+```
+graphify                                             # full pipeline on current directory → Obsidian vault
+graphify <path>                                      # full pipeline on specific path
+graphify https://github.com/<owner>/<repo>           # clone repo then run full pipeline on it
+graphify https://github.com/<owner>/<repo> --branch <branch>  # clone a specific branch
+graphify <url1> <url2> ...                           # clone multiple repos, build each, merge into one cross-repo graph
+graphify <path> --mode deep                          # thorough extraction, richer INFERRED edges
+graphify <path> --update                             # incremental - re-extract only new/changed files
+graphify <path> --directed                            # build directed graph (preserves edge direction: source→target)
+graphify <path> --whisper-model medium                # use a larger Whisper model for better transcription accuracy
+graphify <path> --cluster-only                       # rerun clustering on existing graph
+graphify <path> --no-viz                             # skip visualization, just report + JSON
+graphify <path> --html                               # (HTML is generated by default - this flag is a no-op)
+graphify <path> --svg                                # also export graph.svg (embeds in Notion, GitHub)
+graphify <path> --graphml                            # export graph.graphml (Gephi, yEd)
+graphify <path> --neo4j                              # generate graphify-out/cypher.txt for Neo4j
+graphify <path> --neo4j-push bolt://localhost:7687   # push directly to Neo4j
+graphify <path> --mcp                                # start MCP stdio server for agent access
+graphify <path> --watch                              # watch folder, auto-rebuild on code changes (no LLM needed)
+graphify <path> --wiki                               # build agent-crawlable wiki (index.md + one article per community)
+graphify <path> --obsidian --obsidian-dir ~/vaults/my-project  # write vault to custom path (e.g. existing vault)
+graphify add <url>                                   # fetch URL, save to ./raw, update graph
+graphify add <url> --author "Name"                   # tag who wrote it
+graphify add <url> --contributor "Name"              # tag who added it to the corpus
+graphify query "<question>"                          # BFS traversal - broad context
+graphify query "<question>" --dfs                    # DFS - trace a specific path
+graphify query "<question>" --budget 1500            # cap answer at N tokens
+graphify path "AuthModule" "Database"                # shortest path between two concepts
+graphify explain "SwinTransformer"                   # plain-language explanation of a node
+```
+
+## What graphify is for
+
+Drop any folder of code, docs, papers, images, or video into graphify and get a queryable knowledge graph. Persistent across sessions, honest audit trail (EXTRACTED/INFERRED/AMBIGUOUS), community detection surfaces cross-document connections you wouldn't think to ask about.
+
+## What You Must Do When Invoked
+
+If the user invoked `graphify --help` or `graphify -h` (with no other arguments), print the contents of the `## Usage` section above verbatim and stop. Do not run any commands, do not detect files, do not default the path to `.`. Just print the Usage block and return.
+
+**Fast path — existing graph:** Before doing anything else, check whether `graphify-out/graph.json` exists. The expected location is `graphify-out/graph.json` relative to the **current working directory** (i.e. the project root where you are running commands). If it exists AND the user's request is a natural-language question about the codebase (e.g. "How does X work?", "What calls Y?", "Trace the data flow through Z") and NOT an explicit rebuild command (`--update`, `--cluster-only`, or a bare path/URL that implies fresh extraction): **skip Steps 1–5 entirely and jump straight to `## For graphify query`.** Run `graphify query "<question>"` immediately. Do not run detect. Do not check corpus size. Do not ask the user to narrow. The graph is already built — use it.
+
+If no path was given, use `.` (current directory). Do not ask the user for a path.
+
+If the path argument starts with `https://github.com/` or `http://github.com/`, treat it as a GitHub URL - run Step 0 before anything else, then continue with the resolved local path.
+
+Follow these steps in order. Do not skip steps.
+
+### Step 0 - GitHub repos and multi-path merge (only if a URL or several paths)
+
+Only when the path is one or more `https://github.com/...` URLs, or several local subfolders to merge. See `references/github-and-merge.md` for the clone, cross-repo merge, and monorepo flow, then continue with the resolved local path. A plain local path skips this step.
+
+### Step 1 - Ensure graphify is installed
+
+```bash
+# Detect the correct Python interpreter (handles uv tool, pipx, venv, system installs)
+PYTHON=""
+GRAPHIFY_BIN=$(which graphify 2>/dev/null)
+# 1. uv tool installs — most reliable on modern Mac/Linux
+if [ -z "$PYTHON" ] && command -v uv >/dev/null 2>&1; then
+    _UV_PY=$(uv tool run graphifyy python -c "import sys; print(sys.executable)" 2>/dev/null)
+    if [ -n "$_UV_PY" ]; then PYTHON="$_UV_PY"; fi
+fi
+# 2. Read shebang from graphify binary (pipx and direct pip installs)
+if [ -z "$PYTHON" ] && [ -n "$GRAPHIFY_BIN" ]; then
+    _SHEBANG=$(head -1 "$GRAPHIFY_BIN" | tr -d '#!')
+    case "$_SHEBANG" in
+        *[!a-zA-Z0-9/_.-]*) ;;
+        *) "$_SHEBANG" -c "import graphify" 2>/dev/null && PYTHON="$_SHEBANG" ;;
+    esac
+fi
+# 3. Fall back to python3
+if [ -z "$PYTHON" ]; then PYTHON="python3"; fi
+if ! "$PYTHON" -c "import graphify" 2>/dev/null; then
+    if command -v uv >/dev/null 2>&1; then
+        uv tool install --upgrade graphifyy -q 2>&1 | tail -3
+        _UV_PY=$(uv tool run graphifyy python -c "import sys; print(sys.executable)" 2>/dev/null)
+        if [ -n "$_UV_PY" ]; then PYTHON="$_UV_PY"; fi
+    else
+        "$PYTHON" -m pip install graphifyy -q 2>/dev/null \
+          || "$PYTHON" -m pip install graphifyy -q --break-system-packages 2>&1 | tail -3
+    fi
+fi
+# Write interpreter path for all subsequent steps (persists across invocations)
+mkdir -p graphify-out
+"$PYTHON" -c "import sys; open('graphify-out/.graphify_python', 'w', encoding='utf-8').write(sys.executable)"
+# Save scan root so `graphify update` (no args) knows where to look next time
+echo "$(cd INPUT_PATH && pwd)" > graphify-out/.graphify_root
+```
+
+If the import succeeds, print nothing and move straight to Step 2.
+
+**In every subsequent bash block, replace `python3` with `$(cat graphify-out/.graphify_python)` to use the correct interpreter.**
+
+### Step 2 - Detect files
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from graphify.detect import detect
+from pathlib import Path
+result = detect(Path('INPUT_PATH'))
+print(json.dumps(result, ensure_ascii=False))
+" > graphify-out/.graphify_detect.json
+```
+
+Replace INPUT_PATH with the actual path the user provided. Do NOT cat or print the JSON - read it silently and present a clean summary instead:
+
+```
+Corpus: X files · ~Y words
+  code:     N files (.py .ts .go ...)
+  docs:     N files (.md .txt ...)
+  papers:   N files (.pdf ...)
+  images:   N files
+  video:    N files (.mp4 .mp3 ...)
+```
+
+Omit any category with 0 files from the summary.
+
+Then act on it:
+- If `total_files` is 0: stop with "No supported files found in [path]."
+- If `skipped_sensitive` is non-empty: mention file count skipped, not the file names.
+- If `total_words` > 2,000,000 OR `total_files` > 500: show the warning. Then compute the top 5 first-level subdirectories by file count:
+  - Read `scan_root` from the detect JSON (always an absolute path to the resolved INPUT_PATH).
+  - Concatenate all file lists across all types (`code`, `document`, `paper`, `image`, `video`).
+  - Filter out any path that starts with `scan_root + "/graphify-out/"` to exclude converted sidecars.
+  - For each file, strip the `scan_root` prefix and take the first path component. Files directly in `scan_root` with no subdirectory count as `(root)`.
+  - If all files are in `(root)` with no subdirectories, do not ask to narrow — no subfolders exist. Instead suggest `--no-cluster` to skip the expensive clustering step and proceed.
+  - Otherwise rank by count, show the top 5 with file counts, then ask which subfolder to run on. Wait for the user's answer before proceeding.
+- Otherwise: proceed directly to Step 2.5 if video files were detected, or Step 3 if not.
+
+### Step 2.5 - Video and audio (only if video files detected)
+
+Skip this step entirely if `detect` returned zero `video` files. When the corpus has video or audio, see `references/transcribe.md` to transcribe them to text first, then treat the transcripts as doc files in Step 3.
+
+### Step 3 - Extract entities and relationships
+
+**Before starting:** note whether `--mode deep` was given. You must pass `DEEP_MODE=true` to every subagent in Step B2 if it was. Track this from the original invocation - do not lose it.
+
+This step has two parts: **structural extraction** (deterministic, free) and **semantic extraction** (LLM, costs tokens).
+
+**Before dispatching subagents:** check whether `GEMINI_API_KEY` or `GOOGLE_API_KEY` is set. If neither is set, print this one-liner to the user:
+> Tip: set `GEMINI_API_KEY` or `GOOGLE_API_KEY` to use Gemini for semantic extraction (`pip install 'graphifyy[gemini]'`).
+
+Print it once, then continue. If `GEMINI_API_KEY` or `GOOGLE_API_KEY` IS set, use `graphify.llm.extract_corpus_parallel(files, backend="gemini")` for semantic extraction instead of dispatching Claude subagents. The default Gemini model is `gemini-3-flash-preview`; set `GRAPHIFY_GEMINI_MODEL` or pass `--model` in headless CLI flows to override it.
+
+> **No other API keys are read.** If `GEMINI_API_KEY`/`GOOGLE_API_KEY` are unset, fall straight through to Claude Code subagent dispatch (Part B below) — the host session itself is the LLM. graphify does **not** read `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or any other provider key from the environment. If a host agent prompts the user for `ANTHROPIC_API_KEY` to run extraction, that prompt is a misread of this skill — ignore it and dispatch subagents as written.
+
+**Run Part A (AST) and Part B (semantic) in parallel. Dispatch all semantic subagents AND start AST extraction in the same message. Both can run simultaneously since they operate on different file types. Merge results in Part C as before.**
+
+Note: Parallelizing AST + semantic saves 5-15s on large corpora. AST is deterministic and fast; start it while subagents are processing docs/papers.
+
+#### Part A - Structural extraction for code files
+
+For any code files detected, run AST extraction in parallel with Part B subagents:
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import sys, json
+from graphify.extract import collect_files, extract
+from pathlib import Path
+import json
+
+code_files = []
+detect = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+for f in detect.get('files', {}).get('code', []):
+    code_files.extend(collect_files(Path(f)) if Path(f).is_dir() else [Path(f)])
+
+if code_files:
+    result = extract(code_files, cache_root=Path('.'))
+    Path('graphify-out/.graphify_ast.json').write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+    print(f'AST: {len(result[\"nodes\"])} nodes, {len(result[\"edges\"])} edges')
+else:
+    Path('graphify-out/.graphify_ast.json').write_text(json.dumps({'nodes':[],'edges':[],'input_tokens':0,'output_tokens':0}, ensure_ascii=False), encoding=\"utf-8\")
+    print('No code files - skipping AST extraction')
+"
+```
+
+#### Part B - Semantic extraction (parallel subagents)
+
+**Fast path:** If detection found zero docs, papers, and images (code-only corpus), skip Part B entirely and go straight to Part C. AST handles code - there is nothing for semantic subagents to do.
+
+**MANDATORY: You MUST use the Agent tool here. Reading files yourself one-by-one is forbidden - it is 5-10x slower. If you do not use the Agent tool you are doing this wrong.**
+
+Before dispatching subagents, print a timing estimate:
+- Load `total_words` and file counts from `graphify-out/.graphify_detect.json`
+- Estimate agents needed: `ceil(uncached_non_code_files / 22)` (chunk size is 20-25)
+- Estimate time: ~45s per agent batch (they run in parallel, so total ≈ 45s × ceil(agents/parallel_limit))
+- Print: "Semantic extraction: ~N files → X agents, estimated ~Ys"
+
+**Step B0 - Check extraction cache first**
+
+Before dispatching any subagents, check which files already have cached extraction results:
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from graphify.cache import check_semantic_cache
+from pathlib import Path
+
+detect = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+all_files = [f for files in detect['files'].values() for f in files]
+
+cached_nodes, cached_edges, cached_hyperedges, uncached = check_semantic_cache(all_files)
+
+if cached_nodes or cached_edges or cached_hyperedges:
+    Path('graphify-out/.graphify_cached.json').write_text(json.dumps({'nodes': cached_nodes, 'edges': cached_edges, 'hyperedges': cached_hyperedges}, ensure_ascii=False), encoding=\"utf-8\")
+Path('graphify-out/.graphify_uncached.txt').write_text('\n'.join(uncached), encoding=\"utf-8\")
+print(f'Cache: {len(all_files)-len(uncached)} files hit, {len(uncached)} files need extraction')
+"
+```
+
+Only dispatch subagents for files listed in `graphify-out/.graphify_uncached.txt`. If all files are cached, skip to Part C directly.
+
+**Step B1 - Split into chunks**
+
+Load files from `graphify-out/.graphify_uncached.txt`. Split into chunks of 20-25 files each. Each image gets its own chunk (vision needs separate context). When splitting, group files from the same directory together so related artifacts land in the same chunk and cross-file relationships are more likely to be extracted.
+
+**Step B2 - Dispatch ALL subagents in a single message**
+
+Call the Agent tool multiple times IN THE SAME RESPONSE - one call per chunk. This is the only way they run in parallel. If you make one Agent call, wait, then make another, you are doing it sequentially and defeating the purpose.
+
+**IMPORTANT - subagent type:** Always use `subagent_type="general-purpose"`. Do NOT use `Explore` - it is read-only and cannot write chunk files to disk, which silently drops extraction results. General-purpose has Write and Bash access which the subagent needs.
+
+Concrete example for 3 chunks:
+```
+[Agent tool call 1: files 1-15, subagent_type="general-purpose"]
+[Agent tool call 2: files 16-30, subagent_type="general-purpose"]
+[Agent tool call 3: files 31-45, subagent_type="general-purpose"]
+```
+All three in one message. Not three separate messages.
+
+Each subagent receives this exact prompt (substitute FILE_LIST, CHUNK_NUM, TOTAL_CHUNKS, DEEP_MODE, and CHUNK_PATH).
+
+CHUNK_PATH must be an **absolute** path — derive it before dispatching:
+```bash
+PROJECT_ROOT=$(cat graphify-out/.graphify_root)
+# Then for chunk N: CHUNK_PATH="${PROJECT_ROOT}/graphify-out/.graphify_chunk_0N.json"
+```
+
+Subagent prompt template:
+
+See `references/extraction-spec.md` for the exact subagent prompt (JSON schema, node-ID rules, confidence rubric, frontmatter, hyperedge, and vision rules). Load it only here, only when at least one chunk holds a doc, paper, or image; a pure-code corpus has skipped Part B and never reads it. Pass each subagent that prompt verbatim with FILE_LIST, CHUNK_NUM, TOTAL_CHUNKS, DEEP_MODE, and CHUNK_PATH substituted, and have it write the result to CHUNK_PATH.
+
+**Step B3 - Collect, cache, and merge**
+
+Wait for all subagents. For each result:
+- Check that `graphify-out/.graphify_chunk_NN.json` exists on disk — this is the success signal
+- If the file exists and contains valid JSON with `nodes` and `edges`, include it and save to cache
+- If the file is missing, the subagent was likely dispatched as read-only (Explore type) — print a warning: "chunk N missing from disk — subagent may have been read-only. Re-run with general-purpose agent." Do not silently skip.
+- If a subagent failed or returned invalid JSON, print a warning and skip that chunk - do not abort
+
+If more than half the chunks failed or are missing, stop and tell the user to re-run and ensure `subagent_type="general-purpose"` is used.
+
+Merge all chunk files into `.graphify_semantic_new.json`. **After each Agent call completes, read the real token counts from the Agent tool result's `usage` field and write them back into the chunk JSON before merging** — the chunk JSON itself always has placeholder zeros. Then run:
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json, glob
+from pathlib import Path
+
+chunks = sorted(glob.glob('graphify-out/.graphify_chunk_*.json'))
+all_nodes, all_edges, all_hyperedges = [], [], []
+total_in, total_out = 0, 0
+for c in chunks:
+    d = json.loads(Path(c).read_text(encoding=\"utf-8\"))
+    all_nodes += d.get('nodes', [])
+    all_edges += d.get('edges', [])
+    all_hyperedges += d.get('hyperedges', [])
+    total_in += d.get('input_tokens', 0)
+    total_out += d.get('output_tokens', 0)
+Path('graphify-out/.graphify_semantic_new.json').write_text(json.dumps({
+    'nodes': all_nodes, 'edges': all_edges, 'hyperedges': all_hyperedges,
+    'input_tokens': total_in, 'output_tokens': total_out,
+}, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+print(f'Merged {len(chunks)} chunks: {total_in:,} in / {total_out:,} out tokens')
+"
+```
+
+Save new results to cache:
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from graphify.cache import save_semantic_cache
+from pathlib import Path
+
+new = json.loads(Path('graphify-out/.graphify_semantic_new.json').read_text(encoding=\"utf-8\")) if Path('graphify-out/.graphify_semantic_new.json').exists() else {'nodes':[],'edges':[],'hyperedges':[]}
+saved = save_semantic_cache(new.get('nodes', []), new.get('edges', []), new.get('hyperedges', []))
+print(f'Cached {saved} files')
+"
+```
+
+Merge cached + new results into `graphify-out/.graphify_semantic.json`:
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from pathlib import Path
+
+cached = json.loads(Path('graphify-out/.graphify_cached.json').read_text(encoding=\"utf-8\")) if Path('graphify-out/.graphify_cached.json').exists() else {'nodes':[],'edges':[],'hyperedges':[]}
+new = json.loads(Path('graphify-out/.graphify_semantic_new.json').read_text(encoding=\"utf-8\")) if Path('graphify-out/.graphify_semantic_new.json').exists() else {'nodes':[],'edges':[],'hyperedges':[]}
+
+all_nodes = cached['nodes'] + new.get('nodes', [])
+all_edges = cached['edges'] + new.get('edges', [])
+all_hyperedges = cached.get('hyperedges', []) + new.get('hyperedges', [])
+seen = set()
+deduped = []
+for n in all_nodes:
+    if n['id'] not in seen:
+        seen.add(n['id'])
+        deduped.append(n)
+
+merged = {
+    'nodes': deduped,
+    'edges': all_edges,
+    'hyperedges': all_hyperedges,
+    'input_tokens': new.get('input_tokens', 0),
+    'output_tokens': new.get('output_tokens', 0),
+}
+Path('graphify-out/.graphify_semantic.json').write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+print(f'Extraction complete - {len(deduped)} nodes, {len(all_edges)} edges ({len(cached[\"nodes\"])} from cache, {len(new.get(\"nodes\",[]))} new)')
+"
+```
+Clean up temp files: `rm -f graphify-out/.graphify_cached.json graphify-out/.graphify_uncached.txt graphify-out/.graphify_semantic_new.json`
+
+#### Part C - Merge AST + semantic into final extraction
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import sys, json
+from pathlib import Path
+
+ast = json.loads(Path('graphify-out/.graphify_ast.json').read_text(encoding=\"utf-8\"))
+sem = json.loads(Path('graphify-out/.graphify_semantic.json').read_text(encoding=\"utf-8\"))
+
+# Merge: AST nodes first, semantic nodes deduplicated by id
+seen = {n['id'] for n in ast['nodes']}
+merged_nodes = list(ast['nodes'])
+for n in sem['nodes']:
+    if n['id'] not in seen:
+        merged_nodes.append(n)
+        seen.add(n['id'])
+
+merged_edges = ast['edges'] + sem['edges']
+merged_hyperedges = sem.get('hyperedges', [])
+merged = {
+    'nodes': merged_nodes,
+    'edges': merged_edges,
+    'hyperedges': merged_hyperedges,
+    'input_tokens': sem.get('input_tokens', 0),
+    'output_tokens': sem.get('output_tokens', 0),
+}
+Path('graphify-out/.graphify_extract.json').write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+total = len(merged_nodes)
+edges = len(merged_edges)
+print(f'Merged: {total} nodes, {edges} edges ({len(ast[\"nodes\"])} AST + {len(sem[\"nodes\"])} semantic)')
+"
+```
+
+### Step 4 - Build graph, cluster, analyze, generate outputs
+
+**Before starting:** note whether `--directed` was given. If so, pass `directed=True` to `build_from_json()` in the code block below. This builds a `DiGraph` that preserves edge direction (source→target) instead of the default undirected `Graph`.
+
+```bash
+mkdir -p graphify-out
+$(cat graphify-out/.graphify_python) -c "
+import sys, json
+from graphify.build import build_from_json
+from graphify.cluster import cluster, score_all
+from graphify.analyze import god_nodes, surprising_connections, suggest_questions
+from graphify.report import generate
+from graphify.export import to_json
+from pathlib import Path
+
+extraction = json.loads(Path('graphify-out/.graphify_extract.json').read_text(encoding=\"utf-8\"))
+detection  = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+
+G = build_from_json(extraction)
+communities = cluster(G)
+cohesion = score_all(G, communities)
+tokens = {'input': extraction.get('input_tokens', 0), 'output': extraction.get('output_tokens', 0)}
+gods = god_nodes(G)
+surprises = surprising_connections(G, communities)
+labels = {cid: 'Community ' + str(cid) for cid in communities}
+# Placeholder questions - regenerated with real labels in Step 5
+questions = suggest_questions(G, communities, labels)
+
+report = generate(G, communities, cohesion, labels, gods, surprises, detection, tokens, '.', suggested_questions=questions)
+Path('graphify-out/GRAPH_REPORT.md').write_text(report, encoding=\"utf-8\")
+to_json(G, communities, 'graphify-out/graph.json')
+
+analysis = {
+    'communities': {str(k): v for k, v in communities.items()},
+    'cohesion': {str(k): v for k, v in cohesion.items()},
+    'gods': gods,
+    'surprises': surprises,
+    'questions': questions,
+}
+Path('graphify-out/.graphify_analysis.json').write_text(json.dumps(analysis, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+if G.number_of_nodes() == 0:
+    print('ERROR: Graph is empty - extraction produced no nodes.')
+    print('Possible causes: all files were skipped, binary-only corpus, or extraction failed.')
+    raise SystemExit(1)
+print(f'Graph: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges, {len(communities)} communities')
+"
+```
+
+If this step prints `ERROR: Graph is empty`, stop and tell the user what happened - do not proceed to labeling or visualization.
+
+Replace INPUT_PATH with the actual path.
+
+### Step 5 - Label communities
+
+Read `graphify-out/.graphify_analysis.json`. For each community key, look at its node labels and write a 2-5 word plain-language name (e.g. "Attention Mechanism", "Training Pipeline", "Data Loading").
+
+Then regenerate the report and save the labels for the visualizer:
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import sys, json
+from graphify.build import build_from_json
+from graphify.cluster import score_all
+from graphify.analyze import god_nodes, surprising_connections, suggest_questions
+from graphify.report import generate
+from pathlib import Path
+
+extraction = json.loads(Path('graphify-out/.graphify_extract.json').read_text(encoding=\"utf-8\"))
+detection  = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+analysis   = json.loads(Path('graphify-out/.graphify_analysis.json').read_text(encoding=\"utf-8\"))
+
+G = build_from_json(extraction)
+communities = {int(k): v for k, v in analysis['communities'].items()}
+cohesion = {int(k): v for k, v in analysis['cohesion'].items()}
+tokens = {'input': extraction.get('input_tokens', 0), 'output': extraction.get('output_tokens', 0)}
+
+# LABELS - replace these with the names you chose above
+labels = LABELS_DICT
+
+# Regenerate questions with real community labels (labels affect question phrasing)
+questions = suggest_questions(G, communities, labels)
+
+report = generate(G, communities, cohesion, labels, analysis['gods'], analysis['surprises'], detection, tokens, '.', suggested_questions=questions)
+Path('graphify-out/GRAPH_REPORT.md').write_text(report, encoding=\"utf-8\")
+Path('graphify-out/.graphify_labels.json').write_text(json.dumps({str(k): v for k, v in labels.items()}, ensure_ascii=False), encoding=\"utf-8\")
+print('Report updated with community labels')
+"
+```
+
+Replace `LABELS_DICT` with the actual dict you constructed (e.g. `{0: "Attention Mechanism", 1: "Training Pipeline"}`).
+Replace INPUT_PATH with the actual path.
+
+### Step 6 - Generate Obsidian vault (opt-in) + HTML
+
+**Generate HTML always** (unless `--no-viz`). **Obsidian vault only if `--obsidian` was explicitly given** — skip it otherwise, it generates one file per node.
+
+If `--obsidian` was given:
+
+- If `--obsidian-dir <path>` was also given, pass it via `--dir`. Otherwise defaults to `graphify-out/obsidian`.
+
+```bash
+graphify export obsidian
+# or with custom dir: graphify export obsidian --dir ~/vaults/my-project
+```
+
+Generate the HTML graph (always, unless `--no-viz`):
+
+```bash
+graphify export html  # auto-aggregates to community view if graph > 5000 nodes
+# or: graphify export html --no-viz
+```
+
+### Steps 6b-8 - Wiki, Neo4j, SVG, GraphML, MCP, benchmark (only on their flags)
+
+These run only when their flag is present (`--wiki`, `--neo4j`/`--neo4j-push`, `--svg`, `--graphml`, `--mcp`) or, for the token-reduction benchmark, when `total_words` exceeds 5,000. A default run with no export flags skips all of them. See `references/exports.md` for each one. Run any `--wiki` export before Step 9 cleanup so `.graphify_labels.json` is still available.
+
+---
+
+### Step 9 - Save manifest, update cost tracker, clean up, and report
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from pathlib import Path
+from datetime import datetime, timezone
+from graphify.detect import save_manifest
+
+# Save manifest for --update
+detect = json.loads(Path('graphify-out/.graphify_detect.json').read_text(encoding=\"utf-8\"))
+# In --update mode, 'all_files' carries the full corpus; 'files' is the changed
+# subset. Full-rebuild mode populates only 'files', so the fallback handles that.
+save_manifest(detect.get('all_files') or detect['files'])
+
+# Update cumulative cost tracker
+extract = json.loads(Path('graphify-out/.graphify_extract.json').read_text(encoding=\"utf-8\"))
+input_tok = extract.get('input_tokens', 0)
+output_tok = extract.get('output_tokens', 0)
+
+cost_path = Path('graphify-out/cost.json')
+if cost_path.exists():
+    cost = json.loads(cost_path.read_text(encoding=\"utf-8\"))
+else:
+    cost = {'runs': [], 'total_input_tokens': 0, 'total_output_tokens': 0}
+
+cost['runs'].append({
+    'date': datetime.now(timezone.utc).isoformat(),
+    'input_tokens': input_tok,
+    'output_tokens': output_tok,
+    'files': detect.get('total_files', 0),
+})
+cost['total_input_tokens'] += input_tok
+cost['total_output_tokens'] += output_tok
+cost_path.write_text(json.dumps(cost, indent=2, ensure_ascii=False), encoding=\"utf-8\")
+
+print(f'This run: {input_tok:,} input tokens, {output_tok:,} output tokens')
+print(f'All time: {cost[\"total_input_tokens\"]:,} input, {cost[\"total_output_tokens\"]:,} output ({len(cost[\"runs\"])} runs)')
+"
+rm -f graphify-out/.graphify_detect.json graphify-out/.graphify_extract.json graphify-out/.graphify_ast.json graphify-out/.graphify_semantic.json graphify-out/.graphify_analysis.json
+find graphify-out -maxdepth 1 -name '.graphify_chunk_*.json' -delete 2>/dev/null
+rm -f graphify-out/.needs_update 2>/dev/null || true
+```
+
+Tell the user (omit the obsidian line unless --obsidian was given):
+```
+Graph complete. Outputs in PATH_TO_DIR/graphify-out/
+
+  graph.html            - interactive graph, open in browser
+  GRAPH_REPORT.md       - audit report
+  graph.json            - raw graph data
+  obsidian/             - Obsidian vault (only if --obsidian was given)
+```
+
+If graphify saved you time, consider supporting it: https://github.com/sponsors/safishamsi
+
+Replace PATH_TO_DIR with the actual absolute path of the directory that was processed.
+
+Then paste these sections from GRAPH_REPORT.md directly into the chat:
+- God Nodes
+- Surprising Connections
+- Suggested Questions
+
+Do NOT paste the full report - just those three sections. Keep it concise.
+
+Then immediately offer to explore. Pick the single most interesting suggested question from the report - the one that crosses the most community boundaries or has the most surprising bridge node - and ask:
+
+> "The most interesting question this graph can answer: **[question]**. Want me to trace it?"
+
+If the user says yes, run `graphify query "[question]"` on the graph and walk them through the answer using the graph structure - which nodes connect, which community boundaries get crossed, what the path reveals. Keep going as long as they want to explore. Each answer should end with a natural follow-up ("this connects to X - want to go deeper?") so the session feels like navigation, not a one-shot report.
+
+The graph is the map. Your job after the pipeline is to be the guide.
+
+---
+
+## Interpreter guard for subcommands
+
+Before running any subcommand below (`--update`, `--cluster-only`, `query`, `path`, `explain`, `add`), check that `.graphify_python` exists. If it's missing (e.g. user deleted `graphify-out/`), re-resolve the interpreter first:
+
+```bash
+if [ ! -f graphify-out/.graphify_python ]; then
+    GRAPHIFY_BIN=$(which graphify 2>/dev/null)
+    if [ -n "$GRAPHIFY_BIN" ]; then
+        PYTHON=$(head -1 "$GRAPHIFY_BIN" | tr -d '#!')
+        case "$PYTHON" in *[!a-zA-Z0-9/_.-]*) PYTHON="python3" ;; esac
+    else
+        PYTHON="python3"
+    fi
+    mkdir -p graphify-out
+    "$PYTHON" -c "import sys; open('graphify-out/.graphify_python', 'w', encoding='utf-8').write(sys.executable)"
+fi
+```
+
+## For --update and --cluster-only
+
+Both are non-default subcommands. `--update` re-extracts only new or changed files; `--cluster-only` reruns clustering on the existing graph. See `references/update.md` for both flows.
+
+---
+
+## For graphify query
+
+When `graphify-out/graph.json` already exists and the user asks a question about the corpus, answer from the graph rather than rebuilding it:
+
+```bash
+graphify query "<question>"
+```
+
+If the `graphify query` CLI is unavailable, fall back to an inline NetworkX traversal of `graphify-out/graph.json`. Answer using only what the graph output contains, and quote `source_location` when citing a specific fact. For the BFS/DFS traversal modes, the `--budget` cap, the NetworkX fallback, `save-result` feedback, and the `graphify path` and `graphify explain` flows, see `references/query.md`.
+
+---
+
+## For graphify add and --watch
+
+Neither is part of the default build. When the user runs `graphify add <url>` to fetch a URL into the corpus, or passes `--watch` to auto-rebuild on file changes, see `references/add-watch.md`.
+
+---
+
+## For the commit hook and native CLAUDE.md integration
+
+When the user asks to install the post-commit auto-rebuild hook or wire graphify into a project's CLAUDE.md, see `references/hooks.md`.
+
+---
+
+## Honesty Rules
+
+- Never invent an edge. If unsure, use AMBIGUOUS.
+- Never skip the corpus check warning.
+- Always show token cost in the report.
+- Never hide cohesion scores behind symbols - show the raw number.
+- Never run HTML viz on a graph with more than 5,000 nodes without warning the user.
+</skill>
+
+explain how does the Queue stream controller
+
+=== ASSISTANT MESSAGE 149 ===
+<think></think>
+
+=== ASSISTANT THINKING 149 ===
+The user wants to understand how the QueueStreamController works. Let me use graphify to query this.
+
+=== ASSISTANT MESSAGE 152 ===
+<think></think>
+
+=== ASSISTANT THINKING 152 ===
+The graph shows QueueStreamController has `.stream()` method. Let me get more details on the actual controllercode.
+
+=== ASSISTANT MESSAGE 155 ===
+<think></think>
+
+## QueueStreamController Explained
+
+**File:** `app/Http/Controllers/QueueStreamController.php`
+
+### What it does
+Real-time SSE (Server-Sent Events) endpoint untuk streaming state antrian ke frontend.
+
+### Methods
+
+| Method | Line | Description |
+|--------|------|-------------|
+| `.__construct()` | L12 | Dependency injection `QueueService` |
+| `.stream()` | L18 | SSE endpoint utama |
+
+### Architecture
+
+```
+Client → GET /antrian/stream/{poli}
+ → QueueStreamController::stream(Poli $poli)
+       → QueueService::getCacheState($poliId)
+       → StreamedResponse (SSE)
+```
+
+### How `.stream()` works
+
+1. **Loop utama** — infinite `while(true)` keep connection alive
+2. **Client check** — `connection_aborted()` break if client disconnects
+3. **State check** — `queueService->getCacheState()` get current queue state
+4. **Delta push** — only send if state changed (avoids redundant data)
+5. **Heartbeat** — send `: heartbeat\n\n` every 30s to prevent timeout
+6. **Flush** — `ob_flush() + flush()` push data immediately
+
+### Headers sent
+```
+Content-Type: text/event-stream
+Cache-Control: no-cache
+X-Accel-Buffering: no ← disable nginx buffering
+Connection: keep-alive
+```
+
+### Key insight
+Uses **Server-Sent Events** (not WebSocket) for real-time updates. Simple, unidirectional, perfect for pushing queue state updates to a dashboard without the complexity of WebSocket connections.
+
+=== ASSISTANT THINKING 155 ===
+Got the code. Now I can explain it properly.
+
+=== USER MESSAGE 158 ===
+Jelaskan bagaimana SSE pada punyaku bisa membuka multiple tab tanpa saling bertabrakan
+
+=== ASSISTANT MESSAGE 159 ===
+<think></think>
+
+=== ASSISTANT THINKING 159 ===
+The user is asking how SSE (Server-Sent Events) in their project can open multiple tabs without colliding with each other. Let me analyze the code and think about this.
+
+Looking at the QueueStreamController, the key is:
+1. Each tab connects to `/antrian/stream/{poli}` with a specific `poliId`
+2. The state is cached per `poliId` via `QueueService::getCacheState($poliId)`
+3. Each client connection is independent - they all read from the same cache but don't interfere with each other
+
+The reason multiple tabs work without collision:
+1. **Server-side**: Each connection is independent. The server just reads from cache and pushes to whoever is connected.
+2. **Cache-based state**: The state is stored centrally (likely Redis or file cache), and all connections read from the same source.
+3. **No sh
+
+=== ASSISTANT MESSAGE 162 ===
+<think></think>
+
+=== ASSISTANT THINKING 162 ===
+Now I understand the full picture. Let me explain how SSE can open multiple tabs without colliding.
+
+The key is in the architecture:
+1. Each tab opens its own SSE connection to `/antrian/stream/{poli}`
+2. Each connection runs independently in a separate process/thread
+3. The Cache layer acts as the shared state - not the connection itself
+4. Each SSE connection uses its own `while(true)` loop polling the same cache key
+
+The "no collision" mechanism is:
+1. **Per-poli SSE connections** - Each poli has its own endpoint `/antrian/stream/{poli}`
+2. **Shared cache state** - All tabs for the same poli read from the same cache key `queue_state_{poliId}`
+3. **Delta push logic** - Only sends when state changes, so multiple tabs see the same update
+4. **No shared mutable state in SSE** - Each SSE con
+
+=== ASSISTANT MESSAGE 165 ===
+<think></think>
+
+=== ASSISTANT THINKING 165 ===
+Let me search more broadly for the frontend SSEcode.
+
+=== ASSISTANT MESSAGE 168 ===
+<think></think>
+
+=== ASSISTANT THINKING 168 ===
+Hmm, EventSource tidak ditemukan. Mungkin mereka menggunakan cara lain untuk SSE di frontend. Let me check for any JavaScript files or assets.
+
+
+=== ASSISTANT MESSAGE 171 ===
+<think></think>
+
+=== ASSISTANT THINKING 171 ===
+Let me check those JS files for SSE/EventSource code.
+
+=== ASSISTANT MESSAGE 174 ===
+<think></think>
+
+=== ASSISTANT THINKING 174 ===
+Hmm, no EventSource found. Let me check if the SSE handling is done in blade files or maybe in a different location.
+
+
+=== ASSISTANT MESSAGE 177 ===
+<think></think>
+
+=== ASSISTANT THINKING 177 ===
+Let me try a different approach - read the blade files for queue.
+
+
+=== ASSISTANT MESSAGE 180 ===
+<think></think>
+
+=== ASSISTANT THINKING 180 ===
+Let me check the queue board blade - that's likely where the SSE client is.
+
+
+=== ASSISTANT MESSAGE 183 ===
+<think></think>
+
+=== ASSISTANT THINKING 183 ===
+The user uses a separate JS file `js/queue-sse.js`. Let me readthat.
+
+=== ASSISTANT MESSAGE 186 ===
+<think></think>
+
+## SSE Multiple Tabs Tanpa Tabrakan
+
+### Arsitektur Kunci
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    SERVER (PHP)                        │
+│  QueueStreamController::stream($poliId)                │
+│         │                                              │
+│         └──→ Cache::get("queue_state_{$poliId}")        │
+│                    (SHARED state per poli)             │
+└─────────────────────────────────────────────────────────┘
+ ▲ ▲                    ▲
+              │                    │                    │
+    ┌─────────┴─────────┐ ┌───────┴───────┐ ┌────────┴────────┐
+    │   Tab 1 (Board)    │ │   Tab 2 (Board)│ │   Tab 3 (Admin) │
+    │ EventSource A │ │ EventSource B │ │  EventSource C  │
+    │ lastQueue=A001    │ │ lastQueue=A001│ │                 │
+    └───────────────────┘ └───────────────┘ └────────────────┘
+```
+
+### Mengapa Tidak Tabrakan?
+
+**1. Shared Cache (Bukan Session/Memory)**
+
+```php
+// QueueService.php
+Cache::put("queue_state_{$poliId}", [...], ...);
+```
+
+Semua SSE connection baca dari **cache yang sama**. Tidak ada state per-connection di server.
+
+**2. Delta Push (Hanya Kirim Jika Berubah)**
+
+```php
+// QueueStreamController.php
+while (true) {
+    $state = $this->queueService->getCacheState($poliId);
+    
+    if ($state !== $lastState) {  // ← Hanya kirim jika berubah $lastState = $state;
+        echo "data: " . json_encode($state) . "\n\n";
+        ob_flush();
+        flush();
+    }
+    sleep(2);
+}
+```
+
+Server **tidak spam** setiap 2 detik. Hanya push saat ada perubahan.
+
+**3. Client-Side State Tracking**
+
+```javascript
+// queue-sse.js
+let lastQueueNumber = cfg.lastQueue ?? null;
+
+function updateBoard(state) {
+    const newNumber = state.current.queue_number;
+    const isNew = newNumber !== lastQueueNumber;  // ← Cek lokal
+    
+    if (isNew) {
+        playNotification(newNumber, state.current.customer_name);
+        lastQueueNumber = newNumber;  // ← Update lokal    }
+}
+```
+
+Setiap tab punya **state lokal sendiri** (`lastQueueNumber`).
+
+**4. Scenario:3 Tab Terbuka**
+
+```
+Timeline:
+─────────────────────────────────────────────────────────Admin klik "Panggil Berikutnya"
+ → QueueService::callNextQueue() 
+  → Cache::put("queue_state_{1}", NEW_STATE)
+  
+Semua3 Tab terima SSE event:
+  Tab 1: lastQueue=A001 → new=A002 (BEDA) → play notification ✅
+  Tab 2: lastQueue=A001 → new=A002 (BEDA) → play notification ✅
+  Tab 3: lastQueue=A001 → new=A002 (BEDA) → update UI ✅
+```
+
+### Tidak Ada Masalah Karena:
+
+| Aspek | Solusi |
+|-------|--------|
+| Server state | Shared cache, bukan per-connection |
+| Push frequency | Delta push, hanya saat berubah |
+| Tab awareness | Tidak perlu - setiap tab Independen |
+| Collision | Tidak ada resource competition |
+| Reconnection | Exponential backoff dengan `retryDelay` |
+
+### Kesimpulan
+
+SSE tidak memiliki mekanisme "multi-tab awareness" bawaan. Tapi dalam kasus ini, **tidak perlu** karena:
+
+1. **Stateless server** — hanya baca dari shared cache
+2. **Delta push** — server push hanya saat state berubah
+3. **Client-side dedup** — setiap tab track `lastQueueNumber` sendiri
+4. **Same state, same time** — semua tab terima state yang sama → tidak ada race condition
+
+Jadi ketika admin memanggil antrian baru, semua tab menerima push yang sama dan independently memutuskan apakah perlu play notification berdasarkan state lokal mereka.
+
+=== ASSISTANT THINKING 186 ===
+Now I have the full picture. Let me explain how SSE with multiple tabs works without collision.
+
+The key is in the architecture:
+
+1. **Server-side (PHP):** Each SSE connection is tied to a specific `poliId`. The server just reads from cache and pushes state. It doesn't track multiple clients - it just broadcasts whenever state changes.
+
+2. **Cache-based state:** The state is stored in `Cache::put("queue_state_{$poliId}", ...)` - not in memory or session. This means ALL SSE connections for the same poli point to the SAME cache key.
+
+3. **Delta push mechanism:** In the server code:
+   ```php
+   if ($state !== $lastState) {
+       $lastState = $state;
+       echo "data: " . json_encode($state) . "\n\n";
+   }
+   ```
+   It only sends when state changes, not on every loop iteration.
+
+4. **Client
+
+=== USER MESSAGE 189 ===
+Ini karena rata-rata temanku mengalami kendala ketika membuka multi tab itu requestnya saling bertabrakan
+
+=== ASSISTANT MESSAGE 190 ===
+<think></think>
+
+=== ASSISTANT THINKING 190 ===
+The user is saying that their friends are experiencing issues when opening multiple tabs - the requests are colliding with each other. This is a common SSE problem.
+
+Let me think about what could cause this:
+
+1. **Session locking** - PHP sessions lock by default, so if one tab is holding a session, other tabs can't access it until the first one releases it. This can cause delays or timeouts.
+
+2. **Connection limits** - Browsers typically limit concurrent connections to the same domain (usually 6 per domain for HTTP/1.1). When opening multiple SSE connections to the same endpoint, they might be queued or some might fail.
+
+3. **Session cookies** - If the app uses session-based auth, opening multiple tabs might cause session conflicts.
+
+4. **Nginx buffering** - The `X-Accel-Buffering: no` hea
+
+=== ASSISTANT MESSAGE 193 ===
+<think></think>
+
+=== ASSISTANT THINKING 193 ===
+Let me check the route - if it's using a session, that could cause issues with multiple tabs.
+
+=== ASSISTANT MESSAGE 196 ===
+<think></think>
+
+=== ASSISTANT THINKING 196 ===
+Hmm, the routes look fine. Let me think about what could cause collisions in multi-tab SSE:
+
+1. **Same session cookies** - All tabs share the same Laravel session. This shouldn't cause issues for SSE since SSE is read-only.
+
+2. **Cache locking** - If multiple requests try to update the cache at the same time, there could be race conditions.
+
+3. **Database locking** - If multiple queue operations happen simultaneously.
+
+4. **Nginx buffering** - The `X-Accel-Buffering: no` header is set, but if nginx isn't configured properly, it could buffer the response.
+
+5. **PHP session locking** - PHP sessions are locked during requests. If one tab is in a long-running SSE connection while another tab tries to do something, there could be blocking.
+
+Actually, I think I found the issue! **PHP session loc
+
+=== ASSISTANT MESSAGE 199 ===
+<think></think>
+
+=== ASSISTANT THINKING 199 ===
+Hmm, session tidak digunakan. Mari cek apakah ada issue lain yang mungkin menyebabkan tabrakan. Mari lihat lebih detail pada cache configuration dan database transactions.
+
+
+=== ASSISTANT MESSAGE 202 ===
+<think></think>
+
+=== ASSISTANT THINKING 202 ===
+Hmm, no session, no transactions/locks. Let me think about what could cause collisions in multi-tab SSE scenarios.
+
+Actually, I think I now understand the user's concern. The issue might be that when you open multiple tabs of the SAME board page, and then one tab does some action (like creating a new queue), the SSE might behave unexpectedly because:
+
+1. Each tab has its own `lastQueueNumber` variable
+2. But when the state changes, ALL tabs receive the event
+3. If the user is doing admin actions from multiple tabs, there could be race conditions
+
+Let me check if there's any issue with the AdminQueueController that might cause problems.
+
+
+=== ASSISTANT MESSAGE 205 ===
+<think></think>
+
+Aha! Ketemu masalahnya. Ini **bukan** masalah SSE-nya, tapi **session locking** di Laravel.
+
+## Penyebab Utama: Session Lock
+
+### Bagaimana Session Lock Bekerja
+
+```
+┌────────────────────────────────────────────────────────────┐
+│ Laravel Session (default: database/file)                │
+│                                                            │
+│ Tab 1 ──→ Lock acquired ──→ [writes session] ──→ releases │
+│ Tab 2 ──→ Blocked until Tab 1 releases ──→ reads session   │
+│ Tab 3 ──→ Blocked... │
+└────────────────────────────────────────────────────────────┘
+```
+
+### Kenapa SSE Terdampak
+
+SSE adalah **long-lived request**. Saat tab lain write session (form submit, page navigation), semua tab lain **blocked** karena session lock.
+
+### Solution: Non-blocking SSE dengan `空`
+
+Tambahkan ini di `QueueStreamController`:
+
+```php
+public function stream(Poli $poli): StreamedResponse
+{
+    $poliId = $poli->id;
+
+    return response()->stream(function () use ($poliId) {
+        // ████ KUNCI UTAMA ████
+        // Release session lock agar tab lain tidak terblokir
+        if (session()->isStarted()) {
+            session()->save();
+            session()->flush();
+        }
+        
+        // Non-blocking cookie agar tidak ada session lock
+        // ... rest of code
+    }, 200, [
+        'Content-Type'  => 'text/event-stream',
+        'Cache-Control' => 'no-cache',
+        'X-Accel-Buffering' => 'no',
+        'Connection'    => 'keep-alive',
+    ]);
+}
+```
+
+### Atau: Config Middleware SSE```php
+// routes/web.php
+Route::get('/stream/{poli}', [QueueStreamController::class, 'stream'])
+    ->name('queue-stream')
+    ->withoutMiddleware(\Illuminate\Session\Middleware\StartSession::class);
+```
+
+### Alternative: Separate Session Driver untuk SSE
+
+```php
+// buat custom middlewarephp artisan make:middleware DisableSessionForSSE
+```
+
+```php
+// app/Http/Middleware/DisableSessionForSSE.php
+class DisableSessionForSSE
+{
+    public function handle($request, $next)
+    {
+        // Skip session untuk SSE saja
+        config(['session.driver' => 'array']);
+        return $next($request);
+    }
+}
+```
+
+### Fix Sementara (Quick)
+
+```php
+// QueueStreamController.php
+public function stream(Poli $poli): StreamedResponse
+{
+    $poliId = $poli->id;
+
+    return response()->stream(function () use ($poliId) {
+        // ████ RELEASE SESSION LOCK ████
+        session()->forget('_token');
+        session()->save();
+        
+        // ... rest of SSE loop
+    }, 200, [
+        'Content-Type'  => 'text/event-stream',
+        'Cache-Control' => 'no-cache',
+        'X-Accel-Buffering' => 'no',
+        'Connection'    => 'keep-alive',
+    ]);
+}
+```
+
+### Root Cause Summary
+
+| Masalah | Penyebab | Solusi |
+|---------|---------|--------|
+| Tab saling block | Session lock di Laravel | `session()->save()` di SSE |
+| SSE hang/timeout | Session ditulis tab lain | `withoutMiddleware` atau custom middleware |
+| Race condition | Tidak ada DB lock | Tambahkan `LOCK` di query |
+
+Mau saya implementasikan fix-nya di code kamu?
+
+=== ASSISTANT THINKING 205 ===
+I see the issue now. Let me look at the race condition problem:
+
+1. **No database locking** - When two admins click "Panggil Berikutnya" at the same time, both could read the same queue and try to call it.
+
+2. **The flow is:**
+   - Admin A clicks → `callNext()` → reads DB → finds queue #1 → updates to "called"
+   - Admin B clicks → `callNext()` → reads DB → finds queue #2 (because #1 is now "called")
+   
+   Actually this works fine because the WHERE clause filters by status.
+
+But let me check for real race conditions. The issue might be in `recallCurrentQueue`:
+
+```php
+public function recallCurrentQueue(Queue $queue): array
+{
+    $newCount = $queue->call_count + 1;
+
+    if ($newCount > 3) {
+        $queue->update(['status' => 'late', 'call_count' => $newCount]);
+        $this->updateCache(
+
+=== USER MESSAGE 208 ===
+No, my sistem is fine, i just want to know why my system is can run multi-tab but why my friend cannot
+
+=== ASSISTANT MESSAGE 209 ===
+<think></think>Oke, jadi sistem kamu work, temanmu tidak. Kemungkinan besar masalah di **environment/serverside**.
+
+## Kemungkinan Penyebab
+
+### 1. **Session Driver Berbeda**
+
+```php
+// config/session.php
+'driver' => env('SESSION_DRIVER', 'file')
+```
+
+| Driver | Multi-tab behavior |
+|--------|-------------------|
+| `file` | ✅ Lock-based, stabil |
+| `database` | ⚠️ Connection pool issues |
+| `redis` | ✅ Biasanya fine |
+| `cookie` | ✅ Tidak ada lock |
+
+**Cek di `.env`:**
+```
+SESSION_DRIVER=file ← ini biasanya paling stabil
+```
+
+###2. **Web Server Timeout**
+
+```nginx
+# Nginx - default timeout 60s
+proxy_read_timeout 60s;  ← perlu diperbesar untuk SSE
+
+# Atau di ApacheTimeout 300
+```
+
+### 3. **Output Buffering Settings**
+
+```php
+// php.ini
+output_buffering = On ← perlu On untuk SSE
+output_buffering = 4096    ← atau specific size
+```
+
+### 4. **HTTPS vs HTTP**
+
+```
+Browser Chrome: HTTPS site + SSE = fineBrowser teman: mungkin redirect HTTP → HTTPS loop```
+
+### 5. **Session Cookie Domain**
+
+```php
+// config/session.php
+'domain' => env('SESSION_DOMAIN', null)
+// atau
+'domain' => '.example.com'  ← harus match semua tab
+```
+
+###6. **SameSite Cookie Policy**
+
+```php
+'same_site' => 'lax'  // atau 'none' untuk cross-site SSE
+```
+
+---
+
+## Cara Debug
+
+Minta temanmu buka DevTools → Network → cari `/stream/{poli}`:
+
+| Status | Artinya |
+|--------|---------|
+|200 (streaming) | ✅ SSE connected |
+| 403/419 | ❌ CSRF token issue |
+| 500 | ❌ Server error |
+| Pending/Stuck | ❌ Session lock atau timeout |
+| Closed | ❌ Connection dropped |
+
+---
+
+## Pertanyaan untuk Temanmu
+
+1. Browser apa? (Chrome/Firefox/Edge/Safari)
+2. Error message apa di console?
+3. Semua tab atau hanya tab tertentu?
+4. Tab pertama baru jalan atau semua tab bersamaan?
+5. Kalau buka di **incognito/private window** bisa?
+
+Ini akan membantu pinpoint masalahnya.
+
+=== ASSISTANT THINKING 209 ===
+The user is saying their system works fine with multi-tab, but their friends can't. They want to understand why this happens - likely due to differences in their environments, browsers, or server configurations.
+
+Let me think about what could cause this difference:
+
+1. **Browser differences** - Different browsers handle SSE and session differently
+2. **Session driver** - They might be using different session drivers (file vs database vs redis vs cookie)
+3. **Web server** - Apache vs Nginx vs Valet vs Homestead vs Docker - each handles long-lived connections differently
+4. **Session config** - Different `session.lifetime` or `session.expire_on_close` settings
+5. **CORS** - If accessing from different domains/origins
+6. **Cache driver** - File cache vs Redis vs database
+7. **PHP version** - 
+
+=== USER MESSAGE 212 ===
+semua tab stuck pada loading
+
+=== ASSISTANT MESSAGE 213 ===
+<think></think>Semua tab stuck = SSE connection **tidak pernah establish**. Ini network/server issue.
+
+## Quick Diagnostic### 1. Buka DevTools → NetworkCek `/stream/{poli}` request:
+
+```
+Status: (pending) / (canceled) / (failed)?
+Type: text/event-stream?
+```
+
+###2. Test SSE ManualBuka tab baru, ketik di address bar:
+
+```bash
+# Ganti sesuai poli ID temanmu
+https://yoursite.com/antrian/stream/1
+```
+
+Kalau muncul teks seperti ini ↓ = SSE jalan:
+```
+data: {"current":null,"waiting_count":0,...}
+
+data: {"current":null,"waiting_count":0,...}
+```
+
+Kalau **blank/hitam** = server problema.
+
+### 3. Cek di Terminal ServerKalau pakai XAMPP/WAMP:
+```
+[Sat Jun 14 12:00:00 2025] 127.0.0.1:xxx Accepted
+[Sat Jun 14 12:00:00 2025] 127.0.0.1:xxx Starting[Sat Jun 14 12:00:01 2025] 127.0.0.1:xxx Script "/path/to/stream.php" started```
+
+Kalau **tidak ada log** = request tidak sampai ke server.
+
+### 4. Kemungkinan Utama
+
+| Cause | Solution |
+|-------|----------|
+| **Firewall blocking** | Disable firewall sementara |
+| **Port conflict** | Port 80/443 dipakai aplikasi lain |
+| **SSL certificate issue** | SSE tidak bisa stream via HTTPS |
+| **Proxy/VPN interference** | Matikan proxy |
+| **Antivirus blocking** | Disable antivirus sementara |
+| **Local dev server** | `php artisan serve` timeout 60s default |
+
+### 5. Quick Fix untuk Local Dev
+
+```bash
+# Pasang timeout unlimitedphp -d max_execution_time=0 artisan serve --host=0.0.0.0 --port=8000
+```
+
+### 6. Test Sederhana
+
+Coba buat file test SSE:
+
+```php
+<?php
+// public/test-sse.php
+header('Content-Type: text/event-stream');
+header('Cache-Control: no-cache');
+header('Connection: keep-alive');
+
+for ($i = 0; $i < 10; $i++) {
+    echo "data: Test $i\n\n";
+    flush();
+    sleep(1);
+}
+echo "data: done\n\n";
+```
+
+Lalu akses `http://localhost/test-sse.php`
+
+Kalau ini juga stuck = **server/web server problema**.
+
+---
+
+## Next Step
+
+Minta temanmu jawab:
+1. Error di DevTools console?
+2. Pakai XAMPP/WAMP/Laravel Valet/Docker?
+3. Local atau hosting?
+4. `php artisan serve` atau Apache/nginx?
+
+Ini akan bantu pinpoint masalahnya.
+
+=== ASSISTANT THINKING 213 ===
+All tabs stuck on loading. This suggests the SSE connection itself is not being established properly. Let me think about what could cause this:
+
+1. The EventSource connection is never being established
+2. The server is not responding at all
+3. There's a network/firewall issue
+4. The route is not accessible
+
+Let me suggest some diagnostic steps they can take.
+
+=== USER MESSAGE 216 ===
+https://github.com/Fi-Rynix/web-workshop this my github friend repository compare it
+
+=== ASSISTANT MESSAGE 217 ===
+<think></think>
+
+=== ASSISTANT THINKING 217 ===
+User wants me to compare their friend's GitHub repository to understand why SSE doesn't work for their friend. Let me fetch and analyze the repository.
+
+=== ASSISTANT MESSAGE 220 ===
+<think></think>
+
+=== ASSISTANT THINKING 220 ===
+The web fetch failed. Let me try using git to clone the repo and examine it locally.
+
+=== ASSISTANT MESSAGE 223 ===
+<think></think>
+
+=== ASSISTANT THINKING 223 ===
+Good, repo cloned. Now let me compare the SSE implementation between user's repo and friend'srepo.
+
+=== ASSISTANT MESSAGE 226 ===
+<think></think>
+
+=== ASSISTANT THINKING 226 ===
+Hmm, no results. Let me search more broadly for queue-related files.
+
+=== ASSISTANT MESSAGE 229 ===
+<think></think>
+
+=== ASSISTANT THINKING 229 ===
+The friend has different controller names: `SseAntrianController.php` instead of `QueueStreamController.php`. Let me compare the SSEimplementation.
+
+=== ASSISTANT MESSAGE 233 ===
+<think></think>
+
+=== ASSISTANT THINKING 233 ===
+The paths are being converted to Windows-style. Let me use forward slashes.
+
+
+=== ASSISTANT MESSAGE 236 ===
+<think></think>
+
+=== ASSISTANT THINKING 236 ===
+The path format is different on Windows. Let me try with forwardslashes.
+
+=== ASSISTANT MESSAGE 239 ===
+<think></think>
+
+=== ASSISTANT THINKING 239 ===
+Interesting! Sekarang saya bisa lihat perbedaannya. Friend punya `session_write_close()` di awal function - ini KUNCI untuk multi-tab SSE. Dan tidak ada `X-Accel-Buffering: no` header di sini.
+
+Mari saya bandingkan dengan sistem user dan lihat route-nya.
+
+
+=== ASSISTANT MESSAGE 242 ===
+<think></think>**Found the key difference!**
+
+## Comparison
+
+### Friend's Code (Works ✅)
+```php
+// routes/web.php
+Route::get('sse/antrian', [SseAntrianController::class, 'stream'])
+    ->name('sse.antrian')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+```
+
+```php
+// Controller
+public function stream(Request $request)
+{
+    session_write_close();  // ← Release session lock immediately!
+ // ...
+}
+```
+
+### Your Code (Stuck ❌)
+```php
+// routes/web.php
+Route::get('/stream/{poli}', [QueueStreamController::class, 'stream'])
+    ->name('queue-stream');
+    // ← NO withoutMiddleware!
+```
+
+```php
+// Controller
+public function stream(Poli $poli): StreamedResponse
+{
+    // ← NO session_write_close()!
+    // ...
+}
+```
+
+## Root Cause
+
+| Aspect | Friend's | Yours |
+|--------|---------|-------|
+| Session Middleware | **Removed** (`withoutMiddleware`) | Active |
+| Session Lock | **Released** (`session_write_close`) | Not released |
+| Multi-tab | ✅ Works | ❌ Stuck |
+
+## Why This Happens
+
+```
+WITHOUT session release:
+┌────────────────────────────────────────┐
+│ Tab 1: SSE connects → Acquires session lock
+│ Tab 2: SSE connects → WAITING for lock
+│ Tab 3: SSE connects → WAITING for lock
+│ ...all stuck waiting for Tab 1 to close │
+└────────────────────────────────────────┘
+
+WITH session release:
+┌────────────────────────────────────────┐
+│ Tab 1: SSE connects → Lock → Release immediately
+│ Tab 2: SSE connects → Lock → Release immediately
+│ Tab 3: SSE connects → Lock → Release immediately
+│ ...all can connect independently!       │
+└────────────────────────────────────────┘
+```
+
+## The Fix for Your System
+
+Tambahkan di `routes/web.php`:
+
+```php
+Route::get('/stream/{poli}', [QueueStreamController::class, 'stream'])
+    ->name('queue-stream')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+```
+
+Atau di `QueueStreamController`:
+
+```php
+public function stream(Poli $poli): StreamedResponse
+{
+    session_write_close();  // ← Tambah ini di awal
+    
+    $poliId = $poli->id;
+    // ... rest of code
+}
+```
+
+**Solution termudah:** tambah `->withoutMiddleware([StartSession::class])` di route.
+
+=== ASSISTANT THINKING 242 ===
+Found it! The key difference:
+
+**Friend's code:**
+```php
+Route::get('sse/antrian', [App\Http\Controllers\SseAntrianController::class, 'stream'])
+    ->name('sse.antrian')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+```
+
+**User's code:**
+```php
+Route::get('/stream/{poli}', [QueueStreamController::class, 'stream'])->name('queue-stream');
+```
+
+The friend uses `->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class])` - this removes the session middleware completely!
+
+And inside the controller:
+```php
+session_write_close();
+```
+
+This is the KEY difference! The friend has:1. Route without session middleware
+2. `session_write_close()` inside
+
+=== USER MESSAGE 245 ===
+No, my system is work, but my friend doesnt
+
+=== ASSISTANT MESSAGE 246 ===
+<think></think>
+
+Oh sorry, balik lagi! 😄
+
+Jadi: **kamu work, temanmu clone repo kamu tapi stuck.**
+
+## Kemungkinan Penyebab Environment### 1. `.env` Missing atau Salah Config
+
+```bash
+# Cek apakah .env ada
+ls -la .env
+
+# Kalau tidak ada, copy dari .env.example
+cp .env.example .env
+
+# Generate app key
+php artisan key:generate# Clear cache
+php artisan config:clear
+php artisan cache:clear
+```
+
+### 2. Dependencies Belum Install
+
+```bash
+composer install
+npm install
+```
+
+### 3. Database Belum Migrate
+
+```bash
+php artisan migrate
+```
+
+### 4. PHP Version Berbeda
+
+Cek versi PHP kamu vs teman:
+
+```bash
+php -v
+```
+
+SSE butuh PHP 7.1+ dengan ekstensi:
+- `php_stream.dll` (atau `php_stream.so` di Linux)
+- `json` extension
+
+### 5. Missing PHP Extensions```bash
+php -m | grep -E "json|mbstring|openssl|pdo"
+```
+
+### 6. Cache Lama dari Kamu```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+# Atau clear semua:
+php artisan optimize:clear
+```
+
+### 7. Storage Link```bash
+php artisan storage:link
+```
+
+---
+
+## Quick Test untuk Teman
+
+Minta teman run ini:
+
+```bash
+# 1. Clean install
+rm -rf vendor node_modules
+composer install
+npm install
+
+# 2. Setup env
+cp .env.example .env
+php artisan key:generate# 3. Clear cache
+php artisan optimize:clear
+
+# 4. Migrate
+php artisan migrate
+
+# 5. Start server
+php artisan serve
+```
+
+Lalu test SSE.
+
+---
+
+## Kemungkinan Paling Besar**Teman lupa run `composer install`** → dependencies tidak ada → PHP error → SSE stuck.
+
+Atau **PHP version teman terlalu lama** → tidak support `StreamedResponse` dengan SSE headers yang benar.
+
+Minta teman kirim output dari:
+```bash
+php -v
+php -m
+```
+
+=== ASSISTANT THINKING 246 ===
+Oh! I misunderstood. The user is saying his system WORKS, but his friend's system DOESN'T. So the friend is the one with the stuck tabs, not the user.
+
+So the user's system already has the correct implementation (or at least it works), but the friend's cloned version doesn't work.
+
+Let me compare again - the friend cloned the user's repo, but the friend's system is stuck. So there must be something different in the friend's environment.
+
+The friend is probably running the cloned repo locally and it doesn't work. The differences could be:
+1. Different PHP version
+2. Different Laravel version
+3. Different environment variables (.env)
+4. Different PHP extensions installed
+5. Different web server configuration
+6. Missing dependencies (composer install not run)
+7. Database not migrated
+8. Cache
+
+=== USER MESSAGE 249 ===
+8.3
+
+=== ASSISTANT MESSAGE 250 ===
+<think></think>
+
+PHP 8.3 ✅ lebih dari cukup.
+
+## Check Lanjutan
+
+###1. Cache Driver
+
+```bash
+# Cek di .env temangrep SESSION_DRIVER .env
+grep CACHE_DRIVER .env
+```
+
+| Driver | Issue |
+|--------|-------|
+| `array` | ❌ Tidak persist, SSE tidak bisa broadcast |
+| `file` | ⚠️ Lock issue di Windows |
+| `redis` | ✅ Best untuk SSE |
+| `database` | ✅ Perlu migration |
+
+### 2. Cek apakah teman install Cache Table
+
+```bash
+php artisan migrate:status
+```
+
+Pastikan ada tabel `cache` atau `cache_locks` (kalau pakai database/file driver).
+
+### 3. Test SSE Manual
+
+Minta teman buat file `public/test-sse.php`:
+
+```php
+<?php
+header('Content-Type: text/event-stream');
+header('Cache-Control: no-cache');
+header('Connection: keep-alive');
+
+for ($i = 0; $i < 5; $i++) {
+    echo "data: Test $i\n\n";
+    flush();
+    sleep(1);
+}
+echo "data: done\n\n";
+```
+
+Lalu akses:
+```
+http://localhost:8000/test-sse.php
+```
+
+Kalau ini stuck juga = **server config problema**, bukan aplikasi kamu.
+
+### 4. Log Error
+
+```bash
+tail -f storage/logs/laravel.log
+```
+
+Lihat apakah ada error saat SSE connect.
+
+---
+
+## Kemungkinan UtamaDengan PHP 8.3, kemungkinan terbesar:
+
+1. **Cache driver `array`** → setiap request cache reset → SSE tidak pernah dapat data2. **Firewall/antivirus** blocking long connection
+3. **XAMPP/WAMP config** → `max_execution_time` terlalu pendek
+
+Minta teman cek `.env` dan kasih tau hasil `CACHE_DRIVER=` apa.
+
+=== ASSISTANT THINKING 250 ===
+The user's friend has PHP 8.3 which is more than sufficient for Laravel and SSE. Let me think about what else could cause the issue.
+
+PHP 8.3 is very modern and should support everything. Let me think about other possible causes:
+
+1. Maybe the friend's code has different SSE implementation issues
+2. Maybe there's a difference in how the frontend connects to SSE
+3. Maybe the cache driver is different (file vs redis vs array)
+4. Maybe the friend didn't run the migration for the cache table
+
+Let me check the friend's code more thoroughly to find differences.
+
+=== USER MESSAGE 253 ===
+does my code have this PHP_CLI_SERVER_WORKER
+
+=== ASSISTANT MESSAGE 254 ===
+<think></think>
+
+=== ASSISTANT THINKING 254 ===
+The user is asking if their code has `PHP_CLI_SERVER_WORKER` - this is a PHP built-in web server worker that can handle SSE properly. Let me check theircode.
+
+=== ASSISTANT MESSAGE 257 ===
+<think></think>
+
+=== ASSISTANT THINKING 257 ===
+The user is asking if their code has PHP_CLI_SERVER_WORKER. Let me check their project too.
+
+=== ASSISTANT MESSAGE 260 ===
+<think></think>
+
+Both repos punya `PHP_CLI_SERVER_WORKERS` tapi **commented out** (default = 1 worker).
+
+## Apa Itu PHP_CLI_SERVER_WORKERS?
+
+```bash
+# Default (1 worker) - Single threadedphp artisan serve
+# Hanya1 request bisa diproses dalam satu waktu
+
+# Multiple workers - Multi threaded
+PHP_CLI_SERVER_WORKERS=4 php artisan serve
+# 4 request bisa diproses bersamaan
+```
+
+## Apakah Ini Penyebab SSE Stuck?
+
+**Ya, bisa jadi!**
+
+PHP built-in server (`php artisan serve`) itu **single-threaded** by default:
+
+```
+1 Worker Mode:
+┌─────────────────────────────────────┐
+│ SSE Tab 1 ───→ ████████████ pending │
+│ SSE Tab 2 ───→ ████████████ pending │ ← semua waiting
+│ SSE Tab 3 ───→ ████████████ pending │  ← karena 1 worker
+│ ... ───→ ████████████ pending │
+└─────────────────────────────────────┘
+```
+
+## Solution### Quick Fix```bash
+# Edit .env
+PHP_CLI_SERVER_WORKERS=4
+
+# Atau langsung runcross-env PHP_CLI_SERVER_WORKERS=4 php artisan serve
+```
+
+### Atau di `package.json`
+
+```json
+"scripts": {
+    "serve": "cross-env PHP_CLI_SERVER_WORKERS=4 php artisan serve"
+}
+```
+
+---
+
+## Tapi... Kenapa Kamu Bisa Work?
+
+Kemungkinan:
+1. **Browser cache** → koneksi lama sudah establish
+2. **Tab yang sama** → tidak trigger new connection
+3. **Kamu pakai XAMPP/Valet** → bukan PHP built-in server
+4. **Koneksi pertama** → worker free saat pertama connect
+
+## Rekomendasi
+
+**Jangan pakai `php artisan serve` untuk production SSE.** Pakai:
+- `php -S` dengan config khusus
+- Valet
+- XAMPP/WAMP
+- Docker- VPS dengan Apache/Nginx
+
+`php artisan serve` itu **development only**, tidak designed untuk concurrent connections seperti SSE.
+
+---
+
+Minta temanmu coba:
+```bash
+PHP_CLI_SERVER_WORKERS=4 php artisan serve
+```
+
+Atau pakai **XAMPP** вместо `artisan serve`.
+
+=== ASSISTANT THINKING 260 ===
+The user is asking about PHP_CLI_SERVER_WORKERS. This is a Laravel environment variable that controls how many PHP built-in server workers are spawned when running `php artisan serve`.
+
+The key issue here might be:
+- With 1 worker (default), only ONE request can be processed at a time for the built-in PHP server
+- With multiple workers, multiple requests can be processed simultaneously
+
+But actually, this is for the PHP built-in server (`php -S`), not for SSE specifically. The PHP built-in server is single-threaded by default.
+
+However, the user's code doesn't actively set this to multiple workers. Let me check if they have this in their .env.
+
+=== USER MESSAGE 263 ===
+how to cek serve scripts
+
+=== ASSISTANT MESSAGE 264 ===
+<think></think>
+
+=== ASSISTANT THINKING 264 ===
+User wants to know how to check the serve scripts in their project.
+
+
+=== ASSISTANT MESSAGE 267 ===
+<think></think>
+
+=== ASSISTANT THINKING 267 ===
+Let me try a different approach to read the package.json file.
+
+=== ASSISTANT MESSAGE 270 ===
+<think></think>
+
+=== ASSISTANT THINKING 270 ===
+The user's package.json doesn't have a serve script - they use `concurrently` from composer.json instead. Let me check the composer.json scripts.
+
+=== ASSISTANT MESSAGE 273 ===
+<think></think>
+
+=== ASSISTANT THINKING 273 ===
+Let me get the full scripts section from composer.json.
+
+=== ASSISTANT MESSAGE 276 ===
+<think></think>## Found!
+
+`composer.json` sudah ada `PHP_CLI_SERVER_WORKERS=4`:
+
+```json
+"dev": [
+    "Composer\\Config::disableProcessTimeout",
+    "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"cross-env PHP_CLI_SERVER_WORKERS=4 php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+]
+```
+
+## Cara Cek & Run
+
+### 1. Lihat semua scripts
+```bash
+composer run --list
+```
+
+###2. Run dev (dengan 4 workers)
+```bash
+composer dev
+```
+
+### 3. Atau manual (1 worker - masalah SSE)
+```bash
+php artisan serve
+```
+
+### 4. Atau manual (4 workers - SSE work)
+```bash
+cross-env PHP_CLI_SERVER_WORKERS=4 php artisan serve
+```
+
+---
+
+## Masalahnya
+
+Temanmu mungkin run `php artisan serve` langsung, bukan `composer dev`.
+
+**Jalankan:**
+```bash
+composer dev
+```
+
+Ini akan:
+1. Start server dengan4 workers ✅
+2. Start queue listener ✅
+3. Start Vite dev server ✅
+4. Start log viewer ✅
+
+---
+
+## Quick Fix untuk Teman
+
+```bash
+# Uncomment di .env
+PHP_CLI_SERVER_WORKERS=4
+
+# Atau buat alias di ~/.bashrc (Windows: Git Bash)
+alias serve='cross-env PHP_CLI_SERVER_WORKERS=4 php artisan serve'
+```
+
+Sekarang temanku tinggal ketik `composer dev` instead of `php artisan serve`.
+
+=== ASSISTANT THINKING 276 ===
+Found it! The `dev` script already has `PHP_CLI_SERVER_WORKERS=4` set:
+
+```json
+"dev": [
+    "Composer\\Config::disableProcessTimeout",
+    "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"cross-env PHP_CLI_SERVER_WORKERS=4 php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+]
+```
+
+So when they run `composer dev`, it already uses 4 workers. But if they just run `php artisan serve` directly, it uses 1 worker.
+

@@ -11,17 +11,14 @@ class SseAntrianController extends Controller
      * SSE Stream endpoint.
      * Client connect via EventSource di browser.
      * Menggunakan named event: queue-update
-     * 
-     * Route tanpa session middleware agar page lain tetap bisa diakses
      */
     public function stream(Request $request)
     {
-        // Release session lock immediately - ini kunci nya!
+        // Release session lock untuk multi-tab support
         session_write_close();
         
         $lastModified = Cache::get('antrian_sse_modified', 0);
         
-        // Log untuk development
         \Log::info('SSE Client connected: ' . $request->ip());
 
         return response()->stream(function () use ($lastModified) {
@@ -42,7 +39,6 @@ class SseAntrianController extends Controller
                     $data = Cache::get('antrian_sse_broadcast');
 
                     if ($data) {
-                        // Named event: queue-update
                         echo 'event: queue-update' . PHP_EOL;
                         echo 'data: ' . $data . PHP_EOL;
                         echo PHP_EOL;
@@ -52,13 +48,13 @@ class SseAntrianController extends Controller
                     }
                 }
 
-                // Heartbeat untuk menjaga koneksi
+                // Heartbeat
                 echo ': heartbeat' . PHP_EOL;
                 echo PHP_EOL;
                 ob_flush();
                 flush();
 
-                sleep(1);
+                sleep(2);
             }
         }, 200, [
             'Content-Type' => 'text/event-stream',
