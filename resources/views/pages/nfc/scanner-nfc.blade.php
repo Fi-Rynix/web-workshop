@@ -15,18 +15,6 @@
         <p>Dekatkan kartu NFC untuk mencatat kehadiran</p>
     </div>
 
-    {{-- DEBUG PANEL --}}
-    <div id="debugPanel" style="background: #1a1a2e; color: #0f0; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; font-family: monospace; font-size: 12px;">
-        <div style="margin-bottom: 8px; font-weight: bold; color: #fff;">🔧 DEBUG PANEL</div>
-        <div id="debug1">1. Page loaded: NO</div>
-        <div id="debug2">2. NFC supported: checking...</div>
-        <div id="debug3">3. Button clicked: NO</div>
-        <div id="debug4">4. Scanning started: NO</div>
-        <div id="debug5">5. Card detected: NO</div>
-        <div id="debug6">6. Fetch sent: NO</div>
-        <div id="debug7">7. Response: -</div>
-    </div>
-
     <div id="statusCard" class="status-card">
         <div id="statusIcon" class="status-icon">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
