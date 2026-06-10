@@ -13,6 +13,7 @@ Auth::routes();
 // =====================================================
 // Public Routes - Antrian Digital (Tanpa Login, Tanpa Session)
 // =====================================================
+
 Route::get('antrian-form', [App\Http\Controllers\AntrianController::class, 'form'])->name('antrian.form')
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
 Route::post('antrian-form', [App\Http\Controllers\AntrianController::class, 'store'])->name('antrian.store')
@@ -26,6 +27,40 @@ Route::get('antrian/api/{id}', [App\Http\Controllers\AntrianController::class, '
 // =====================================================
 Route::get('sse/antrian', [App\Http\Controllers\SseAntrianController::class, 'stream'])->name('sse.antrian')
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\StartSession::class]);
+
+// =====================================================
+// Debug Routes (Tanpa Auth)
+// =====================================================
+
+Route::get('debug/log-test', function() {
+    \Log::info('=== DEBUG LOG TEST ===', [
+        'timestamp' => now()->toIso8601String(),
+        'ip' => request()->ip(),
+        'user_agent' => request()->userAgent(),
+    ]);
+    return response()->json(['status' => true, 'message' => 'Log test sent']);
+});
+
+Route::get('debug/nfc-cards', function() {
+    $cards = \DB::select('SELECT * FROM nfc_cards');
+    return response()->json(['cards' => $cards]);
+});
+
+Route::post('debug/nfc-scan-test', function() {
+    // Manual log
+    file_put_contents(
+        storage_path('logs/nfc-debug.log'),
+        date('Y-m-d H:i:s') . ' - POST: ' . json_encode(request()->all()) . "\n",
+        FILE_APPEND
+    );
+    
+    \Log::info('=== NFC SCAN TEST (NO AUTH) ===', [
+        'all' => request()->all(),
+        'json' => file_get_contents('php://input'),
+        'headers' => request()->headers->all(),
+    ]);
+    return response()->json(['status' => true, 'received' => request()->all()]);
+});
 
 // =====================================================
 // Admin Routes - Antrian (Perlu Login)
@@ -57,6 +92,28 @@ Route::middleware(['auth'])->group(function(){
 Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
     Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
+    // NFC Routes (Admin)
+    Route::get('nfc/index-nfc', [App\Http\Controllers\NfcController::class, 'index'])->name('index-nfc');
+    
+    // Debug route - tanpa CSRF
+    Route::get('nfc/test', function() {
+        \Log::info('NFC Test Endpoint Called', request()->all());
+        return response()->json(['status' => true, 'message' => 'Test OK', 'data' => request()->all()]);
+    });
+    Route::post('nfc/create-nfc', [App\Http\Controllers\NfcController::class, 'store'])->name('create-nfc');
+    Route::put('nfc/edit-nfc/{id}', [App\Http\Controllers\NfcController::class, 'update'])->name('edit-nfc');
+    Route::delete('nfc/delete-nfc/{id}', [App\Http\Controllers\NfcController::class, 'destroy'])->name('delete-nfc');
+    Route::post('nfc/activate-nfc/{id}', [App\Http\Controllers\NfcController::class, 'activate'])->name('activate-nfc');
+    Route::get('nfc/scanner', [App\Http\Controllers\NfcController::class, 'scanner'])->name('nfc.scanner');
+    Route::post('nfc/scan', [App\Http\Controllers\NfcController::class, 'scan'])->name('nfc.scan')
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+    Route::get('nfc/attendance', [App\Http\Controllers\NfcController::class, 'attendance'])->name('nfc.attendance');
+    Route::get('nfc/attendance-data', [App\Http\Controllers\NfcController::class, 'attendanceData'])->name('nfc.attendance-data');
+    Route::get('nfc/raw-data/{id}', [App\Http\Controllers\NfcController::class, 'getRawData'])->name('nfc.raw-data');
+});
+
+// Routes untuk Admin (idrole = 1) - Lanjutan
+Route::middleware(['auth', 'check_verif', 'check.role:1'])->group(function () {
     Route::get('kategori/index-kategori', [App\Http\Controllers\KategoriController::class, 'index'])->name('index-kategori');
     Route::post('kategori/create-kategori', [App\Http\Controllers\KategoriController::class, 'store'])->name('create-kategori');
     Route::put('kategori/edit-kategori/{id}', [App\Http\Controllers\KategoriController::class, 'update'])->name('edit-kategori');

@@ -66,6 +66,26 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#nfcMenu" aria-expanded="false" aria-controls="nfcMenu">
+          <span class="menu-title">NFC Attendance</span>
+          <i class="menu-arrow"></i>
+          <i class="mdi mdi-nfc menu-icon"></i>
+        </a>
+        <div class="collapse" id="nfcMenu">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('index-nfc') }}">Kelola Kartu NFC</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('nfc.scanner') }}">Scanner NFC</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('nfc.attendance') }}">Riwayat Absensi</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="{{ route('generate-pdf') }}">
           <span class="menu-title">Generate PDF</span>
           <i class="mdi mdi-file menu-icon"></i>
