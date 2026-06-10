@@ -9,8 +9,15 @@
     let isScanning = false;
     const API_URL = '/nfc/scan';
 
+    // ====== DEBUG HELPER ======
+    function updateDebug(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = text;
+    }
+
     function init() {
         console.log('Scanner NFC Initialized');
+        updateDebug('debug1', '1. Page loaded: YES ✓');
         checkNfcSupport();
         loadRecentAttendance();
         setupScanButton();
@@ -18,20 +25,23 @@
 
     function setupScanButton() {
         const btn = document.getElementById('btnScan');
-        if (!btn) return;
+        if (!btn) {
+            console.error('Button #btnScan not found!');
+            return;
+        }
 
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-
-        newBtn.addEventListener('click', function(e) {
+        // LANGSUNG attach ke button original - jangan cloneNode
+        btn.addEventListener('click', function(e) {
             e.preventDefault();
             console.log('=== SCAN BUTTON CLICKED ===');
+            updateDebug('debug3', '3. Button clicked: YES ✓');
             toggleScan();
         });
     }
 
     function checkNfcSupport() {
         if (!('NDEFReader' in window)) {
+            updateDebug('debug2', '2. NFC supported: NO ✗ (Chrome/Edge Android only)');
             const btn = document.getElementById('btnScan');
             const statusText = document.getElementById('statusText');
             
@@ -52,6 +62,8 @@
             
             const statusCard = document.getElementById('statusCard');
             if (statusCard) statusCard.className = 'status-card error';
+        } else {
+            updateDebug('debug2', '2. NFC supported: YES ✓');
         }
     }
 
@@ -61,7 +73,10 @@
         const statusIcon = document.getElementById('statusIcon');
         const statusText = document.getElementById('statusText');
 
-        if (!('NDEFReader' in window)) return;
+        if (!('NDEFReader' in window)) {
+            console.error('NDEFReader not available');
+            return;
+        }
 
         if (isScanning) {
             stopScan();
@@ -72,6 +87,7 @@
         ndef.scan()
             .then(() => {
                 console.log('NFC scan started');
+                updateDebug('debug4', '4. Scanning started: YES ✓');
                 isScanning = true;
                 
                 if (btn) {
@@ -94,6 +110,7 @@
             })
             .catch((err) => {
                 console.error('NFC scan error:', err);
+                updateDebug('debug4', `4. Scanning error: ${err.message}`);
                 if (statusCard) statusCard.className = 'status-card error';
                 if (statusText) {
                     statusText.textContent = 'Error: ' + err.message;
@@ -129,15 +146,59 @@
 
     function handleNfcRead(event) {
         console.log('=== NFC READ ===');
+        updateDebug('debug5', '5. Card detected: YES ✓');
         
         const serialNumber = event.serialNumber;
+        console.log('Serial Number:', serialNumber);
+        console.log('Message records:', event.message.records);
+
         let rawData = '';
-        for (const record of event.message.records) {
-            rawData += new TextDecoder().decode(record.data);
+        
+        // Extract raw data dari NDEF records (optional)
+        try {
+            if (event.message && event.message.records && event.message.records.length > 0) {
+                for (const record of event.message.records) {
+                    console.log('Record:', record);
+                    
+                    // Check jika record.data ada dan adalah ArrayBuffer
+                    if (record.data && record.data instanceof ArrayBuffer) {
+                        try {
+                            const text = new TextDecoder().decode(record.data);
+                            rawData += text;
+                        } catch (decodeErr) {
+                            console.warn('Failed to decode record:', decodeErr);
+                        }
+                    } else if (record.toJSON) {
+                        // Alternative: coba convert ke JSON jika ada method
+                        console.log('Record as JSON:', record.toJSON());
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn('Error extracting raw data:', err);
+            // Lanjut terus, rawData boleh kosong
         }
 
         console.log('Card UID:', serialNumber);
+        console.log('Raw Data (optional):', rawData || '(empty)');
         sendToServer(serialNumber, rawData);
+    }
+
+    // ====== HELPER: Get CSRF Token ======
+    function getCsrfToken() {
+        // Cek di meta tag
+        let token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (token) return token;
+        
+        // Cek di cookie
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'XSRF-TOKEN') {
+                return decodeURIComponent(value);
+            }
+        }
+        return null;
     }
 
     async function sendToServer(cardUid, rawData) {
@@ -148,22 +209,33 @@
         const statusIcon = document.getElementById('statusIcon');
         const statusText = document.getElementById('statusText');
 
+        updateDebug('debug6', '6. Fetch sent: YES ✓');
+
         try {
+            const payload = {
+                card_uid: cardUid,
+                device_info: navigator.userAgent,
+                raw_data: rawData || null
+            };
+
+            console.log('Sending payload:', payload);
+
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken() || '',
                 },
-                body: JSON.stringify({
-                    card_uid: cardUid,
-                    device_info: navigator.userAgent,
-                    raw_data: rawData || null
-                })
+                credentials: 'include',
+                body: JSON.stringify(payload)
             });
 
+            console.log('Response status:', response.status);
+            
             const result = await response.json();
             console.log('Server response:', result);
+            updateDebug('debug7', `7. Response: ${result.status ? 'SUCCESS' : 'FAILED'}`);
 
             resultCard.classList.add('show');
 
@@ -181,6 +253,10 @@
                     <div class="result-item">
                         <div class="result-label">Nama</div>
                         <div class="result-value">${result.data.student_name || '-'}</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">NIM</div>
+                        <div class="result-value">${result.data.student_nim || '-'}</div>
                     </div>
                     <div class="result-item">
                         <div class="result-label">Waktu</div>
@@ -208,13 +284,14 @@
             loadRecentAttendance();
         } catch (err) {
             console.error('Error:', err);
+            updateDebug('debug7', `7. Error: ${err.message}`);
             resultCard.classList.add('show');
             resultBadge.className = 'result-badge error';
             resultBadge.textContent = 'Error';
 
             if (statusCard) statusCard.className = 'status-card error';
             if (statusText) {
-                statusText.textContent = 'Koneksi gagal';
+                statusText.textContent = 'Koneksi gagal: ' + err.message;
                 statusText.className = 'status-text error';
             }
 
