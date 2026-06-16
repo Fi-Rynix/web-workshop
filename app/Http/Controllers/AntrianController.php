@@ -10,18 +10,13 @@ class AntrianController extends Controller
 {
     private const CACHE_KEY = 'antrian_sse_broadcast';
 
-    /**
-     * Halaman form daftar antrian untuk guest.
-     */
+    // Halaman form daftar antrian untuk guest
     public function form()
     {
         return view('pages.antrian.guest-form');
     }
 
-    /**
-     * Simpan data antrian baru.
-     * Guest memasukkan nama, dapat nomor antrian.
-     */
+    // Simpan data antrian baru - guest input nama dapat nomor antrian
     public function store(Request $request)
     {
         $request->validate([
@@ -42,10 +37,7 @@ class AntrianController extends Controller
             ->with('success', 'Berhasil daftar antrian! Nomor antrian Anda: ' . $antrian->id);
     }
 
-    /**
-     * Halaman display personal untuk guest.
-     * Menampilkan nomor antrian dan nama, auto-refresh via JS.
-     */
+    // Halaman display personal guest - nomor antrian + nama auto-refresh
     public function display($id)
     {
         $antrian = Antrian::findOrFail($id);
@@ -53,9 +45,7 @@ class AntrianController extends Controller
         return view('pages.antrian.guest-display', compact('antrian'));
     }
 
-    /**
-     * API: Ambil data antrian untuk polling di display personal.
-     */
+    // API: Ambil data antrian untuk polling di display personal
     public function getStatus($id)
     {
         $antrian = Antrian::find($id);
@@ -78,9 +68,7 @@ class AntrianController extends Controller
         ]);
     }
 
-    /**
-     * Broadcast event ke SSE clients.
-     */
+    // Broadcast event ke SSE clients
     private function broadcast(string $event, Antrian $antrian): void
     {
         $data = json_encode([

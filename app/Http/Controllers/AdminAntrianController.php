@@ -10,9 +10,7 @@ class AdminAntrianController extends Controller
 {
     private const CACHE_KEY = 'antrian_sse_broadcast';
 
-    /**
-     * Halaman dashboard admin antrian.
-     */
+    // Halaman dashboard admin antrian
     public function index()
     {
         $data = $this->getAllForAdmin();
@@ -20,9 +18,7 @@ class AdminAntrianController extends Controller
         return view('pages.antrian.admin', $data);
     }
 
-    /**
-     * Panggil nomor antrian.
-     */
+    // Panggil nomor antrian
     public function call(Request $request, int $id)
     {
         $antrian = Antrian::find($id);
@@ -41,9 +37,7 @@ class AdminAntrianController extends Controller
         return redirect()->back()->with('success', "Nomor {$antrian->id} ({$antrian->nama}) dipanggil!");
     }
 
-    /**
-     * Tandai antrian sebagai terlambat.
-     */
+    // Tandai antrian sebagai terlambat
     public function late(Request $request, int $id)
     {
         $antrian = Antrian::find($id);
@@ -61,9 +55,7 @@ class AdminAntrianController extends Controller
         return redirect()->back()->with('success', "Nomor {$antrian->id} ditandai terlambat.");
     }
 
-    /**
-     * Selesaikan antrian.
-     */
+    // Selesaikan antrian
     public function complete(Request $request, int $id)
     {
         $antrian = Antrian::find($id);
@@ -81,9 +73,7 @@ class AdminAntrianController extends Controller
         return redirect()->back()->with('success', "Nomor {$antrian->id} selesai.");
     }
 
-    /**
-     * Panggil ulang antrian yang terlambat.
-     */
+    // Panggil ulang antrian yang terlambat
     public function recall(Request $request, int $id)
     {
         $antrian = Antrian::find($id);
@@ -102,9 +92,7 @@ class AdminAntrianController extends Controller
         return redirect()->back()->with('success', "Nomor {$antrian->id} ({$antrian->nama}) dipanggil ulang!");
     }
 
-    /**
-     * Ambil semua data antrian untuk admin.
-     */
+    // Ambil semua data antrian untuk admin
     private function getAllForAdmin(): array
     {
         return [
@@ -119,9 +107,7 @@ class AdminAntrianController extends Controller
         ];
     }
 
-    /**
-     * Broadcast event ke SSE clients.
-     */
+    // Broadcast event ke SSE clients
     private function broadcast(string $event, Antrian $antrian): void
     {
         $data = json_encode([

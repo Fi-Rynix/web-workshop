@@ -8,18 +8,14 @@ use Illuminate\Http\Request;
 
 class NfcController extends Controller
 {
-    /**
-     * Halaman index: list semua kartu NFC
-     */
+    // Halaman index - list semua kartu NFC
     public function index()
     {
         $cards = NfcCard::orderBy('idnfc', 'desc')->get();
         return view('pages.nfc.index-nfc', compact('cards'));
     }
 
-    /**
-     * Simpan kartu NFC baru
-     */
+    // Simpan kartu NFC baru
     public function store(Request $request)
     {
         $request->validate([
@@ -40,9 +36,7 @@ class NfcController extends Controller
         return redirect()->route('index-nfc')->with('success', 'Kartu NFC berhasil ditambahkan.');
     }
 
-    /**
-     * Update kartu NFC
-     */
+    // Update kartu NFC
     public function update(Request $request, $id)
     {
         $card = NfcCard::findOrFail($id);
@@ -63,9 +57,7 @@ class NfcController extends Controller
         return redirect()->route('index-nfc')->with('success', 'Kartu NFC berhasil diperbarui.');
     }
 
-    /**
-     * Nonaktifkan kartu NFC
-     */
+    // Nonaktifkan kartu NFC
     public function destroy($id)
     {
         $card = NfcCard::findOrFail($id);
@@ -74,9 +66,7 @@ class NfcController extends Controller
         return redirect()->route('index-nfc')->with('success', 'Kartu NFC berhasil dinonaktifkan.');
     }
 
-    /**
-     * Reaktifkan kartu NFC
-     */
+    // Reaktifkan kartu NFC
     public function activate($id)
     {
         $card = NfcCard::findOrFail($id);
@@ -85,18 +75,13 @@ class NfcController extends Controller
         return redirect()->route('index-nfc')->with('success', 'Kartu NFC berhasil diaktifkan.');
     }
 
-    /**
-     * Halaman scanner NFC (mobile-friendly)
-     */
+    // Halaman scanner NFC mobile-friendly
     public function scanner()
     {
         return view('pages.nfc.scanner-nfc');
     }
 
-    /**
-     * API: scan kartu NFC → buat attendance record
-     * Called from scanner page via fetch
-     */
+    // API: scan kartu NFC buat attendance record - called from scanner page via fetch
     public function scan(Request $request)
     {
         // Force write to log
@@ -175,9 +160,7 @@ class NfcController extends Controller
         ]);
     }
 
-    /**
-     * Halaman list attendance
-     */
+    // Halaman list attendance
     public function attendance()
     {
         $attendances = Attendance::with('nfcCard')
@@ -188,9 +171,7 @@ class NfcController extends Controller
         return view('pages.nfc.attendance-nfc', compact('attendances'));
     }
 
-    /**
-     * API: Get attendance data (JSON) untuk scanner page
-     */
+    // API: Get attendance data JSON untuk scanner page
     public function attendanceData()
     {
         $attendances = Attendance::with('nfcCard')
@@ -204,9 +185,7 @@ class NfcController extends Controller
         ]);
     }
 
-    /**
-     * API: Get raw data untuk attendance tertentu
-     */
+    // API: Get raw data untuk attendance tertentu
     public function getRawData($id)
     {
         $attendance = Attendance::find($id);

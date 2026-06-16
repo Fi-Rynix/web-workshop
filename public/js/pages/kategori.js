@@ -13,12 +13,8 @@
 (function() {
     'use strict';
 
-    // ====================================
     // INISIALISASI & SETUP
-    // ====================================
-
-    // inisialisasi halaman kategori
-    // dipanggil saat dokumen sudah siap
+    // inisialisasi halaman kategori dipanggil saat dokumen sudah siap
     function initKategoriPage() {
         console.log('Kategori Page Initialized');
         
@@ -32,12 +28,8 @@
         setupFormSubmission();
     }
 
-    // ====================================
     // EVENT LISTENERS
-    // ====================================
-
-    // setup modal events
-    // mengelola pembukaan dan penutupan modal
+    // setup modal events mengelola pembukaan dan penutupan modal
     function setupModalEvents() {
         // Event untuk tombol show modal
         document.addEventListener('click', function(e) {
@@ -67,8 +59,7 @@
         });
     }
 
-    // setup table events
-    // mengelola interaksi dengan tabel
+    // setup table events mengelola interaksi dengan tabel
     function setupTableEvents() {
         const table = document.querySelector('.kategori-table');
         if (!table) return;
@@ -101,8 +92,7 @@
         });
     }
 
-    // setup form submission events
-    // mengelola loading animation dan prevent double click
+    // setup form submission events mengelola loading animation dan prevent double click
     function setupFormSubmission() {
         // Get all forms yang akan di-submit
         const forms = document.querySelectorAll('form[action*="kategori"]');
@@ -152,12 +142,8 @@
         });
     }
 
-    // ====================================
     // FUNGSI MODAL
-    // ====================================
-
-    // membuka modal dengan animasi
-    // @param {string} modalid - id dari modal element
+    // membuka modal dengan animasi param modalid id dari modal element
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (!modal) return;
@@ -183,8 +169,7 @@
         }, 100);
     }
 
-    // menutup modal dengan animasi
-    // @param {string} modalid - id dari modal element
+    // menutup modal dengan animasi param modalid id dari modal element
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (!modal) return;

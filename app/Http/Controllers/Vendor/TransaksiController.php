@@ -7,9 +7,7 @@ use App\Models\Pesanan;
 
 class TransaksiController extends Controller
 {
-    /**
-     * Tampilkan semua pesanan
-     */
+    // Tampilkan semua pesanan
     public function index()
     {
         $pesanans = Pesanan::with(['user', 'detailPesanan.menu'])
@@ -19,9 +17,7 @@ class TransaksiController extends Controller
         return view('pages.vendor.index-transaksi', compact('pesanans'));
     }
 
-    /**
-     * Detail pesanan
-     */
+    // Detail pesanan
     public function show($id)
     {
         $pesanan = Pesanan::with(['user', 'detailPesanan.menu'])
@@ -30,21 +26,13 @@ class TransaksiController extends Controller
         return view('pages.vendor.detail-transaksi', compact('pesanan'));
     }
 
-    /**
-     * Halaman scan QR pesanan.
-     * Vendor scan QR dari customer, hasil scan adalah idpesanan.
-     * Tampilan: detail pesanan lengkap (display only, tanpa aksi).
-     */
+    // Halaman scan QR pesanan - vendor scan QR customer hasil scan idpesanan display only tanpa aksi
     public function scanIndex()
     {
         return view('pages.vendor.scan-pesanan');
     }
 
-    /**
-     * API: Ambil detail pesanan by idpesanan (untuk frontend scanner).
-     * Return JSON berisi data pesanan + list item (semua, tanpa filter idvendor).
-     * 404 kalau pesanan tidak ditemukan.
-     */
+    // API: Ambil detail pesanan by idpesanan untuk frontend scanner return JSON data pesanan + list item tanpa filter idvendor 404 kalau tidak ditemukan
     public function getPesananDetail($id)
     {
         $pesanan = Pesanan::with(['user', 'detailPesanan.menu'])

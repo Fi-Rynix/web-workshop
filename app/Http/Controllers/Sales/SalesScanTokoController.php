@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SalesScanTokoController extends Controller
 {
-    /**
-     * Halaman dashboard sales (landing page).
-     */
+    // Halaman dashboard sales landing page
     public function dashboard()
     {
         $sales = Auth::user();
@@ -28,18 +26,13 @@ class SalesScanTokoController extends Controller
         return view('pages.sales.dashboard', compact('sales', 'totalKunjungan', 'kunjunganDiterima', 'kunjunganDitolak'));
     }
 
-    /**
-     * Halaman scan QR Code toko.
-     */
+    // Halaman scan QR Code toko
     public function scanIndex()
     {
         return view('pages.sales.scan-toko');
     }
 
-    /**
-     * API: ambil detail toko by barcode.
-     * Dipakai frontend setelah scan QR sukses.
-     */
+    // API: ambil detail toko by barcode dipakai frontend setelah scan QR sukses
     public function getTokoByBarcode($barcode)
     {
         $toko = LokasiToko::find($barcode);
@@ -64,11 +57,7 @@ class SalesScanTokoController extends Controller
         ]);
     }
 
-    /**
-     * Submit laporan kunjungan: simpan ke database setelah validasi client.
-     * Frontend sudah hitung jarak & status. Server hitung ulang untuk keamanan,
-     * lalu simpan.
-     */
+    // Submit laporan kunjungan - simpan ke database setelah validasi client frontend hitung jarak server hitung ulang untuk keamanan
     public function submitKunjungan(Request $request)
     {
         $request->validate([
@@ -119,10 +108,7 @@ class SalesScanTokoController extends Controller
         ]);
     }
 
-    /**
-     * API: ambil riwayat kunjungan sales yang sedang login.
-     * Untuk tabel riwayat di halaman scan.
-     */
+    // API: ambil riwayat kunjungan sales yang sedang login untuk tabel riwayat di halaman scan
     public function riwayatKunjungan()
     {
         $laporan = LaporanKunjunganSales::where('iduser', Auth::id())

@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class VendorController extends Controller
 {
-    /**
-     * Tampilkan dashboard vendor
-     */
+    // Tampilkan dashboard vendor
     public function index()
     {
         // Ambil vendor yang dimiliki user ini (asumsi ada relasi)
@@ -24,9 +22,7 @@ class VendorController extends Controller
         return view('pages.vendor.dashboard', compact('menuCount'));
     }
 
-    /**
-     * Tampilkan semua menu milik vendor
-     */
+    // Tampilkan semua menu milik vendor
     public function menuIndex()
     {
         $menus = Menu::with('vendor')
@@ -36,18 +32,14 @@ class VendorController extends Controller
         return view('pages.vendor.menu.index', compact('menus'));
     }
 
-    /**
-     * Form tambah menu baru
-     */
+    // Form tambah menu baru
     public function menuCreate()
     {
         $vendors = Vendor::all();
         return view('pages.vendor.menu.create', compact('vendors'));
     }
 
-    /**
-     * Simpan menu baru
-     */
+    // Simpan menu baru
     public function menuStore(Request $request)
     {
         $request->validate([
@@ -71,9 +63,7 @@ class VendorController extends Controller
         }
     }
 
-    /**
-     * Form edit menu
-     */
+    // Form edit menu
     public function menuEdit($id)
     {
         $menu = Menu::findOrFail($id);
@@ -81,9 +71,7 @@ class VendorController extends Controller
         return view('pages.vendor.menu.edit', compact('menu', 'vendors'));
     }
 
-    /**
-     * Update menu
-     */
+    // Update menu
     public function menuUpdate(Request $request, $id)
     {
         $request->validate([
@@ -108,9 +96,7 @@ class VendorController extends Controller
         }
     }
 
-    /**
-     * Hapus menu
-     */
+    // Hapus menu
     public function menuDestroy($id)
     {
         try {
@@ -123,9 +109,7 @@ class VendorController extends Controller
         }
     }
 
-    /**
-     * Lihat pesanan yang masuk untuk menu vendor
-     */
+    // Lihat pesanan yang masuk untuk menu vendor
     public function pesananIndex()
     {
         // Ambil pesanan yang berisi menu dari vendor ini
@@ -137,9 +121,7 @@ class VendorController extends Controller
         return view('pages.vendor.pesanan.index', compact('detailPesanan'));
     }
 
-    /**
-     * Detail pesanan
-     */
+    // Detail pesanan
     public function pesananShow($id)
     {
         $detail = DetailPesanan::with(['menu', 'pesanan.user', 'pesanan.detailPesanan.menu'])

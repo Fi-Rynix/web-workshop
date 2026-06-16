@@ -7,11 +7,7 @@ use Illuminate\Support\Facades\Cache;
 
 class SseAntrianController extends Controller
 {
-    /**
-     * SSE Stream endpoint.
-     * Client connect via EventSource di browser.
-     * Menggunakan named event: queue-update
-     */
+    // SSE Stream endpoint - client connect via EventSource browser, named event queue-update
     public function stream(Request $request)
     {
         // Release session lock untuk multi-tab support

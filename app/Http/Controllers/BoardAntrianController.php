@@ -6,9 +6,7 @@ use App\Models\Antrian;
 
 class BoardAntrianController extends Controller
 {
-    /**
-     * Halaman papan antrian publik.
-     */
+    // Halaman papan antrian publik
     public function index()
     {
         $data = [

@@ -11,10 +11,7 @@ use Illuminate\Http\Request;
 
 class KunjunganTokoController extends Controller
 {
-    /**
-     * Generate barcode berikutnya: TOKO0001, TOKO0002, ...
-     * Scan barcode existing yang match pattern TOKOXXXX, ambil nomor max + 1.
-     */
+    // Generate barcode berikutnya TOKO0001, TOKO0002 dst - scan existing match pattern TOKOXXXX ambil nomor max + 1
     private function generateNextBarcode(): string
     {
         $last = LokasiToko::where('barcode', 'like', 'TOKO%')
@@ -29,10 +26,7 @@ class KunjunganTokoController extends Controller
         return 'TOKO' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
-    /**
-     * API: return JSON berisi barcode berikutnya yang akan di-generate.
-     * Dipanggil dari frontend saat modal tambah dibuka untuk preview.
-     */
+    // API: return JSON barcode berikutnya untuk preview di frontend saat modal tambah dibuka
     public function nextBarcode()
     {
         return response()->json([
@@ -41,18 +35,14 @@ class KunjunganTokoController extends Controller
         ]);
     }
 
-    /**
-     * Halaman index: list semua toko.
-     */
+    // Halaman index - list semua toko
     public function index()
     {
         $lokasilist = LokasiToko::orderBy('barcode', 'asc')->get();
         return view('pages.kunjungan-toko.index-kunjungan-toko', compact('lokasilist'));
     }
 
-    /**
-     * Simpan toko baru.
-     */
+    // Simpan toko baru
     public function store(Request $request)
     {
         $request->validate([
@@ -82,9 +72,7 @@ class KunjunganTokoController extends Controller
             ->with('success', "Toko berhasil ditambahkan dengan barcode {$barcode}.");
     }
 
-    /**
-     * Update toko.
-     */
+    // Update toko
     public function update(Request $request, $barcode)
     {
         $toko = LokasiToko::findOrFail($barcode);
@@ -109,9 +97,7 @@ class KunjunganTokoController extends Controller
             ->with('success', 'Toko berhasil diperbarui.');
     }
 
-    /**
-     * Hapus toko.
-     */
+    // Hapus toko
     public function destroy($barcode)
     {
         $toko = LokasiToko::findOrFail($barcode);
@@ -121,9 +107,7 @@ class KunjunganTokoController extends Controller
             ->with('success', 'Toko berhasil dihapus.');
     }
 
-    /**
-     * Detail toko: tampilkan info + QR code berisi barcode.
-     */
+    // Detail toko - tampilkan info + QR code berisi barcode
     public function show($barcode)
     {
         $toko = LokasiToko::findOrFail($barcode);

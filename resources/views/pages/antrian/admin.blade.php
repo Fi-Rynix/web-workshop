@@ -158,32 +158,24 @@
 
 @section('extra-js')
 <script>
-    const sseDot = document.getElementById('sseDot');
-    const sseStatus = document.getElementById('sseStatus');
-
+    // Admin page cukup auto-reload saat ada perubahan
     function connectSSE() {
         const eventSource = new EventSource('{{ route('sse.antrian') }}');
-
-        eventSource.onopen = () => {
-            sseDot.classList.add('connected');
-            sseStatus.textContent = 'Terhubung';
-        };
 
         eventSource.addEventListener('queue-update', (event) => {
             try {
                 const data = JSON.parse(event.data);
                 console.log('SSE Event:', data);
+                // Auto reload saat ada perubahan
                 location.reload();
             } catch (e) {
-                console.log('Heartbeat or invalid data');
+                // Heartbeat - ignore
             }
         });
 
         eventSource.onerror = () => {
-            sseDot.classList.remove('connected');
-            sseStatus.textContent = 'Terputus, reconnecting...';
             eventSource.close();
-            setTimeout(connectSSE, 3000);
+            setTimeout(connectSSE, 5000);
         };
     }
 

@@ -5,17 +5,11 @@
 (function() {
     'use strict';
 
-    // ====================================
     // VARIABEL GLOBAL
-    // ====================================
-    
     let ndefScanner = null;
     let isScanningUid = false;
 
-    // ====================================
     // INISIALISASI & SETUP
-    // ====================================
-
     function initNfcPage() {
         console.log('NFC Page Initialized');
         setupModalEvents();
@@ -24,10 +18,7 @@
         setupNfcScanButton();
     }
 
-    // ====================================
     // EVENT LISTENERS
-    // ====================================
-
     function setupModalEvents() {
         document.addEventListener('click', function(e) {
             // Show modal button
@@ -99,10 +90,7 @@
         });
     }
 
-    // ====================================
     // FUNGSI MODAL
-    // ====================================
-
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (!modal) {
@@ -145,10 +133,7 @@
         console.log('Modal closed:', modalId);
     }
 
-    // ====================================
-    // FUNGSI NFC SCANNER (SCAN TO REGISTER)
-    // ====================================
-
+    // FUNGSI NFC SCANNER SCAN TO REGISTER
     function setupNfcScanButton() {
         console.log('Setting up NFC scan button...');
         

@@ -62,12 +62,7 @@ class PesananController extends Controller
         return view('pages.pelanggan.index-transaksi', compact('pesanans'));
     }
 
-    /**
-     * Riwayat pesanan KHUSUS GUEST.
-     * Menampilkan SEMUA pesanan yang dibuat oleh user dengan nama Guest_xxxxx.
-     * Tidak ada filter per user — semua guest bisa lihat pesanan guest lain.
-     * Akses: publik (tanpa auth).
-     */
+    // Riwayat pesanan KHUSUS GUEST - menampilkan SEMUA pesanan user Guest_xxxxx tidak ada filter semua guest bisa lihat guest lain akses publik tanpa auth
     public function indexForGuest()
     {
         $guestIds = User::where('nama', 'like', 'Guest_%')->pluck('iduser')->all();
@@ -82,11 +77,7 @@ class PesananController extends Controller
         return view('pages.pelanggan.index-transaksi-guest', compact('pesanans', 'guestCount'));
     }
 
-    /**
-     * Detail pesanan KHUSUS GUEST.
-     * Hanya menampilkan pesanan yang iduser-nya user Guest.
-     * Akses: publik (tanpa auth).
-     */
+    // Detail pesanan KHUSUS GUEST - hanya menampilkan pesanan yang iduser-nya user Guest akses publik tanpa auth
     public function showForGuest($id)
     {
         $guestIds = User::where('nama', 'like', 'Guest_%')->pluck('iduser')->all();
@@ -101,10 +92,7 @@ class PesananController extends Controller
         return view('pages.pelanggan.detail-transaksi-guest', compact('pesanan', 'qrCodeBase64'));
     }
 
-    /**
-     * Generate QR Code SVG (Base64 encoded) berisi idpesanan.
-     * Helper internal yang di-reuse oleh show() dan showForGuest().
-     */
+    // Generate QR Code SVG Base64 encoded berisi idpesanan helper internal di-reuse oleh show() dan showForGuest()
     private function generateQrCodeBase64($payload): string
     {
         $renderer = new \BaconQrCode\Renderer\ImageRenderer(

@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\File;
 
 class MenuController extends Controller
 {
-    /**
-     * Tampilkan semua menu
-     */
+    // Tampilkan semua menu
     public function index()
     {
         $menus = Menu::with('vendor')->get();
@@ -20,9 +18,7 @@ class MenuController extends Controller
         return view('pages.vendor.index-menu', compact('menus', 'vendors'));
     }
 
-    /**
-     * Simpan menu baru
-     */
+    // Simpan menu baru
     public function store()
     {
         $pathGambar = null;
@@ -44,9 +40,7 @@ class MenuController extends Controller
         return redirect()->route('vendor.menu.index')->with('success', 'Menu berhasil ditambahkan.');
     }
 
-    /**
-     * Update menu
-     */
+    // Update menu
     public function update($id)
     {
         $menu = Menu::findOrFail($id);
@@ -76,9 +70,7 @@ class MenuController extends Controller
         return redirect()->route('vendor.menu.index')->with('success', 'Menu berhasil diperbarui.');
     }
 
-    /**
-     * Hapus menu
-     */
+    // Hapus menu
     public function destroy($id)
     {
         $menu = Menu::findOrFail($id);

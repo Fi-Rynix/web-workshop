@@ -13,12 +13,8 @@
 (function() {
     'use strict';
 
-    // ====================================
     // INISIALISASI & SETUP
-    // ====================================
-
-    // inisialisasi halaman buku
-    // dipanggil saat dokumen sudah siap
+    // inisialisasi halaman buku dipanggil saat dokumen sudah siap
     function initBukuPage() {
         console.log('Buku Page Initialized');
         
@@ -32,12 +28,8 @@
         setupTableEvents();
     }
 
-    // ====================================
     // EVENT LISTENERS
-    // ====================================
-
-    // setup modal events
-    // mengelola pembukaan dan penutupan modal
+    // setup modal events mengelola pembukaan dan penutupan modal
     function setupModalEvents() {
         // Event untuk tombol show modal
         document.addEventListener('click', function(e) {
@@ -67,8 +59,7 @@
         });
     }
 
-    // setup form events
-    // mengelola validasi dan submit form
+    // setup form events mengelola validasi dan submit form
     function setupFormEvents() {
         // Form submit handling
         const forms = document.querySelectorAll('form');
@@ -99,8 +90,7 @@
         });
     }
 
-    // setup table events
-    // mengelola interaksi dengan tabel
+    // setup table events mengelola interaksi dengan tabel
     function setupTableEvents() {
         const table = document.querySelector('.buku-table');
         if (!table) return;
@@ -133,12 +123,8 @@
         });
     }
 
-    // ====================================
     // FUNGSI MODAL
-    // ====================================
-
-    // membuka modal dengan animasi
-    // @param {string} modalid - id dari modal element
+    // membuka modal dengan animasi param modalid id dari modal element
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (!modal) return;
@@ -166,8 +152,7 @@
         }, 100);
     }
 
-    // menutup modal dengan animasi
-    // @param {string} modalid - id dari modal element
+    // menutup modal dengan animasi param modalid id dari modal element
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (!modal) return;
@@ -190,13 +175,8 @@
         console.log('Modal closed:', modalId);
     }
 
-    // ====================================
     // FUNGSI FORM VALIDATION
-    // ====================================
-
-    // validasi seluruh form
-    // @param {htmlformelement} form - form element
-    // @returns {boolean} - valid atau tidak
+    // validasi seluruh form param form form element return boolean valid atau tidak
     function validateForm(form) {
         const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
         let isValid = true;
@@ -210,9 +190,7 @@
         return isValid;
     }
 
-    // validasi satu input field
-    // @param {htmlelement} input - input element
-    // @returns {boolean} - valid atau tidak
+    // validasi satu input field param input input element return boolean valid atau tidak
     function validateInput(input) {
         const value = input.value.trim();
         let isValid = true;
@@ -241,9 +219,7 @@
         return isValid;
     }
 
-    // tampilkan error message untuk input
-    // @param {htmlelement} input - input element
-    // @param {string} message - error message
+    // tampilkan error message untuk input param input input element param message error message
     function showInputError(input, message) {
         input.classList.add('error');
         
@@ -258,8 +234,7 @@
         errorEl.textContent = message;
     }
 
-    // clear error message dari input
-    // @param {htmlelement} input - input element
+    // clear error message dari input param input input element
     function clearInputError(input) {
         input.classList.remove('error');
         
@@ -269,8 +244,7 @@
         }
     }
 
-    // clear semua error di form
-    // @param {htmlformelement} form - form element
+    // clear semua error di form param form form element
     function clearFormErrors(form) {
         const inputs = form.querySelectorAll('input.error, textarea.error, select.error');
         inputs.forEach(input => {
@@ -278,13 +252,8 @@
         });
     }
 
-    // ====================================
     // FUNGSI HELPER
-    // ====================================
-
-    // show toast/notification message
-    // @param {string} message - pesan yang ditampilkan
-    // @param {string} type - tipe: success, error, warning, info
+    // show toast notification message param message pesan ditampilkan param type tipe success error warning info
     function showNotification(message, type = 'info') {
         // Create toast element
         const toast = document.createElement('div');
@@ -304,9 +273,7 @@
         }, 3000);
     }
 
-    // format tanggal untuk display
-    // @param {date|string} date - date object atau string
-    // @returns {string} - format: dd-mm-yyyy
+    // format tanggal untuk display param date date object atau string return format dd-mm-yyyy
     function formatDate(date) {
         if (typeof date === 'string') {
             date = new Date(date);
@@ -319,16 +286,12 @@
         return `${d}-${m}-${y}`;
     }
 
-    // confirm dialog sebelum delete
-    // @param {string} message - pesan konfirmasi
-    // @returns {boolean} - dikonfirmasi atau tidak
+    // confirm dialog sebelum delete param message pesan konfirmasi return boolean dikonfirmasi atau tidak
     function confirmAction(message) {
         return confirm(message || 'Apakah anda yakin?');
     }
 
-    // disable tombol untuk prevent double submit
-    // @param {htmlelement} button - button element
-    // @param {number} duration - durasi dalam ms (default: 3000)
+    // disable tombol untuk prevent double submit param button button element param duration durasi dalam ms default 3000
     function disableButton(button, duration = 3000) {
         button.disabled = true;
         button.style.opacity = '0.6';

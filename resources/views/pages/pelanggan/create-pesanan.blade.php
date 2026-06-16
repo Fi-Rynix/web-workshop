@@ -214,12 +214,6 @@
     let menus = [];
     let currentOrder = null;
 
-    /**
-     * ============================================================
-     * STATE MANAGEMENT
-     * ============================================================
-     */
-
     // Restore currentOrder dari localStorage (kalau ada order yang belum selesai)
     const savedOrder = localStorage.getItem('currentOrder');
     console.log('[restore] savedOrder:', savedOrder);
@@ -565,11 +559,6 @@
         });
     });
 
-    /**
-     * ============================================================
-     * PAYMENT STATUS SECTION & WEBHOOK POLLING
-     * ============================================================
-     */
 
     // Tampilkan section status pembayaran
     function showPaymentStatusSection(orderData) {

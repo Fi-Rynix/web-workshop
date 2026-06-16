@@ -148,7 +148,7 @@
         sendToServer(serialNumber, rawData);
     }
 
-    // ====== HELPER: Get CSRF Token ======
+    // HELPER Get CSRF Token
     function getCsrfToken() {
         // Cek di meta tag
         let token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');

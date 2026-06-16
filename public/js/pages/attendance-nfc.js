@@ -5,10 +5,7 @@
 (function() {
     'use strict';
 
-    // ====================================
     // INISIALISASI
-    // ====================================
-
     function initAttendancePage() {
         console.log('Attendance NFC Page Initialized');
         
@@ -16,10 +13,7 @@
         setupTableEvents();
     }
 
-    // ====================================
     // SETUP MODAL EVENTS
-    // ====================================
-
     function setupModalEvents() {
         document.addEventListener('click', function(e) {
             // Close modal button
@@ -40,10 +34,7 @@
         });
     }
 
-    // ====================================
     // SETUP TABLE EVENTS
-    // ====================================
-
     function setupTableEvents() {
         const table = document.querySelector('.attendance-table');
         if (!table) return;
@@ -66,10 +57,7 @@
         });
     }
 
-    // ====================================
     // FUNGSI MODAL
-    // ====================================
-
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (!modal) return;
@@ -91,10 +79,7 @@
         }, 200);
     }
 
-    // ====================================
     // SHOW RAW DATA
-    // ====================================
-
     function showRawData(id) {
         fetch('/nfc/raw-data/' + id, {
             headers: {
